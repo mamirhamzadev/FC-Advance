@@ -17,9 +17,7 @@ import Button from "../../components/Button";
 function MerchantCashAdvance() {
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+  useEffect(() => setLoading(false), []);
 
   return (
     <>

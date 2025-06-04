@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import BreadCrumb from "../../components/BreadCrumb";
-import { HOME_ROUTE } from "../../constants/routes";
+import {
+  HOME_ROUTE,
+  PRIVACY_POLICY_ROUTE,
+  TERMS_CONDITIONS_ROUTE,
+} from "../../constants/routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/Button";
 import { getContactInfoData } from "./data";
+import { Link } from "react-router-dom";
 
 function ContactUs() {
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+  useEffect(() => setLoading(false), []);
 
   return (
     <>
@@ -57,9 +60,16 @@ function ContactUs() {
             <input type="checkbox" name="notifications" id="notifications" />
             <label htmlFor="notifications" className="text-[14px] text-[#333]">
               By providing your phone number, you agree to receive text messages
-              from <strong>Fc Advance</strong> subject to our privacy policy and
-              terms & conditions. Message & data rates may apply. Message
-              frequency varies. Reply Stop to opt out.
+              from <strong>Fc Advance</strong> subject to our{" "}
+              <Link to={PRIVACY_POLICY_ROUTE} className="underline">
+                privacy policy
+              </Link>{" "}
+              and{" "}
+              <Link to={TERMS_CONDITIONS_ROUTE} className="underline">
+                terms & conditions
+              </Link>
+              . Message & data rates may apply. Message frequency varies. Reply
+              Stop to opt out.
             </label>
           </div>
           <Button className="mt-[25px] flex gap-[5px] items-center">

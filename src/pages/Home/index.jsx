@@ -31,7 +31,7 @@ function Home() {
 
   useEffect(() => {
     setSwiperIndex(0);
-    setTimeout(() => setLoading(false), 1000);
+    setLoading(false);
   }, []);
 
   return (

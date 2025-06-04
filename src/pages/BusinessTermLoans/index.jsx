@@ -19,9 +19,7 @@ import { getAccordianData } from "./data";
 function BusinessTermLoans() {
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+  useEffect(() => setLoading(false), []);
 
   return (
     <>

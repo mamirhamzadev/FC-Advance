@@ -3,9 +3,6 @@ import Loader from "../../components/Loader";
 import BreadCrumb from "../../components/BreadCrumb";
 import { HOME_ROUTE } from "../../constants/routes";
 import {
-  FUNDING_SOLUTIONS_CARD_1,
-  FUNDING_SOLUTIONS_CARD_2,
-  FUNDING_SOLUTIONS_CARD_3,
   FUNDING_SOLUTIONS_DECLINED_SECTION,
   FUNDING_SOLUTIONS_IMG_1,
 } from "../../constants/images";
@@ -23,9 +20,7 @@ import Button from "../../components/Button";
 function FundingSolutions() {
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
-  }, []);
+  useEffect(() => setLoading(false), []);
 
   return (
     <>
