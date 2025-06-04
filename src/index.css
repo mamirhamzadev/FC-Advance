@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: open-sans;
+  src: url("./assets/fonts/OpenSans-Regular.ttf");
+}
+@font-face {
+  font-family: montserrat;
+  src: url("./assets/fonts/Montserrat-Regular.ttf");
+}
+
+:root {
+  --gray-700: #747474;
+  --gray-900: #333;
+  --black: #000;
+
+  --animate-zoom: animate-zoom 20s ease forwards;
+}
+
+@theme {
+  --breakpoint-xl: 1200px;
+  --color-gray-700: var(--gray-700);
+  --color-gray-900: var(--gray-900);
+  --color-black: var(--black);
+}
+
+#root,
+body {
+  margin: 0;
+  padding: 0;
+}
+* {
+  box-sizing: border-box;
+  font-family: sans-serif, montserrat;
+}
+
+.wrapper {
+  @apply max-w-full xl:!max-w-[1140px] lg:max-w-[960px] md:max-w-[720px] sm:max-w-[540px] w-full mx-auto px-[15px];
+}
+
+.open-sans {
+  font-family: sans-serif, open-sans;
+}
+
+a,
+button {
+  cursor: pointer;
+  outline: 0;
+}
+
+@keyframes animate-zoom {
+  from {
+    transform: scale(1, 1);
+  }
+  to {
+    transform: scale(1.2, 1.2);
+  }
+}
