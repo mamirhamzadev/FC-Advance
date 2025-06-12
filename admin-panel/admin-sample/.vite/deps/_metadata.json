@@ -1,0 +1,62 @@
+{
+  "hash": "5fb6cb00",
+  "browserHash": "60182993",
+  "optimized": {
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "26ecb96c",
+      "needsInterop": false
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "94c77014",
+      "needsInterop": true
+    },
+    "react-redux": {
+      "src": "../../node_modules/react-redux/dist/react-redux.mjs",
+      "file": "react-redux.js",
+      "fileHash": "9d2076fb",
+      "needsInterop": false
+    },
+    "react-toastify": {
+      "src": "../../node_modules/react-toastify/dist/react-toastify.esm.mjs",
+      "file": "react-toastify.js",
+      "fileHash": "b4090e51",
+      "needsInterop": false
+    },
+    "primereact/api": {
+      "src": "../../node_modules/primereact/api/api.esm.js",
+      "file": "primereact_api.js",
+      "fileHash": "a2e251c1",
+      "needsInterop": false
+    },
+    "@reduxjs/toolkit": {
+      "src": "../../node_modules/@reduxjs/toolkit/dist/redux-toolkit.modern.mjs",
+      "file": "@reduxjs_toolkit.js",
+      "fileHash": "f46259dd",
+      "needsInterop": false
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "95bd5b57",
+      "needsInterop": true
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "128cec27",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-G4O6EYSD": {
+      "file": "chunk-G4O6EYSD.js"
+    },
+    "chunk-ZC22LKFR": {
+      "file": "chunk-ZC22LKFR.js"
+    }
+  }
+}

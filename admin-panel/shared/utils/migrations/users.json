@@ -1,0 +1,57 @@
+[
+	{
+		"username": "admin",
+		"email": "admin@dashboard.com",
+		"password": "Admin@123!",
+		"about": {
+			"firstName": "Admin",
+			"lastName": "Dashboard",
+			"phone": "123-456-7890",
+			"streetAddress": "123 Admin Street",
+			"country": "507f191e810c19729de860ea",
+			"city": "Admin City",
+			"state": "Admin State",
+			"postalCode": "12345",
+			"profileImage": {
+				"filename": "picture.jpg",
+				"mimetype": "image/jpeg"
+			}
+		},
+		"subscriptions": [
+			{
+				"subscription": "609c197e810c19729de860eb",
+				"paymentID": "PAY123456",
+				"schedule": {
+					"start": "2023-10-01T06:00:00.000Z",
+					"end": "2024-10-01T06:00:00.000Z"
+				},
+				"paymentStatus": "paid",
+				"isActive": true,
+				"isActiveByAdmin": true,
+				"cancellation": {
+					"status": false,
+					"date": null,
+					"reason": null
+				}
+			}
+		],
+		"passwordReset": {
+			"count": 0,
+			"code": null,
+			"lastResetDate": "2023-10-04T06:52:00.000Z",
+			"expiresAt": "2023-10-18T06:52:00.000Z"
+		},
+		"isVerified": {
+			"status": true,
+			"code": null,
+			"createdAt": "2023-10-04T06:52:00.000Z",
+			"expiresAt": "2023-10-18T06:52:00.000Z"
+		},
+		"userRole": "admin",
+		"isActive": true,
+		"isApproved": true,
+		"isFeatured": true,
+		"createdBy": "507f191e810c19729de860ea",
+		"updatedBy": "507f191e810c19729de860eb"
+	}
+]
