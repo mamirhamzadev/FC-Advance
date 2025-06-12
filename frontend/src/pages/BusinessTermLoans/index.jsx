@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import BreadCrumb from "../../components/BreadCrumb";
-import { FUNDING_SOLUTIONS_ROUTE, HOME_ROUTE } from "../../constants/routes";
+import {
+  APPLY_NOW_ROUTE,
+  FUNDING_SOLUTIONS_ROUTE,
+  HOME_ROUTE,
+} from "../../constants/routes";
 import {
   BUSINESS_TERM_LOANS_IMG,
   FUNDING_SOLUTIONS_DECLINED_SECTION,
@@ -303,8 +307,8 @@ function BusinessTermLoans() {
           man led. Along on happy could cease green oh.
         </p>
         <div className="flex flex-col w-full border border-[#e7e7e7]">
-          {getAccordianData().map((data) => (
-            <Accordian title={data.title}>
+          {getAccordianData().map((data, index) => (
+            <Accordian title={data.title} key={index}>
               <p className="p-[20px] text-gray-700 font-bold">{data.desc}</p>
             </Accordian>
           ))}

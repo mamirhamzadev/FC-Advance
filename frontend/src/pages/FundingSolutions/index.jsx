@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import BreadCrumb from "../../components/BreadCrumb";
-import { HOME_ROUTE } from "../../constants/routes";
+import { APPLY_NOW_ROUTE, HOME_ROUTE } from "../../constants/routes";
 import {
   FUNDING_SOLUTIONS_DECLINED_SECTION,
   FUNDING_SOLUTIONS_IMG_1,
@@ -157,7 +157,7 @@ function FundingSolutions() {
           After approval, expect to receive a confirmation within 24 hours and
           the funds to be deposited in your bank account within 24hours.
         </p>
-        <Button text="Apply Now" />
+        <Button text="Apply Now" href={APPLY_NOW_ROUTE} />
       </section>
 
       {/* What If I’m Declined section */}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Loader from "../../components/Loader";
 import BreadCrumb from "../../components/BreadCrumb";
-import { FUNDING_SOLUTIONS_ROUTE, HOME_ROUTE } from "../../constants/routes";
+import { APPLY_NOW_ROUTE, FUNDING_SOLUTIONS_ROUTE, HOME_ROUTE } from "../../constants/routes";
 import { FUNDING_SOLUTIONS_DECLINED_SECTION } from "../../constants/images";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {

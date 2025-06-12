@@ -146,7 +146,7 @@ function Apply() {
       <div className="wrapper flex flex-col justify-self-center !w-[calc(100%-20px)] !mx-[10px] mt-[30px] mb-[30px] md:mb-[80px] border rounded-[10px] py-[30px] md:!px-[50px] !px-[20px]">
         {companyData?.is_applied ? (
           <div className="flex items-center justify-center py-[50px] text-[14px] text-green-600 font-bold">
-            <p>Your application submitted successfully</p>
+            <p>Your application has been submitted</p>
           </div>
         ) : (
           <>
@@ -163,7 +163,7 @@ function Apply() {
               Thank you for placing your trust in FC Advance. Please review
               attached information for submission
             </p>
-            <form onSubmit={handleFormSubmit} className="flex flex-col">
+            <form method="post" onSubmit={handleFormSubmit} className="flex flex-col">
               <div className="flex gap-[50px] md:flex-row flex-col mt-[50px]">
                 <FloatingInput
                   name="submitted_by[full_name]"
