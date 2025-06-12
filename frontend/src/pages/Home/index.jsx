@@ -217,8 +217,8 @@ function Home() {
                 </tr>
               </thead>
               <tbody>
-                {getAdvanceFundingSolutionsTableData().map((data) => (
-                  <tr className="nth-of-type-[odd]:bg-[#0000000d]">
+                {getAdvanceFundingSolutionsTableData().map((data, index) => (
+                  <tr className="nth-of-type-[odd]:bg-[#0000000d]" key={index}>
                     <th className="text-start p-[20px] whitespace-nowrap">
                       {data.title}
                     </th>

@@ -79,8 +79,8 @@ function ContactUs() {
         </form>
         <div className="md:w-[33%] flex flex-col mt-[30px] gap-[20px] text-[#232323] text-[14px] font-bold">
           <h3 className="text-[20px] md:text-[24px]">Contact Info</h3>
-          {getContactInfoData().map((data) => (
-            <div className="flex gap-[15px] items-center">
+          {getContactInfoData().map((data, index) => (
+            <div key={index} className="flex gap-[15px] items-center">
               <span className="size-[70px] rounded-full border border-gray-700 text-gray-700 flex items-center justify-center text-[30px]">
                 <FontAwesomeIcon icon={data.icon} />
               </span>
