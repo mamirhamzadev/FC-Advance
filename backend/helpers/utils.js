@@ -3,6 +3,9 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import multer from "multer";
+import nodemailer from "nodemailer";
+import { readFileSync } from "fs";
+import path from "path";
 dotenv.config();
 
 export const makeRes = (res, msg = "", code = OK, data = null) => {
@@ -50,6 +53,56 @@ export const getTokenPayload = (token) => {
       resolve(payload);
     });
   });
+};
+
+export const generatePassword = (length = 8) => {
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  const numbers = "0123456789";
+
+  const allChars = upper + lower + numbers;
+  let password = "";
+
+  password += upper[Math.floor(Math.random() * upper.length)];
+  password += lower[Math.floor(Math.random() * lower.length)];
+  password += numbers[Math.floor(Math.random() * numbers.length)];
+
+  for (let i = password.length; i < length; i++) {
+    password += allChars[Math.floor(Math.random() * allChars.length)];
+  }
+
+  password = password
+    .split("")
+    .sort(() => 0.5 - Math.random())
+    .join("");
+
+  return password;
+};
+
+export const sendMail = async (to, subject, template_name, jsonData) => {
+  try {
+    const USER = process.env.EMAIL_SERVICE_USER;
+    const PASS = process.env.EMAIL_SERVICE_PASS;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: { user: USER, pass: PASS },
+    });
+
+    let html = readFileSync(
+      path.join(process.cwd(), "templates", template_name),
+      "utf-8"
+    );
+    Object.keys(jsonData || {}).forEach(
+      (key) => (html = html.replace(key, jsonData[key]))
+    );
+
+    const mailOptions = { from: USER, to, subject, html };
+    await transporter.sendMail(mailOptions);
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 const storage = multer.diskStorage({

@@ -190,8 +190,8 @@ const Header = () => {
                       </NavLink>
                     </li>
                     <li className="menu-item  me-lg-1">
-                      <NavLink className="menu-link py-3" to="/companies">
-                        <span className="menu-title">Companies</span>
+                      <NavLink className="menu-link py-3" to="/reps">
+                        <span className="menu-title">Reps</span>
                       </NavLink>
                     </li>
                   </ul>

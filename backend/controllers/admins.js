@@ -1,6 +1,6 @@
 import { BAD_REQUEST, CREATED, OK, SERVER_ERROR } from "../constants/codes.js";
 import Admin from "../models/Admin.js";
-import Company from "../models/Company.js";
+import Application from "../models/Application.js";
 import {
   makeRes,
   createHash,
@@ -143,8 +143,8 @@ export const listUsers = async (req, res) => {};
 
 export const dashboard = async (req, res) => {
   try {
-    const companies = await Company.countDocuments({});
-    return makeRes(res, "", OK, { profile: req.user, companies });
+    const applications = await Application.countDocuments({});
+    return makeRes(res, "", OK, { profile: req.user, applications });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
   }

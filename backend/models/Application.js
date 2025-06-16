@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const addressSchema = new mongoose.Schema(
   {
-    line1: { type: String, required: true },
+    line1: { type: String, default: "" },
     line2: { type: String, default: "" },
   },
   { _id: false }
@@ -81,4 +81,4 @@ const schema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Company", schema);
+export default mongoose.model("Application", schema);

@@ -78,15 +78,31 @@ const PlainDataTable = React.memo((props) => {
           {value ? "Active" : "Inactive"}
         </div>
       );
-    } else if (columnField === "source.link") {
+    } else if (columnField === "link") {
       return (
-        <Link
-          to={value}
-          target="_blank"
-          className="text-start d-flex align-items-center text-primary"
-        >
-          Visit Link
-        </Link>
+        <div className="d-flex gap-3 align-items-center">
+          <button
+            onClick={(e) =>
+              navigator.clipboard.writeText(value).then(() => {
+                e.target.innerHTML = "Copied";
+                setTimeout(() => {
+                  e.target.innerHTML = "Copy Link";
+                }, 2000);
+              })
+            }
+            style={{ minWidth: "85px" }}
+            className="btn btn-primary p-2 py-1"
+          >
+            Copy Link
+          </button>
+          <Link
+            to={value}
+            target="_blank"
+            className="text-start d-flex align-items-center text-primary"
+          >
+            Visit Instead
+          </Link>
+        </div>
       );
     } else if (columnField === "isFollowUpRequired") {
       return (

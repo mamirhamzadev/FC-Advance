@@ -4,7 +4,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
 import adminRouter from "./routes/admins.js";
-import companiesRouter from "./routes/companies.js";
+import ApplicationRouter from "./routes/applications.js";
+import RepsRouter from "./routes/reps.js";
 import path from "path";
 
 mongoose
@@ -21,6 +22,7 @@ app.use(cors({ origin: "*" }));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/api/admins", adminRouter);
-app.use("/api/companies", companiesRouter);
+app.use("/api/applications", ApplicationRouter);
+app.use("/api/reps", RepsRouter);
 
 app.listen(PORT, () => console.log("Server is listening at Port: " + PORT));

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Form Submitted</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        color: #333;
+        background-color: #f6f6f6;
+        padding: 20px;
+      }
+      p {
+        font-size: 14px;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      }
+      h2 {
+        color: #2c3e50;
+      }
+      .info {
+        margin: 20px 0;
+      }
+      .info p {
+        margin: 5px 0;
+      }
+      .button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 12px 20px;
+        background-color: #007bff;
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 12px;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Form Submitted for Company - {{company_name}}</h2>
+
+      <div class="info">
+        <p><strong>Your Email:</strong> {{submitted_by_email}}</p>
+        <p><strong>Your Full Name:</strong> {{submitted_by_full_name}}</p>
+
+        <h3 style="margin-top: 50px">BUSINESS INFORMATION</h3>
+        <p><strong>Name:</strong> {{business_name}}</p>
+        <p><strong>Type:</strong> {{business_type}}</p>
+        <p>
+          <strong>Website:</strong>
+          <a href="{{business_webite}}">{{business_webite}}</a>
+        </p>
+        <p><strong>Tax ID:</strong> {{business_tax_id}}</p>
+        <p><strong>Start Date:</strong> {{business_start_date}}</p>
+        <p>
+          <strong>State of Incorporation:</strong>
+          {{business_state_of_incorporation}}
+        </p>
+        <p><strong>Industry:</strong> {{business_industry}}</p>
+        <p><strong>Phone:</strong> {{business_phone}}</p>
+        <p><strong>Address:</strong> {{business_address}}</p>
+        <p><strong>City:</strong> {{business_city}}</p>
+        <p><strong>State:</strong> {{business_state}}</p>
+        <p><strong>Zip Code:</strong> {{business_zip}}</p>
+
+        <h3 style="margin-top: 50px">OWNER INFORMATION</h3>
+        <p><strong>Full Name:</strong> {{owner_full_name}}</p>
+        <p><strong>Ownership %:</strong> {{owner_ownership_percent}}</p>
+        <p><strong>Email:</strong> {{owner_email}}</p>
+        <p><strong>SSN:</strong> {{owner_ssn}}</p>
+        <p><strong>Phone:</strong> {{owner_phone}}</p>
+        <p><strong>FICO Score:</strong> {{owner_fico_score}}</p>
+        <p><strong>Address Line 1:</strong> {{owner_address_line_1}}</p>
+        <p><strong>Address Line 2:</strong> {{owner_address_line_2}}</p>
+        <p><strong>City:</strong> {{owner_city}}</p>
+        <p><strong>State:</strong> {{owner_state}}</p>
+        <p><strong>Zip Code:</strong> {{owner_zip}}</p>
+        <p><strong>Date of Birth:</strong> {{owner_dob}}</p>
+
+        <h3 style="margin-top: 50px">PARTNER INFORMATION</h3>
+        <p><strong>Full Name:</strong> {{partner_full_name}}</p>
+        <p><strong>Ownership %:</strong> {{partner_ownership_percent}}</p>
+        <p><strong>Email:</strong> {{partner_email}}</p>
+        <p><strong>SSN:</strong> {{partner_ssn}}</p>
+        <p><strong>Phone:</strong> {{partner_phone}}</p>
+        <p><strong>FICO Score:</strong> {{partner_fico_score}}</p>
+        <p><strong>Address Line 1:</strong> {{partner_address_line_1}}</p>
+        <p><strong>Address Line 2:</strong> {{partner_address_line_2}}</p>
+        <p><strong>City:</strong> {{partner_city}}</p>
+        <p><strong>State:</strong> {{partner_state}}</p>
+        <p><strong>Zip Code:</strong> {{partner_zip}}</p>
+        <p><strong>Date of Birth:</strong> {{partner_dob}}</p>
+      </div>
+    </div>
+  </body>
+</html>

@@ -7,6 +7,7 @@ import FundingSolutions from "../pages/FundingSolutions";
 import Home from "../pages/Home";
 import MerchantCashAdvance from "../pages/MerchantCashAdvance";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
+import RepDashboard from "../pages/RepDashboard";
 import TermsConditions from "../pages/TermsConditions";
 
 export const HOME_ROUTE = "/";
@@ -17,6 +18,7 @@ export const PRIVACY_POLICY_ROUTE = "/privacy-policy";
 export const TERMS_CONDITIONS_ROUTE = "/terms-and-conditions";
 
 export const APPLY_NOW_ROUTE = "/apply";
+export const REP_DASHBOARD_ROUTE = "/rep/dashboard";
 
 export const MERCHANT_CASH_ADVANCE_ROUTE = "/merchant-cash-advance";
 export const BUSINESS_TERM_LOANS_ROUTE = "/business-term-loans";
@@ -69,6 +71,13 @@ export default [
     name: "Apply Now",
     path: APPLY_NOW_ROUTE,
     component: Apply,
+    isHeaderRoute: false,
+    isFooterRoute: false,
+  },
+  {
+    name: "Rep Dashboard",
+    path: REP_DASHBOARD_ROUTE,
+    component: RepDashboard,
     isHeaderRoute: false,
     isFooterRoute: false,
   },

@@ -5,11 +5,12 @@ import Footer from "./components/Footer";
 import { useEffect } from "react";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
+import NotFound from "./pages/NotFound";
 
 axios.defaults.baseURL = "http://localhost:3000/";
 axios.interceptors.request.use((config) => {
   config.headers.Authorization = `Bearer ${
-    localStorage.getItem("token") || ""
+    localStorage.getItem("rep-token") || ""
   }`;
   return config;
 });
@@ -22,8 +23,14 @@ function App() {
         <Header />
         <Routes>
           {ROUTES.map((route) => (
-            <Route path={route.path} element={<route.component />} />
+            <Route
+              path={
+                route.path.includes("apply") ? route.path + "/:id" : route.path
+              }
+              element={<route.component />}
+            />
           ))}
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer />
       </Wrapper>
