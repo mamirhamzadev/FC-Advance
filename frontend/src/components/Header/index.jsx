@@ -1,14 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LOGO } from "../../constants/images";
-import { APPLY_NOW_ROUTE, HOME_ROUTE } from "../../constants/routes";
+import {
+  APPLY_NOW_ROUTE,
+  HOME_ROUTE,
+  REP_DASHBOARD_ROUTE,
+} from "../../constants/routes";
 import ROUTES from "../../constants/routes";
 import Button from "../Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useRef } from "react";
+import { useSelector } from "react-redux";
+import { useEffect } from "react";
 
 function Header() {
   const headerRef = useRef(null);
+  const location = useLocation();
+  const isAuthorized = useSelector(
+    (state) => state?.repDashboard?.isAuthorized
+  );
 
   const handleDropDownToggle = (e) => {
     if (!headerRef.current) return;
@@ -19,6 +29,10 @@ function Header() {
       ? `${dropdown.scrollHeight + 30}px`
       : "0px";
   };
+
+  useEffect(() => {
+    headerRef.current?.classList.remove("active");
+  }, [location]);
 
   return (
     <header
@@ -60,11 +74,30 @@ function Header() {
             return null;
           })}
         </div>
-        <Button
-          className="lg:flex hidden"
-          text="Apply Now"
-          href={APPLY_NOW_ROUTE}
-        />
+        <div className="flex gap-[10px]">
+          <Button
+            className="lg:flex hidden !bg-black !px-[20px]"
+            text={"Apply Now"}
+            href={APPLY_NOW_ROUTE}
+          />
+          {isAuthorized && REP_DASHBOARD_ROUTE.includes(location.pathname) ? (
+            <Button
+              className="lg:flex hidden !px-[20px]"
+              text={"Logout"}
+              href={""}
+              onClick={() => {
+                localStorage.removeItem("rep-token");
+                window.location.reload();
+              }}
+            />
+          ) : (
+            <Button
+              className="lg:flex hidden !px-[20px]"
+              text={"Dashboard"}
+              href={REP_DASHBOARD_ROUTE}
+            />
+          )}
+        </div>
       </div>
       <div className="drop-down group-[.active]/header:flex lg:!hidden hidden absolute top-[105px] w-full bg-white transition-all duration-300 overflow-hidden">
         <div className="wrapper flex flex-col items-center w-full pb-[30px]">
@@ -81,11 +114,25 @@ function Header() {
               );
             return null;
           })}
-          <Button
-            className="mt-[30px]"
-            text="Apply Now"
-            href={APPLY_NOW_ROUTE}
-          />
+          <div className="flex gap-[10px] mt-[30px]">
+            <Button
+              text={"Apply Now"}
+              className="!bg-black"
+              href={APPLY_NOW_ROUTE}
+            />
+
+            {isAuthorized && REP_DASHBOARD_ROUTE.includes(location.pathname) ? (
+              <Button
+                text={"Logout"}
+                onClick={() => {
+                  localStorage.removeItem("rep-token");
+                  window.location.reload();
+                }}
+              />
+            ) : (
+              <Button text={"Dashboard"} href={REP_DASHBOARD_ROUTE} />
+            )}
+          </div>
         </div>
       </div>
     </header>

@@ -78,7 +78,10 @@ const PlainDataTable = React.memo((props) => {
           {value ? "Active" : "Inactive"}
         </div>
       );
-    } else if (columnField === "link") {
+    } else if (
+      columnField.includes("website") ||
+      columnField.includes("link")
+    ) {
       return (
         <div className="d-flex gap-3 align-items-center">
           <button

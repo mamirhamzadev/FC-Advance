@@ -75,6 +75,13 @@ export default [
     isFooterRoute: false,
   },
   {
+    name: "Apply Now",
+    path: APPLY_NOW_ROUTE + "/:id",
+    component: Apply,
+    isHeaderRoute: false,
+    isFooterRoute: false,
+  },
+  {
     name: "Rep Dashboard",
     path: REP_DASHBOARD_ROUTE,
     component: RepDashboard,

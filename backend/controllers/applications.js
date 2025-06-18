@@ -1,7 +1,8 @@
+import { isObjectIdOrHexString } from "mongoose";
 import { BAD_REQUEST, CREATED, OK, SERVER_ERROR } from "../constants/codes.js";
 import { makeRes, sendMail } from "../helpers/utils.js";
+import Admin from "../models/Admin.js";
 import Application from "../models/Application.js";
-import Company from "../models/Application.js";
 import Reps from "../models/Reps.js";
 
 export const create = async (req, res) => {
@@ -10,6 +11,20 @@ export const create = async (req, res) => {
   const empty_fields = [];
   if (!payload?.submitted_by?.full_name) empty_fields.push("Your Full Name");
   if (!payload?.submitted_by?.email) empty_fields.push("Your Email");
+  else {
+    const application = await Application.findOne({
+      "submitted_by.email": payload?.submitted_by?.email,
+    }).lean();
+    if (application)
+      return makeRes(
+        res,
+        "Your application has already been submitted",
+        CREATED,
+        {
+          is_submitted: true,
+        }
+      );
+  }
 
   if (!payload?.business?.name) empty_fields.push("Legal Company Name");
   if (!payload?.business?.type) empty_fields.push("Doing Business As");
@@ -65,22 +80,31 @@ export const create = async (req, res) => {
       return url;
     });
     payload = { ...payload, media, is_applied: true };
-    const rep = await Reps.findOne({ _id: payload?.envelope_id });
-    if (!rep)
-      return makeRes(
-        res,
-        "Something went wrong with the link. Please contact to admin",
-        BAD_REQUEST
-      );
-    const company = await Company.create(payload);
-    rep.applications.push(company._id);
-    await rep.save();
+    const rep =
+      payload?.envelope_id && isObjectIdOrHexString(payload?.envelope_id)
+        ? await Reps.findOne({ _id: payload?.envelope_id })
+        : null;
+    const company = await Application.create(payload);
+    if (rep) {
+      rep.applications.push(company._id);
+      await rep.save();
+    }
+    const admin = await Admin.find({}, { _id: 0, email: 1 });
+    const sendToEmails = [
+      company.submitted_by.email,
+      ...admin.map((adm) => adm.email),
+    ];
+    if (rep) sendToEmails.push(rep.email);
     await sendMail(
-      [company.submitted_by.email, rep.email],
-      `Form Submitted for Company - (${rep?.name})`,
+      sendToEmails,
+      rep
+        ? `Form Submitted for Rep - (${rep?.name})`
+        : "Form submitted without Rep",
       "form-submission.html",
       {
-        "{{company_name}}": rep.name,
+        "{{rep_name_line}}": rep
+          ? `Form Submitted for Rep - (${rep?.name})`
+          : "Form submitted without Rep",
         "{{submitted_by_email}}": company?.submitted_by.email,
         "{{submitted_by_full_name}}": company?.submitted_by.full_name,
         "{{business_name}}": company?.business.name,
@@ -114,25 +138,25 @@ export const create = async (req, res) => {
           ?.toISOString()
           ?.split("T")?.[0],
 
-        "{{partner_full_name}}": company?.partner.full_name,
-        "{{partner_ownership_percent}}": company?.partner.ownership_percent,
-        "{{partner_email}}": company?.partner.email,
-        "{{partner_ssn}}": company?.partner.ssn,
-        "{{partner_phone}}": company?.partner.phone,
-        "{{partner_fico_score}}": company?.partner.fico_score,
-        "{{partner_address_line_1}}": company?.partner.address.line1,
-        "{{partner_address_line_2}}": company?.partner.address.line2,
-        "{{partner_city}}": company?.partner.city,
-        "{{partner_state}}": company?.partner.state,
-        "{{partner_zip}}": company?.partner.zip,
-        "{{partner_dob}}": new Date(company?.partner.dob)
+        "{{partner_full_name}}": company?.partner?.full_name,
+        "{{partner_ownership_percent}}": company?.partner?.ownership_percent,
+        "{{partner_email}}": company?.partner?.email,
+        "{{partner_ssn}}": company?.partner?.ssn,
+        "{{partner_phone}}": company?.partner?.phone,
+        "{{partner_fico_score}}": company?.partner?.fico_score,
+        "{{partner_address_line_1}}": company?.partner?.address.line1,
+        "{{partner_address_line_2}}": company?.partner?.address.line2,
+        "{{partner_city}}": company?.partner?.city,
+        "{{partner_state}}": company?.partner?.state,
+        "{{partner_zip}}": company?.partner?.zip,
+        "{{partner_dob}}": new Date(company?.partner?.dob)
           ?.toISOString()
           ?.split("T")?.[0],
       }
     );
-    return makeRes(res, "Applied successfully", OK, {
-      company: company,
+    return makeRes(res, "Application submitted successfully", OK, {
       is_submitted: true,
+      company,
     });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
@@ -142,12 +166,6 @@ export const create = async (req, res) => {
 export const checkApplicationExistance = async (req, res) => {
   const payload = req.body;
 
-  if (!payload?.envelope_id)
-    return makeRes(
-      res,
-      "Something went wrong with the link. Please contact to admin",
-      BAD_REQUEST
-    );
   const empty_fields = [];
   if (!payload?.submitted_by?.full_name) empty_fields.push("Full Name");
   if (!payload?.submitted_by?.email) empty_fields.push("Email");
@@ -164,10 +182,17 @@ export const checkApplicationExistance = async (req, res) => {
 
   try {
     const application = await Application.findOne({
-      envelope_id: payload?.envelope_id,
       "submitted_by.email": payload?.submitted_by?.email,
     }).lean();
-    if (application) return makeRes(res, "", CREATED, { is_submitted: true });
+    if (application)
+      return makeRes(
+        res,
+        "Your Application has already been submitted",
+        CREATED,
+        {
+          is_submitted: true,
+        }
+      );
     return makeRes(res, "", OK, { application: payload });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
@@ -175,9 +200,12 @@ export const checkApplicationExistance = async (req, res) => {
 };
 
 export const list = async (req, res) => {
+  const without_rep = req.query?.without_rep === "1";
   try {
-    const companies = await Company.find({ is_applied: true });
-    return makeRes(res, "", OK, { companies, profile: req.user });
+    const applications = without_rep
+      ? await Application.find({ is_applied: true, envelope_id: "" })
+      : await Application.find({ is_applied: true });
+    return makeRes(res, "", OK, { applications, profile: req.user });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
   }

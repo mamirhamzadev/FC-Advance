@@ -5,12 +5,12 @@ import {
   SERVER_ERROR,
 } from "../constants/codes.js";
 import {
-  compHash,
   createToken,
   generatePassword,
   makeRes,
   sendMail,
 } from "../helpers/utils.js";
+import Application from "../models/Application.js";
 import Reps from "../models/Reps.js";
 import dotenv from "dotenv";
 import { isObjectIdOrHexString } from "mongoose";
@@ -33,7 +33,10 @@ export const create = async (req, res) => {
     );
 
   try {
-    const existingRep = await Reps.findOne({ name: payload?.name });
+    const existingRep = await Reps.findOne({
+      name: payload?.name,
+      admin_id: null,
+    });
     if (existingRep)
       return makeRes(res, "Rep name should be the unique", BAD_REQUEST);
     const existingPasssword =
@@ -89,7 +92,10 @@ export const update = async (req, res) => {
     let hasChange = false;
     let mailChanged = false;
     if (rep.name !== payload?.name) {
-      const existingRep = await Reps.findOne({ name: payload?.name });
+      const existingRep = await Reps.findOne({
+        name: payload?.name,
+        admin_id: null,
+      });
       if (existingRep)
         return makeRes(res, "Rep name should be the unique", BAD_REQUEST);
       rep.name = payload?.name;
@@ -134,10 +140,18 @@ export const remove = async (req, res) => {
       BAD_REQUEST
     );
   try {
+    const repApplications = (await Reps.findOne({ _id: id })).applications;
     const response = await Reps.deleteOne({ _id: id });
+    const applicationsResponse = await Application.deleteMany({
+      _id: repApplications,
+    });
+    let msg = "Rep and related applications deleted";
     if (response.deletedCount)
-      return makeRes(res, "Rep deleted", OK, { profile: req.user });
-    return makeRes(res, "Rep cannot be deleted", BAD_REQUEST);
+      msg = !applicationsResponse.deletedCount
+        ? "Rep deleted but applications not deleted"
+        : msg;
+    else msg = "Rep cannot be deleted";
+    return makeRes(res, msg, OK, { profile: req.user });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
   }
@@ -161,12 +175,18 @@ export const get = async (req, res) => {
 
 export const list = async (req, res) => {
   try {
-    let reps = await Reps.find({}).lean();
+    let reps = await Reps.find({ admin_id: null }).lean();
+    let admin_rep = await Reps.findOne({ admin_id: req.user?._id }).lean();
     reps = reps.map((rep) => ({
       ...rep,
       link: `${process.env.CLIENT_BASE_URL}/apply/${rep._id}`,
+      applications: (rep?.applications || []).length,
     }));
-    return makeRes(res, "", OK, { reps, profile: req.user });
+    admin_rep = {
+      ...admin_rep,
+      link: `${process.env.CLIENT_BASE_URL}/apply/${admin_rep._id}`,
+    };
+    return makeRes(res, "", OK, { admin_rep, reps, profile: req.user });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
   }
@@ -189,7 +209,7 @@ export const dashboardLogin = async (req, res) => {
     );
 
   try {
-    let reps = await Reps.find({ email: payload?.email })
+    let reps = await Reps.find({ email: payload?.email, admin_id: null })
       .populate("applications")
       .lean();
     if (reps.length && reps[0].password === payload.password) {
@@ -212,7 +232,7 @@ export const dashboardLogin = async (req, res) => {
 export const listWithApplications = async (req, res) => {
   try {
     let reps = [];
-    reps = await Reps.find({ email: req?.rep?.email })
+    reps = await Reps.find({ email: req?.rep?.email, admin_id: null })
       .populate("applications")
       .lean();
     reps = reps.map((rep) => ({

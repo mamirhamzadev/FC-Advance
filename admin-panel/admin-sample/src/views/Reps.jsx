@@ -47,7 +47,7 @@ const FILE_NAMES = {
 
 const DATE_FIELDS = ["dob", "start_date"];
 
-const Application = () => {
+const Reps = () => {
   const { notify } = useToast();
 
   const [formData, setFormData] = useState();
@@ -55,6 +55,7 @@ const Application = () => {
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [isUpdatingRecord, setIsUpdatingRecord] = useState(false);
   const [reps, setReps] = useState([]);
+  const [adminRep, setAdminRep] = useState(null);
   const [isFetchingReps, setIsFetchingReps] = useState(true);
   const [isFetchingRep, setIsFetchingRep] = useState(false);
   const [viewRepModal, setShowViewRepModal] = useState(false);
@@ -66,7 +67,10 @@ const Application = () => {
     if (!isFetchingReps) return;
     axios
       .get("/api/reps/list")
-      .then((res) => setReps(res?.data?.reps))
+      .then((res) => {
+        setReps(res?.data?.reps);
+        setAdminRep(res?.data?.admin_rep);
+      })
       .catch((err) => notify(err?.msg))
       .finally(() => setIsFetchingReps(false));
   }, [isFetchingReps]);
@@ -184,13 +188,13 @@ const Application = () => {
   return (
     <>
       <div className="fade-in">
-        <BreadCrumb pageNames={["Companies"]} />
+        <BreadCrumb pageNames={["Reps"]} />
 
         <div className="container-xxl">
           <div className="row">
             <div className="d-flex flex-wrap flex-stack my-4">
               <div className="d-flex flex-wrap flex-stack">
-                <div className="fw-bolder fs-4">Companies</div>
+                <div className="fw-bolder fs-4">Reps</div>
                 <span className="badge badge-square badge-success ms-2">
                   {isFetchingReps ? "~" : reps?.length}
                 </span>
@@ -202,10 +206,28 @@ const Application = () => {
                       <li className="me-3">
                         <button
                           onClick={() => handleAddUpdateButton()}
-                          className="btn btn-icon bg-primary text-white plan-action-btn w-100 py-2 px-4 ms-4"
+                          className="btn btn-icon bg-primary text-white plan-action-btn w-100 py-2 px-5"
                         >
                           <i className="las la-plus fs-2 me-1 text-white" />
                           Add Rep
+                        </button>
+                      </li>
+                      <li className="d-flex align-items-center justify-content-center">
+                        <button
+                          title="Copy Rep link"
+                          onClick={(e) =>
+                            navigator.clipboard.writeText(adminRep.link)
+                          }
+                          className="border-0 bg-transparent d-flex align-items-center justify-content-center h-100"
+                        >
+                          <i className="fa fa-copy text-primary fs-2"></i>
+                        </button>
+                        <button
+                          title="View Rep stats"
+                          onClick={() => handleViewRepsButton(adminRep)}
+                          className="border-0 bg-transparent d-flex align-items-center justify-content-center h-100"
+                        >
+                          <i className="fa fa-eye text-primary fs-2"></i>
                         </button>
                       </li>
                     </ul>
@@ -227,8 +249,8 @@ const Application = () => {
                   view={handleViewRepsButton}
                   edit={handleAddUpdateButton}
                   delete={handleDeleteItemButton}
-                  fieldNamesToShow={["#", "Name", "Link"]}
-                  fieldsToShow={["#", "name", "link"]}
+                  fieldNamesToShow={["#", "Name", "Link", "Total Applications"]}
+                  fieldsToShow={["#", "name", "link", "applications"]}
                 />
               </div>
             )}
@@ -629,4 +651,4 @@ const Application = () => {
   );
 };
 
-export default Application;
+export default Reps;

@@ -194,6 +194,11 @@ const Header = () => {
                         <span className="menu-title">Reps</span>
                       </NavLink>
                     </li>
+                    <li className="menu-item me-lg-1">
+                      <NavLink className="menu-link py-3" to="/applications">
+                        <span className="menu-title">Direct Applications</span>
+                      </NavLink>
+                    </li>
                   </ul>
                   <div className="flex-shrink-0 p-4 p-lg-0  me-lg-2">
                     <button

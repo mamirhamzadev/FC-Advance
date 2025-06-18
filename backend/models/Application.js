@@ -70,7 +70,7 @@ const partnerSchema = new mongoose.Schema(
 
 const schema = new mongoose.Schema(
   {
-    envelope_id: { type: String, required: true },
+    envelope_id: { type: String, default: "" },
     submitted_by: { type: submittedBySchema, required: true },
     business: { type: businessSchema, default: null },
     owner: { type: ownerSchema, default: null },

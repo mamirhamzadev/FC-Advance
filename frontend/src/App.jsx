@@ -1,11 +1,12 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import ROUTES from "./constants/routes";
+import ROUTES, { APPLY_NOW_ROUTE } from "./constants/routes";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useEffect } from "react";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import NotFound from "./pages/NotFound";
+import Apply from "./pages/Apply";
 
 axios.defaults.baseURL = "http://localhost:3000/";
 axios.interceptors.request.use((config) => {
@@ -23,12 +24,7 @@ function App() {
         <Header />
         <Routes>
           {ROUTES.map((route) => (
-            <Route
-              path={
-                route.path.includes("apply") ? route.path + "/:id" : route.path
-              }
-              element={<route.component />}
-            />
+            <Route path={route.path} element={<route.component />} />
           ))}
           <Route path="*" element={<NotFound />} />
         </Routes>

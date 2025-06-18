@@ -10,6 +10,7 @@ const LazyComponents = {
   ResetPassword: lazy(() => import("./views/component/auth/ResetPassword")),
   Profile: lazy(() => import("./views/Profile")),
   Reps: lazy(() => import("./views/Reps")),
+  Applications: lazy(() => import("./views/Applications")),
   Users: lazy(() => import("./views/Users")),
 };
 
@@ -49,6 +50,10 @@ function App() {
                   element={<LazyComponents.ChangePassword />}
                 />
                 <Route path="reps" element={<LazyComponents.Reps />} />
+                <Route
+                  path="applications"
+                  element={<LazyComponents.Applications />}
+                />
                 <Route path="users" element={<LazyComponents.Users />} />
               </Route>
 

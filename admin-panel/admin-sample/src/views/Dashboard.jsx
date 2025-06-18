@@ -15,7 +15,7 @@ const Dashboard = () => {
   useEffect(() => {
     axios
       .get("/api/admins/dashboard")
-      .then((res) => setData({ companies: res?.data?.companies }))
+      .then((res) => setData({ ...res?.data }))
       .catch((err) => notify("error", err?.msg))
       .finally(() => setLoading(false));
   }, []);
@@ -56,17 +56,17 @@ const Dashboard = () => {
                   <div className="mt-n20 position-relative">
                     <div className="row g-3 g-lg-6 justify-content-center">
                       <DashboardInfoCard
-                        title="Companies"
-                        icon="fa-cubes"
-                        count={data?.companies || 0}
-                        page="companies"
+                        title="Reps"
+                        icon="fa-headset"
+                        count={data?.reps || 0}
+                        page="reps"
                         isFetching={loading}
                       />
                       <DashboardInfoCard
-                        title="Products"
-                        icon="fa-box-open"
-                        count={0}
-                        page="products"
+                        title="Applications"
+                        icon="fa-clipboard-list"
+                        count={data?.applications || 0}
+                        page="applications"
                         isFetching={loading}
                       />
                       <DashboardInfoCard

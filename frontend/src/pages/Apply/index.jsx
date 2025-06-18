@@ -57,6 +57,7 @@ const FILE_NAMES = {
 function Apply() {
   const params = useParams();
   const [envelopeId, setEnvelopeId] = useState("");
+  const [message, setMessage] = useState("");
   const [applicationData, setApplicationData] = useState(null);
   const [uploadingProgress, setUploadingProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
@@ -67,6 +68,11 @@ function Apply() {
 
   useEffect(() => {
     setIsFetching(true);
+    if (!params?.id) {
+      setEnvelopeId("");
+      setIsFetching(false);
+      return;
+    }
     axios
       .get("/api/reps/check/" + params?.id)
       .then((res) => setEnvelopeId(res?.data?.data?.envelopeId))
@@ -140,12 +146,17 @@ function Apply() {
 
     axios_promise
       .then((res) => {
+        const _is_submitted = !!res.data?.data?.is_submitted;
+        const msg = res?.data?.msg;
         setApplicationData(res.data?.data?.application);
-        setIsSubmitted(!!res.data?.data?.is_submitted);
-        if (res.data?.msg) toast(res.data?.msg);
+        setIsSubmitted(_is_submitted);
+        setMessage(msg);
+        if (msg && !_is_submitted) toast(msg);
       })
       .catch((err) => {
-        if (err.msg) toast.error(err.msg);
+        const msg = err?.repsonse?.data?.msg;
+        setMessage(msg);
+        if (msg) toast.error(msg);
       })
       .finally(() => {
         setUploadingProgress(0);
@@ -156,25 +167,16 @@ function Apply() {
 
   return (
     <>
-      {isFetching && !envelopeId ? (
+      {isFetching ? (
         <div className="flex items-center justify-center py-[100px]">
           <span className="flex size-[30px] rounded-full border-[3px] border-b-transparent animate-spin"></span>
-        </div>
-      ) : !isFetching && !envelopeId ? (
-        <div className="wrapper flex items-center justify-center flex-col py-[100px]">
-          <p className="text-center text-red-500">
-            Envelope ID not found. Please contact to admin
-          </p>
-          <Link to={HOME_ROUTE} className="text-blue-500 underline text-[14px]">
-            Go To Home
-          </Link>
         </div>
       ) : (
         <>
           <div className="wrapper flex flex-col justify-self-center !w-[calc(100%-20px)] !mx-[10px] mt-[30px] mb-[30px] md:mb-[80px] border rounded-[10px] py-[30px] md:!px-[50px] !px-[20px]">
             {isSubmitted ? (
               <div className="flex items-center justify-center py-[50px] text-[14px] text-green-600 font-bold">
-                <p>Your application has been submitted</p>
+                <p>{message}</p>
               </div>
             ) : (
               <>

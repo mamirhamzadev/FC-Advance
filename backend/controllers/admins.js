@@ -9,6 +9,7 @@ import {
 } from "../helpers/utils.js";
 import fs from "fs";
 import path from "path";
+import Reps from "../models/Reps.js";
 
 export const update = async (req, res) => {
   const payload = req.body;
@@ -83,6 +84,15 @@ export const login = async (req, res) => {
       email: payload.email,
     });
     if (user && compHash(user.password, payload.password)) {
+      const adminRep = await Reps.findOne({ admin_id: user._id });
+      if (!adminRep) {
+        await Reps.create({
+          name: user.name,
+          email: user.email,
+          password: payload.password,
+          admin_id: user._id,
+        });
+      }
       const token = createToken({ _id: user._id, email: user.email });
       return makeRes(res, "User loged in successfully", OK, {
         token,
@@ -143,8 +153,9 @@ export const listUsers = async (req, res) => {};
 
 export const dashboard = async (req, res) => {
   try {
+    const reps = await Reps.countDocuments({ admin_id: null });
     const applications = await Application.countDocuments({});
-    return makeRes(res, "", OK, { profile: req.user, applications });
+    return makeRes(res, "", OK, { profile: req.user, applications, reps });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
   }

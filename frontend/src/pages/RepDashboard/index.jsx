@@ -5,6 +5,8 @@ import FloatingInput from "../../components/Input";
 import Button from "../../components/Button";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { setRepAuthorized } from "../../redux/actions/rep-dashboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
@@ -58,10 +60,13 @@ const FILE_NAMES = {
 const DATE_FIELDS = ["dob", "start_date"];
 
 function RepDashboard() {
+  const dispatch = useDispatch();
+  const isAuthorized = useSelector(
+    (state) => state?.repDashboard?.isAuthorized
+  );
   const [reps, setReps] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRep, setSelectedRep] = useState(null);
-  const [isAuthorized, setIsAuthorized] = useState(true);
   const [selectedApplication, setSelectedApplication] = useState(null);
 
   useEffect(() => {
@@ -71,9 +76,12 @@ function RepDashboard() {
           Authorization: "Bearer " + localStorage.getItem("rep-token") || "",
         },
       })
-      .then((res) => setReps(res?.data?.data?.reps))
+      .then((res) => {
+        setReps(res?.data?.data?.reps);
+        dispatch(setRepAuthorized());
+      })
       .catch((err) => {
-        if (err.response?.status === 401) setIsAuthorized(false);
+        if (err.response?.status === 401) dispatch(setRepAuthorized(false));
         else toast.error(err?.response?.data?.msg);
       })
       .finally(() => setIsLoading(false));
@@ -134,9 +142,12 @@ function RepDashboard() {
       .then((res) => {
         localStorage.setItem("rep-token", res?.data?.data?.rep_token);
         setReps(res?.data?.data?.reps);
-        setIsAuthorized(true);
+        dispatch(setRepAuthorized());
       })
-      .catch((err) => toast.error(err?.response?.data?.msg))
+      .catch((err) => {
+        if (err?.response?.status === 401) dispatch(setRepAuthorized(false));
+        else toast.error(err?.response?.data?.msg);
+      })
       .finally(() => setIsLoading(false));
   };
 
@@ -171,8 +182,23 @@ function RepDashboard() {
             <div className="lg:flex hidden flex-1 min-h-[60vh] p-[20px] flex-col overflow-auto">
               {selectedRep ? (
                 <>
-                  <h3 className="mb-[10px] font-bold text-[20px]">
+                  <h3 className="mb-[10px] font-bold text-[20px] flex gap-[5px] flex-wrap">
                     Rep - {selectedRep?.name}
+                    <button
+                      onClick={(e) =>
+                        navigator.clipboard
+                          .writeText(selectedRep.link)
+                          .then(() => {
+                            e.target.innerHTML = "Copied";
+                            setTimeout(() => {
+                              e.target.innerHTML = "Copy Link for Client";
+                            }, 1000);
+                          })
+                      }
+                      className="bg-red-600 text-white text-[14px] py-[5px] px-[10px] rounded-[10px]"
+                    >
+                      Copy Link for Client
+                    </button>
                   </h3>
                   <p className="mb-[30px] text-[14px]">
                     <span className="font-semibold">Email: </span>
@@ -340,8 +366,21 @@ function RepDashboard() {
             </div>
 
             <div className="flex flex-1 min-h-[60vh] p-[15px] md:p-[20px] flex-col overflow-auto">
-              <h3 className="mb-[10px] font-bold text-[20px]">
+              <h3 className="mb-[10px] font-bold text-[20px] flex gap-[5px] flex-wrap">
                 Rep - {selectedRep?.name}
+                <button
+                  onClick={(e) =>
+                    navigator.clipboard.writeText(selectedRep.link).then(() => {
+                      e.target.innerHTML = "Copied";
+                      setTimeout(() => {
+                        e.target.innerHTML = "Copy Link for Client";
+                      }, 1000);
+                    })
+                  }
+                  className="bg-red-600 text-white text-[14px] py-[5px] px-[10px] rounded-[10px]"
+                >
+                  Copy Link for Client
+                </button>
               </h3>
               <p className="mb-[30px] text-[14px]">
                 <span className="font-semibold">Email: </span>
