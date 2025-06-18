@@ -154,13 +154,16 @@ export const create = async (req, res) => {
           ?.split("T")?.[0],
         "{{media}}": company.media
           .filter((file) => !!file)
+          .map((file) => file.split("\\").pop())
           .map(
             (file) =>
-              `<a href="${
-                process.env.SERVER_BASE_URL
-              }/${file}" target="_blank" title="${file
-                .split("\\")
-                .pop()}">Download<br/>Media</a>`
+              `<a 
+                href="${process.env.SERVER_BASE_URL}/uploads/${file}" 
+                target="_blank" 
+                title="${file}"
+                download>
+                Download<br/>Media
+              </a>`
           )
           .join(""),
       }
