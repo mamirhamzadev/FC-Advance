@@ -14,6 +14,8 @@ import Application from "../models/Application.js";
 import Reps from "../models/Reps.js";
 import dotenv from "dotenv";
 import { isObjectIdOrHexString } from "mongoose";
+import { unlinkSync } from "fs";
+import { join } from "path";
 dotenv.config();
 
 export const create = async (req, res) => {
@@ -140,10 +142,23 @@ export const remove = async (req, res) => {
       BAD_REQUEST
     );
   try {
-    const repApplications = (await Reps.findOne({ _id: id })).applications;
+    const repApplications = (
+      await Reps.findOne({ _id: id }).populate("applications")
+    ).applications;
+    const mediaFiles = repApplications
+      .map((app) => app?.media)
+      .flat()
+      .filter((file) => !!file)
+      .map((file) => file.split("\\").pop());
+    mediaFiles.forEach((file) => {
+      try {
+        unlinkSync(join(process.cwd(), "uploads", file));
+      } catch (e) {}
+    });
+
     const response = await Reps.deleteOne({ _id: id });
     const applicationsResponse = await Application.deleteMany({
-      _id: repApplications,
+      _id: repApplications.map((app) => app._id),
     });
     let msg = "Rep and related applications deleted";
     if (response.deletedCount)
@@ -180,7 +195,7 @@ export const list = async (req, res) => {
     reps = reps.map((rep) => ({
       ...rep,
       link: `${process.env.CLIENT_BASE_URL}/apply/${rep._id}`,
-      applications: (rep?.applications || []).length,
+      applications: ((rep?.applications || []).length || 0).toString(),
     }));
     admin_rep = {
       ...admin_rep,

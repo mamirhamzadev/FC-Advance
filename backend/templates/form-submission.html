@@ -44,6 +44,19 @@
         font-size: 12px;
         color: #888;
       }
+      .media {
+        display: flex;
+      }
+      .media > a {
+        padding: 10px 15px;
+        background-color: #b6ffb6;
+        color: black !important;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 10px;
+        font-size: 14px;
+        margin-right: 10px;
+      }
     </style>
   </head>
   <body>
@@ -101,6 +114,15 @@
         <p><strong>State:</strong> {{partner_state}}</p>
         <p><strong>Zip Code:</strong> {{partner_zip}}</p>
         <p><strong>Date of Birth:</strong> {{partner_dob}}</p>
+        <div style="display: flex; gap: 5px; margin-top: 10px">
+          <strong>Media:</strong>
+          <div
+            style="flex-wrap: wrap !important; align-items: center !important"
+            class="media"
+          >
+            {{media}}
+          </div>
+        </div>
       </div>
     </div>
   </body>

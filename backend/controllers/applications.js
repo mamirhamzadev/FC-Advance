@@ -152,6 +152,17 @@ export const create = async (req, res) => {
         "{{partner_dob}}": new Date(company?.partner?.dob)
           ?.toISOString()
           ?.split("T")?.[0],
+        "{{media}}": company.media
+          .filter((file) => !!file)
+          .map(
+            (file) =>
+              `<a href="${
+                process.env.SERVER_BASE_URL
+              }/${file}" target="_blank" title="${file
+                .split("\\")
+                .pop()}">Download<br/>Media</a>`
+          )
+          .join(""),
       }
     );
     return makeRes(res, "Application submitted successfully", OK, {
