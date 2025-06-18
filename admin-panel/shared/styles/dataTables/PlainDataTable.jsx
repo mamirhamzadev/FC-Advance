@@ -138,7 +138,9 @@ const PlainDataTable = React.memo((props) => {
       return value && value.length > 50 ? `${value.slice(0, 50)}...` : value;
     }
 
-    return value || "N/A";
+    return value !== undefined || value !== null || value !== NaN
+      ? value
+      : "N/A";
   };
 
   const renderColumns = () => {

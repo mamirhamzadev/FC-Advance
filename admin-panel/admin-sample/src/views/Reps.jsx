@@ -250,7 +250,7 @@ const Reps = () => {
                   edit={handleAddUpdateButton}
                   delete={handleDeleteItemButton}
                   fieldNamesToShow={["#", "Name", "Link", "Total Applications"]}
-                  fieldsToShow={["#", "name", "link", "applications"]}
+                  fieldsToShow={["#", "name", "link", "applications.length"]}
                 />
               </div>
             )}

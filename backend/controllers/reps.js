@@ -195,7 +195,6 @@ export const list = async (req, res) => {
     reps = reps.map((rep) => ({
       ...rep,
       link: `${process.env.CLIENT_BASE_URL}/apply/${rep._id}`,
-      applications: ((rep?.applications || []).length || 0).toString(),
     }));
     admin_rep = {
       ...admin_rep,
