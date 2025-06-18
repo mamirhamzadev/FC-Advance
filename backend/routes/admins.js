@@ -6,7 +6,9 @@ import {
   listUsers,
   login,
   profile,
+  sendOtp,
   update,
+  verifyOTP,
 } from "../controllers/admins.js";
 import { uploadFileInstance } from "../helpers/utils.js";
 
@@ -20,6 +22,8 @@ router.post(
   update
 );
 router.get("/profile", checkAdminAuth, profile);
+router.post("/send-otp", sendOtp);
+router.post("/verify-otp", verifyOTP);
 router.post("/change-password", checkAdminAuth, changePassword);
 router.get("/list-users", checkAdminAuth, listUsers);
 router.get("/dashboard", checkAdminAuth, dashboard);

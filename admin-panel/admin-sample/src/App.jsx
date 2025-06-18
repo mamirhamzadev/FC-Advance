@@ -7,7 +7,6 @@ const LazyComponents = {
   Auth: lazy(() => import("./views/Auth")),
   Dashboard: lazy(() => import("./views/Dashboard")),
   ChangePassword: lazy(() => import("./views/ChangePassword")),
-  ResetPassword: lazy(() => import("./views/component/auth/ResetPassword")),
   Profile: lazy(() => import("./views/Profile")),
   Reps: lazy(() => import("./views/Reps")),
   Applications: lazy(() => import("./views/Applications")),
@@ -59,10 +58,6 @@ function App() {
 
               {/* Routes without Header and Footer */}
               <Route path="/auth" element={<LazyComponents.Auth />} />
-              <Route
-                path="/reset-password"
-                element={<LazyComponents.ResetPassword />}
-              />
             </Routes>
           </Suspense>
         </div>

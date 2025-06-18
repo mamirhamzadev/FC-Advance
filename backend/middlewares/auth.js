@@ -8,7 +8,9 @@ import Admin from "../models/Admin.js";
 import Reps from "../models/Reps.js";
 
 export const checkAdminAuth = async (req, res, next) => {
-  let token = req.headers?.authorization?.split(" ") || [];
+  let token = req.headers?.authorization;
+  if (!token) return next();
+  token = token.split(" ") || [];
   token = token.length > 1 ? token[1] : "";
   if (!token) return makeRes(res, "Unauthorized", UNAUTHORIZED);
   try {

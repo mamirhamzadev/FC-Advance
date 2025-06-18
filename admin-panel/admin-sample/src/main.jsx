@@ -18,8 +18,10 @@ import { setProfile } from "./redux/actions/profile.js";
 const root = createRoot(document.getElementById("root"));
 
 axios.defaults.baseURL = "http://localhost:3000/";
+const publicRoutes = ["send-otp", "verify-otp"];
 axios.interceptors.request.use((config) => {
-  config.headers.Authorization = "Bearer " + localStorage.getItem("token");
+  if (!publicRoutes.some((route) => config.url?.includes(route)))
+    config.headers.Authorization = "Bearer " + localStorage.getItem("token");
   return config;
 });
 axios.interceptors.response.use(
@@ -27,7 +29,7 @@ axios.interceptors.response.use(
     if (res.status === 200) {
       if (res?.data?.data?.profile)
         store.dispatch(setProfile(res?.data?.data?.profile));
-      else {
+      else if (!publicRoutes.some((route) => res.config.url?.includes(route))) {
         window.location.replace("/auth");
         return Promise.reject(axios.Cancel("Session Expired"));
       }
@@ -36,7 +38,10 @@ axios.interceptors.response.use(
     return Promise.reject(res.data);
   },
   (err) => {
-    if (err?.response?.status === 401) {
+    if (
+      err?.response?.status === 401 &&
+      !publicRoutes.some((route) => err.config.url?.includes(route))
+    ) {
       window.location.replace("/auth");
       return Promise.reject(axios.Cancel("Session Expired"));
     }
