@@ -1,5 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FloatingInput from "../../components/Input";
+import Button from "../../components/Button";
+import { CONTACT_US_ROUTE } from "../../constants/routes";
 import {
   faFile,
   faFileCsv,
@@ -10,14 +12,14 @@ import {
   faFileVideo,
   faFileWord,
   faFileZipper,
+  faInfo,
   faUpload,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { HOME_ROUTE } from "../../constants/routes";
 
 const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "tiff", "bmp", "webp", "svg"];
 const VIDEO_EXTS = [
@@ -173,14 +175,18 @@ function Apply() {
         </div>
       ) : (
         <>
-          <div className="wrapper flex flex-col justify-self-center !w-[calc(100%-20px)] !mx-[10px] mt-[30px] mb-[30px] md:mb-[80px] border rounded-[10px] py-[30px] md:!px-[50px] !px-[20px]">
+          <div className="wrapper flex flex-col justify-self-center !w-[calc(100%-20px)] !mx-[10px] mt-[30px] mb-[30px] md:mb-[80px] shadow-[0_0_10px_#cccccc] py-[30px] md:!px-[50px] !px-[20px]">
             {isSubmitted ? (
-              <div className="flex items-center justify-center py-[50px] text-[14px] text-green-600 font-bold">
-                <p>{message}</p>
+              <div className="flex items-center justify-center flex-col gap-[15px] py-[50px] font-bold">
+                <span className="rounded-full size-[70px] border flex items-center justify-center text-[30px]">
+                  <FontAwesomeIcon icon={faInfo} />
+                </span>
+                <p className="text-[16px]">{message}!</p>
+                <Button text="Contact Us" href={CONTACT_US_ROUTE} />
               </div>
             ) : (
               <>
-                <h2 className="text-[26px] md:text-[30px] font-bold text-[#6fbf30] text-center">
+                <h2 className="text-[26px] md:text-[30px] font-bold text-center">
                   Funding Application
                 </h2>
                 {envelopeId ? (
@@ -188,7 +194,7 @@ function Apply() {
                     Envelope ID: {envelopeId}
                   </p>
                 ) : null}
-                <span className="pb-[10px] border-b-[2px] border-b-[#6fbf30] block"></span>
+                <span className="pb-[10px] border-b-[2px] block"></span>
                 <p className="mt-[10px] text-[12px] text-gray-400 md:text-left text-center">
                   Thank you for placing your trust in FC Advance. Please review
                   attached information for submission
@@ -219,7 +225,7 @@ function Apply() {
                     <>
                       <div className="mt-[50px] flex gap-[50px] md:flex-row flex-col">
                         <div className="flex flex-col gap-[20px] w-full">
-                          <h3 className="w-fit uppercase mb-[10px] pb-[5px] font-bold relative before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-[#6fbf30]">
+                          <h3 className="w-fit uppercase mb-[10px] pb-[5px] font-bold relative before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-black">
                             Business Information
                           </h3>
 
@@ -308,7 +314,7 @@ function Apply() {
                           />
                         </div>
                         <div className="flex flex-col gap-[20px] w-full">
-                          <h3 className="w-fit uppercase mb-[10px] pb-[5px] font-bold relative before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-[#6fbf30]">
+                          <h3 className="w-fit uppercase mb-[10px] pb-[5px] font-bold relative before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-black">
                             Owner Information
                           </h3>
 
@@ -393,7 +399,7 @@ function Apply() {
                           />
                         </div>
                         <div className="flex flex-col gap-[20px] w-full">
-                          <h3 className="w-fit uppercase mb-[10px] pb-[5px] font-bold relative before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-[#6fbf30]">
+                          <h3 className="w-fit uppercase mb-[10px] pb-[5px] font-bold relative before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-black">
                             Partner Information
                           </h3>
 
@@ -641,13 +647,14 @@ function Apply() {
                       </div>
                     </>
                   ) : null}
-                  <button
+                  <Button
                     disabled={isLoading}
-                    className="mt-[20px] text-white w-fit px-[20px] py-[10px] leading-[1.5] text-[14px] self-center md:self-end min-w-[150px] flex gap-[10px] items-center justify-center disabled:bg-blue-300 disabled:!cursor-not-allowed bg-blue-600"
+                    type="submit"
+                    className={`mt-[20px] text-white w-fit px-[20px] py-[10px] leading-[1.5] text-[14px] self-center md:self-end min-w-[150px] flex gap-[10px] items-center justify-center`}
                   >
                     {applicationData ? "Apply" : "Next"}
                     <span className="in-disabled:flex hidden animate-spin size-[20px] rounded-full border-[3px] border-white border-b-transparent"></span>
-                  </button>
+                  </Button>
                 </form>
               </>
             )}

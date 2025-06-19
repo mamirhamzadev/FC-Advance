@@ -30,14 +30,14 @@ function FloatingInput({
         required={!!required}
         readOnly={!!readOnly}
         disabled={!!disabled}
-        className={`w-full border-b-[2px] border-b-gray-300 outline-0 px-[2px] py-[5px] transition-colors focus:border-b-[#6fbf30] read-only:text-gray-400 disabled:text-gray-600 disabled:bg-gray-100 disabled:border-b-gray-200 ${
-          _value ? "!border-b-[#6fbf30]" : ""
+        className={`w-full border-b-[2px] border-b-gray-300 outline-0 px-[2px] py-[5px] transition-colors focus:border-b-black read-only:text-gray-400 disabled:text-gray-600 disabled:bg-gray-100 disabled:border-b-gray-200 ${
+          _value ? "!border-b-black" : ""
         } ${inputClassName}`}
       />
       <span
-        className={`bg-white absolute ps-[5px] text-gray-400 transition-[transform,font-size] group-has-[input:focus]/input:transform-[translate(-5px,-105%)] group-has-[input:focus]/input:text-[12px] group-has-[input:focus]/input:text-[#6fbf30] ${
+        className={`bg-white absolute ps-[5px] text-gray-400 transition-[transform,font-size] group-has-[input:focus]/input:transform-[translate(-5px,-105%)] group-has-[input:focus]/input:font-bold group-has-[input:focus]/input:text-[12px] group-has-[input:focus]/input:text-black ${
           _value
-            ? "!transform-[translate(-5px,-105%)] !text-[12px] !text-[#6fbf30]"
+            ? "!transform-[translate(-5px,-105%)] !text-[12px] !text-black font-bold"
             : ""
         } ${
           readOnly ? "!text-[12px] !transform-[translate(-5px,-105%)]" : ""

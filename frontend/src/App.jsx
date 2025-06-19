@@ -1,12 +1,11 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import ROUTES, { APPLY_NOW_ROUTE } from "./constants/routes";
+import ROUTES from "./constants/routes";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useEffect } from "react";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import NotFound from "./pages/NotFound";
-import Apply from "./pages/Apply";
 
 axios.defaults.baseURL = "http://localhost:3000/";
 axios.interceptors.request.use((config) => {

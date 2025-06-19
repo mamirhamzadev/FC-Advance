@@ -42,8 +42,12 @@ export const create = async (req, res) => {
     if (existingRep)
       return makeRes(res, "Rep name should be the unique", BAD_REQUEST);
     const existingPasssword =
-      (await Reps.findOne({ email: payload?.email }, { password: 1, _id: 0 }))
-        ?.password || null;
+      (
+        await Reps.findOne(
+          { email: payload?.email, admin_id: null },
+          { password: 1, _id: 0 }
+        )
+      )?.password || null;
     payload.password = existingPasssword || generatePassword();
     const rep = await Reps.create(payload);
     let msg = "Rep created and email cannot be sent at " + rep.email;

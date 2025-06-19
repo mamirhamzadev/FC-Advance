@@ -71,11 +71,7 @@ function RepDashboard() {
 
   useEffect(() => {
     axios
-      .get("/api/reps/list-with-applications", {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("rep-token") || "",
-        },
-      })
+      .get("/api/reps/list-with-applications")
       .then((res) => {
         setReps(res?.data?.data?.reps);
         dispatch(setRepAuthorized());

@@ -48,6 +48,10 @@ button {
   outline: 0;
 }
 
+input:-webkit-autofill {
+  box-shadow: 0 0 0 1000px white inset !important;
+}
+
 @keyframes animate-zoom {
   from {
     transform: scale(1, 1);

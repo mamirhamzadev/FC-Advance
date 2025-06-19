@@ -93,7 +93,7 @@ function Header() {
           ) : (
             <Button
               className="lg:flex hidden !px-[20px]"
-              text={"Dashboard"}
+              text={isAuthorized ? "Dashboard" : "Login"}
               href={REP_DASHBOARD_ROUTE}
             />
           )}
@@ -130,7 +130,10 @@ function Header() {
                 }}
               />
             ) : (
-              <Button text={"Dashboard"} href={REP_DASHBOARD_ROUTE} />
+              <Button
+                text={isAuthorized ? "Dashboard" : "Login"}
+                href={REP_DASHBOARD_ROUTE}
+              />
             )}
           </div>
         </div>
