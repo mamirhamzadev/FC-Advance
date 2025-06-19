@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FloatingInput from "../../components/Input";
 import Button from "../../components/Button";
-import { CONTACT_US_ROUTE } from "../../constants/routes";
+import { CONTACT_US_ROUTE, HOME_ROUTE } from "../../constants/routes";
 import {
   faFile,
   faFileCsv,
@@ -20,6 +20,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Fields, alphabetValidator } from "./helper";
 
 const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "tiff", "bmp", "webp", "svg"];
 const VIDEO_EXTS = [
@@ -182,7 +183,18 @@ function Apply() {
                   <FontAwesomeIcon icon={faInfo} />
                 </span>
                 <p className="text-[16px]">{message}!</p>
-                <Button text="Contact Us" href={CONTACT_US_ROUTE} />
+                <Button
+                  text={
+                    message === "Application submitted successfully"
+                      ? "Back to Home"
+                      : "Contact Us"
+                  }
+                  href={
+                    message === "Application submitted successfully"
+                      ? HOME_ROUTE
+                      : CONTACT_US_ROUTE
+                  }
+                />
               </div>
             ) : (
               <>
@@ -207,6 +219,7 @@ function Apply() {
                   <div className="flex gap-[50px] md:flex-row flex-col mt-[50px]">
                     <FloatingInput
                       name="submitted_by[full_name]"
+                      onChange={alphabetValidator}
                       placeholder="Your Full Name"
                       value={applicationData?.submitted_by?.full_name}
                       required
@@ -229,249 +242,45 @@ function Apply() {
                             Business Information
                           </h3>
 
-                          <FloatingInput
-                            name="business[name]"
-                            placeholder="Legal Company Name"
-                            value={applicationData?.business?.name}
-                            required
-                          />
-                          <FloatingInput
-                            name="business[type]"
-                            placeholder="Doing Business As"
-                            value={applicationData?.business?.type}
-                            required
-                          />
-                          <FloatingInput
-                            name="business[website]"
-                            placeholder="Company Website"
-                            value={applicationData?.business?.website}
-                          />
-                          <FloatingInput
-                            name="business[tax_id]"
-                            placeholder="Tax ID/EIN"
-                            value={applicationData?.business?.tax_id}
-                            required
-                          />
-                          <FloatingInput
-                            type="date"
-                            name="business[start_date]"
-                            placeholder="Business Start Date"
-                            value={
-                              applicationData?.business?.start_date
-                                ? new Date(
-                                    applicationData?.business?.start_date
-                                  )
-                                    ?.toISOString()
-                                    ?.split("T")?.[0]
-                                : ""
-                            }
-                            required
-                          />
-                          <FloatingInput
-                            name="business[state_of_incorporation]"
-                            placeholder="State of Incorporation"
-                            value={
-                              applicationData?.business?.state_of_incorporation
-                            }
-                            required
-                          />
-                          <FloatingInput
-                            name="business[industry]"
-                            placeholder="Industry"
-                            value={applicationData?.business?.industry}
-                            required
-                          />
-                          <FloatingInput
-                            type="tel"
-                            name="business[phone]"
-                            placeholder="Phone"
-                            value={applicationData?.business?.phone}
-                            required
-                          />
-                          <FloatingInput
-                            name="business[address]"
-                            placeholder="Address"
-                            value={applicationData?.business?.address}
-                            required
-                          />
-                          <FloatingInput
-                            name="business[city]"
-                            placeholder="City"
-                            value={applicationData?.business?.city}
-                            required
-                          />
-                          <FloatingInput
-                            name="business[state]"
-                            placeholder="State"
-                            value={applicationData?.business?.state}
-                            required
-                          />
-                          <FloatingInput
-                            name="business[zip]"
-                            placeholder="Zip"
-                            value={applicationData?.business?.zip}
-                            required
-                          />
+                          {Fields.business.map((field) => (
+                            <FloatingInput
+                              name={field.name}
+                              placeholder={field.placeholder}
+                              type={field.type}
+                              onChange={field.onChange}
+                              required={field.required}
+                            />
+                          ))}
                         </div>
                         <div className="flex flex-col gap-[20px] w-full">
                           <h3 className="w-fit uppercase mb-[10px] pb-[5px] font-bold relative before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-black">
                             Owner Information
                           </h3>
-
-                          <FloatingInput
-                            name="owner[full_name]"
-                            placeholder="Full Name"
-                            value={applicationData?.owner?.full_name}
-                            required
-                          />
-                          <FloatingInput
-                            name="owner[ownership_percent]"
-                            placeholder="Ownership %"
-                            value={applicationData?.owner?.ownership_percent}
-                            required
-                          />
-                          <FloatingInput
-                            type="email"
-                            name="owner[email]"
-                            placeholder="Business Email"
-                            value={applicationData?.owner?.email}
-                          />
-                          <FloatingInput
-                            name="owner[ssn]"
-                            placeholder="Social Security Number"
-                            value={applicationData?.owner?.ssn}
-                            required
-                          />
-                          <FloatingInput
-                            type="tel"
-                            name="owner[phone]"
-                            placeholder="Mobile Phone"
-                            value={applicationData?.owner?.phone}
-                            required
-                          />
-                          <FloatingInput
-                            name="owner[fico_score]"
-                            placeholder="FICO Score"
-                            value={applicationData?.owner?.fico_score}
-                            required
-                          />
-                          <FloatingInput
-                            name="owner[address][line1]"
-                            placeholder="Address Line 1"
-                            value={applicationData?.owner?.address?.line1}
-                            required
-                          />
-                          <FloatingInput
-                            name="owner[address][line2]"
-                            placeholder="Address Line 2"
-                            value={applicationData?.owner?.address?.line2}
-                          />
-                          <FloatingInput
-                            name="owner[city]"
-                            value={applicationData?.owner?.city}
-                            placeholder="City"
-                            required
-                          />
-                          <FloatingInput
-                            name="owner[state]"
-                            placeholder="State"
-                            value={applicationData?.owner?.state}
-                            required
-                          />
-                          <FloatingInput
-                            name="owner[zip]"
-                            value={applicationData?.owner?.zip}
-                            placeholder="Zip"
-                            required
-                          />
-                          <FloatingInput
-                            type="date"
-                            name="owner[dob]"
-                            placeholder="Date of Birth"
-                            value={
-                              applicationData?.owner?.dob
-                                ? new Date(applicationData?.owner?.dob)
-                                    ?.toISOString()
-                                    ?.split("T")?.[0]
-                                : ""
-                            }
-                            required
-                          />
+                          {Fields.owner.map((field) => (
+                            <FloatingInput
+                              name={field.name}
+                              onChange={field.onChange}
+                              placeholder={field.placeholder}
+                              type={field.type}
+                              required={field.required}
+                            />
+                          ))}
                         </div>
+
                         <div className="flex flex-col gap-[20px] w-full">
                           <h3 className="w-fit uppercase mb-[10px] pb-[5px] font-bold relative before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-black">
                             Partner Information
                           </h3>
 
-                          <FloatingInput
-                            name="partner[full_name]"
-                            placeholder="Full Name"
-                            value={applicationData?.partner?.full_name}
-                          />
-                          <FloatingInput
-                            name="partner[ownership_percent]"
-                            placeholder="Ownership %"
-                            value={applicationData?.partner?.ownership_percent}
-                          />
-                          <FloatingInput
-                            type="email"
-                            name="partner[email]"
-                            placeholder="Business Email"
-                            value={applicationData?.partner?.email}
-                          />
-                          <FloatingInput
-                            name="partner[ssn]"
-                            placeholder="Social Security Number"
-                            value={applicationData?.partner?.ssn}
-                          />
-                          <FloatingInput
-                            type="tel"
-                            name="partner[phone]"
-                            placeholder="Mobile Phone"
-                            value={applicationData?.partner?.phone}
-                          />
-                          <FloatingInput
-                            name="partner[fico_score]"
-                            placeholder="FICO Score"
-                            value={applicationData?.partner?.fico_score}
-                          />
-                          <FloatingInput
-                            name="partner[address][line1]"
-                            placeholder="Address Line 1"
-                            value={applicationData?.partner?.address?.line1}
-                          />
-                          <FloatingInput
-                            name="partner[address][line2]"
-                            placeholder="Address Line 2"
-                            value={applicationData?.partner?.address?.line2}
-                          />
-                          <FloatingInput
-                            name="partner[city]"
-                            value={applicationData?.partner?.city}
-                            placeholder="City"
-                          />
-                          <FloatingInput
-                            name="partner[state]"
-                            value={applicationData?.partner?.state}
-                            placeholder="State"
-                          />
-                          <FloatingInput
-                            name="partner[zip]"
-                            value={applicationData?.partner?.zip}
-                            placeholder="Zip"
-                          />
-                          <FloatingInput
-                            type="date"
-                            name="partner[dob]"
-                            placeholder="Date of Birth"
-                            value={
-                              applicationData?.partner?.dob
-                                ? new Date(applicationData?.partner?.dob)
-                                    ?.toISOString()
-                                    ?.split("T")?.[0]
-                                : ""
-                            }
-                          />
+                          {Fields.partner.map((field) => (
+                            <FloatingInput
+                              name={field.name}
+                              onChange={field.onChange}
+                              placeholder={field.placeholder}
+                              type={field.type}
+                              required={field.required}
+                            />
+                          ))}
                         </div>
                       </div>
                       <div className="my-[50px] md:text-left text-center">

@@ -395,8 +395,8 @@ function RepDashboard() {
                     key={index}
                     className="flex flex-col gap-[5px] border border-gray-300 overflow-hidden rounded-[0.5rem] p-[15px] cursor-pointer relative group"
                   >
-                    <span className="absolute top-0 left-0 size-full bg-black/50 backdrop-blur-md z-1 flex items-center justify-center text-white text-[20px] opacity-0 transition-[opacity] duration-300 group-[:hover]:opacity-100">
-                      <FontAwesomeIcon icon={faEye} />
+                    <span className="absolute bottom-0 left-0 w-full bg-black/50 z-1 flex items-center justify-center text-white text-[16px] transform-[translateY(100%)] transition-[transform] duration-300 group-[:hover]:transform-[translateY(0)]">
+                      Click to View
                     </span>
                     <p>
                       <strong>Submitted By: </strong>

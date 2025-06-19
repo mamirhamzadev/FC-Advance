@@ -1,6 +1,7 @@
+const repToken = localStorage.getItem("rep-token");
 const initalState = {
   type: "rep",
-  isAuthorized: false,
+  isAuthorized: !!repToken,
 };
 
 export const repAuthrorized = (state = initalState, action) => {

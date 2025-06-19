@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LOGO } from "../../constants/images";
 import {
   APPLY_NOW_ROUTE,
@@ -10,12 +10,15 @@ import Button from "../Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useRef } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setRepAuthorized } from "../../redux/actions/rep-dashboard";
 import { useEffect } from "react";
 
 function Header() {
   const headerRef = useRef(null);
   const location = useLocation();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const isAuthorized = useSelector(
     (state) => state?.repDashboard?.isAuthorized
   );
@@ -33,6 +36,16 @@ function Header() {
   useEffect(() => {
     headerRef.current?.classList.remove("active");
   }, [location]);
+
+  const repDashboardLoginHandler = () => {
+    if (REP_DASHBOARD_ROUTE === location.pathname) {
+      if (isAuthorized) {
+        localStorage.removeItem("rep-token");
+        dispatch(setRepAuthorized(false));
+      }
+    } else return navigate(REP_DASHBOARD_ROUTE);
+    headerRef.current?.classList.remove("active");
+  };
 
   return (
     <header
@@ -80,23 +93,20 @@ function Header() {
             text={"Apply Now"}
             href={APPLY_NOW_ROUTE}
           />
-          {isAuthorized && REP_DASHBOARD_ROUTE.includes(location.pathname) ? (
-            <Button
-              className="lg:flex hidden !px-[20px]"
-              text={"Logout"}
-              href={""}
-              onClick={() => {
-                localStorage.removeItem("rep-token");
-                window.location.reload();
-              }}
-            />
-          ) : (
-            <Button
-              className="lg:flex hidden !px-[20px]"
-              text={isAuthorized ? "Dashboard" : "Login"}
-              href={REP_DASHBOARD_ROUTE}
-            />
-          )}
+
+          <Button
+            className="lg:flex hidden !px-[20px]"
+            text={
+              REP_DASHBOARD_ROUTE === location.pathname
+                ? isAuthorized
+                  ? "Logout"
+                  : "Login"
+                : isAuthorized
+                ? "Dashboard"
+                : "Login"
+            }
+            onClick={repDashboardLoginHandler}
+          />
         </div>
       </div>
       <div className="drop-down group-[.active]/header:flex lg:!hidden hidden absolute top-[105px] w-full bg-white transition-all duration-300 overflow-hidden">
@@ -121,20 +131,18 @@ function Header() {
               href={APPLY_NOW_ROUTE}
             />
 
-            {isAuthorized && REP_DASHBOARD_ROUTE.includes(location.pathname) ? (
-              <Button
-                text={"Logout"}
-                onClick={() => {
-                  localStorage.removeItem("rep-token");
-                  window.location.reload();
-                }}
-              />
-            ) : (
-              <Button
-                text={isAuthorized ? "Dashboard" : "Login"}
-                href={REP_DASHBOARD_ROUTE}
-              />
-            )}
+            <Button
+              text={
+                REP_DASHBOARD_ROUTE === location.pathname
+                  ? isAuthorized
+                    ? "Logout"
+                    : "Login"
+                  : isAuthorized
+                  ? "Dashboard"
+                  : "Login"
+              }
+              onClick={repDashboardLoginHandler}
+            />
           </div>
         </div>
       </div>
