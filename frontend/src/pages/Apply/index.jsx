@@ -21,6 +21,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Fields, alphabetValidator } from "./helper";
+import { UPLOADING_ANIMATION } from "../../constants/images";
 
 const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "tiff", "bmp", "webp", "svg"];
 const VIDEO_EXTS = [
@@ -472,12 +473,15 @@ function Apply() {
           {isUploading ? (
             <div className="fixed top-0 left-0 size-full bg-black/50 z-10 flex items-center justify-center">
               <div className="bg-white max-w-[250px] w-full p-[30px] rounded-[0.5rem] shadow flex items-center justify-center flex-col gap-[20px]">
-                <div className="relative flex items-center justify-center overflow-hidden rounded-full size-[100px] bg-green-100 text-[20px] font-bold inset-shadow-2xs">
+                <div className="relative flex items-center justify-center overflow-hidden rounded-full size-[200px] bg-gray-300 text-[20px] font-bold inset-shadow-2xs p-[10px]">
                   <span
                     style={{ height: `${uploadingProgress}%` }}
-                    className="absolute bottom-0 w-full bg-green-400"
+                    className="absolute bottom-0 w-full bg-gray-800 duration-500 transition-[height]"
                   ></span>
-                  <span className="relative">{uploadingProgress}%</span>
+                  <img
+                    src={UPLOADING_ANIMATION}
+                    className="relative z-1 size-[150px] rounded-full"
+                  />
                 </div>
               </div>
             </div>

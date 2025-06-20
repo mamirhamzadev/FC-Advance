@@ -70,14 +70,12 @@ const Profile = () => {
     axios
       .post("/api/admins/update", formDataToSend)
       .then((res) => {
-        console.log(res);
         notify("success", res?.msg);
         setIsUpdatingUser(false);
         setLoading(true);
       })
       .catch((err) => {
         notify("error", err?.msg);
-        console.log(err);
         setIsUpdatingUser(false);
         setIsEmailAlreadyExists(!!err?.data?.email);
         setIsUsernameAlreadyExists(!!err?.data?.username);

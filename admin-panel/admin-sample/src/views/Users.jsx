@@ -104,17 +104,6 @@ const Users = () => {
 
   const handleSubmitUserForm = async (data) => {
     setShowProgressModal(true);
-    // try {
-    //   await axios.post("/api/admins/create", data);
-    //   notify("success", isUpdatingRecord ? "User Updated" : "User Added");
-    //   setShowProgressModal(false);
-    //   setShowAddUpdateModal(false);
-    //   setIsFetchingUsers(true);
-    // } catch (err) {
-    //   console.log(err);
-    //   notify("error", err.msg);
-    //   setShowProgressModal(false);
-    // }
     setTimeout(() => {
       notify("success", isUpdatingRecord ? "User Updated" : "User Added");
       setShowProgressModal(false);

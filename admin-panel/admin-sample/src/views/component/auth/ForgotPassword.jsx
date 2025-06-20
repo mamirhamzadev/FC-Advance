@@ -13,7 +13,6 @@ const ForgotPassword = (props) => {
     e.preventDefault();
     setIsSubmittingRequest(true);
     const payload = new FormData(e.target);
-    console.log(Object.fromEntries(payload));
     const api_route = showOtpInput
       ? "/api/admins/verify-otp"
       : "/api/admins/send-otp";

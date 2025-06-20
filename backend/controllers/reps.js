@@ -3,6 +3,7 @@ import {
   NOT_FOUND,
   OK,
   SERVER_ERROR,
+  UNAUTHORIZED,
 } from "../constants/codes.js";
 import {
   createToken,
@@ -35,20 +36,10 @@ export const create = async (req, res) => {
     );
 
   try {
-    const existingRep = await Reps.findOne({
-      name: payload?.name,
-      admin_id: null,
-    });
+    const existingRep = await Reps.findOne({ email: payload?.email });
     if (existingRep)
-      return makeRes(res, "Rep name should be the unique", BAD_REQUEST);
-    const existingPasssword =
-      (
-        await Reps.findOne(
-          { email: payload?.email, admin_id: null },
-          { password: 1, _id: 0 }
-        )
-      )?.password || null;
-    payload.password = existingPasssword || generatePassword();
+      return makeRes(res, "Another rep exists with this email", BAD_REQUEST);
+    payload.password = generatePassword();
     const rep = await Reps.create(payload);
     let msg = "Rep created and email cannot be sent at " + rep.email;
     if (
@@ -94,25 +85,17 @@ export const update = async (req, res) => {
     );
 
   try {
+    const existingRep = await Reps.findOne({ email: payload?.email });
+    if (existingRep)
+      return makeRes(res, "Another rep exists with this email", BAD_REQUEST);
     let rep = await Reps.findOne({ _id: payload?._id });
-    let hasChange = false;
+    rep.name = payload?.name;
     let mailChanged = false;
-    if (rep.name !== payload?.name) {
-      const existingRep = await Reps.findOne({
-        name: payload?.name,
-        admin_id: null,
-      });
-      if (existingRep)
-        return makeRes(res, "Rep name should be the unique", BAD_REQUEST);
-      rep.name = payload?.name;
-      hasChange = true;
-    }
     if (rep.email !== payload?.email) {
       rep.email = payload?.email;
-      hasChange = true;
       mailChanged = true;
     }
-    if (hasChange) rep = await rep.save();
+    rep = await rep.save();
     let msg = "Rep updated";
     if (mailChanged) {
       if (
@@ -176,6 +159,24 @@ export const remove = async (req, res) => {
   }
 };
 
+export const getRepForRepDashboard = async (req, res) => {
+  const email = req?.rep?.email;
+  if (!email)
+    return makeRes(
+      res,
+      "Something went wrong. Please refresh and try again",
+      BAD_REQUEST
+    );
+  try {
+    const rep = await Reps.findOne({ email, admin_id: null })
+      .populate("applications")
+      .lean();
+    return makeRes(res, "", OK, { rep, profile: req.user });
+  } catch (e) {
+    return makeRes(res, e.message, SERVER_ERROR);
+  }
+};
+
 export const get = async (req, res) => {
   const id = req.params.id;
   if (!id)
@@ -227,18 +228,18 @@ export const dashboardLogin = async (req, res) => {
     );
 
   try {
-    let reps = await Reps.find({ email: payload?.email, admin_id: null })
+    let rep = await Reps.findOne({ email: payload?.email, admin_id: null })
       .populate("applications")
       .lean();
-    if (reps.length && reps[0].password === payload.password) {
-      const rep_token = createToken({ email: reps[0].email });
-      reps = reps.map((_rep) => ({
-        ..._rep,
-        link: `${process.env.CLIENT_BASE_URL}/apply/${_rep._id}`,
-      }));
+    if (rep && rep?.password === payload?.password) {
+      const rep_token = createToken({ email: rep.email });
+      rep = {
+        ...rep,
+        link: `${process.env.CLIENT_BASE_URL}/apply/${rep._id}`,
+      };
       return makeRes(res, "Logged in successfully", OK, {
         rep_token,
-        reps,
+        rep,
       });
     }
     return makeRes(res, "Credentials not matched", BAD_REQUEST);
@@ -247,17 +248,54 @@ export const dashboardLogin = async (req, res) => {
   }
 };
 
+export const changePassword = async (req, res) => {
+  const payload = req.body;
+
+  const error_fields = [];
+  if (!req?.rep?.email) return makeRes(res, "Session Expired", UNAUTHORIZED);
+  if (!payload?.old_password) error_fields.push("Old Password");
+  if (!payload?.new_password) error_fields.push("New Password");
+  if (!payload?.confirm_password) error_fields.push("Confirm Password");
+
+  if (error_fields.length)
+    return makeRes(
+      res,
+      `${error_fields.join(", ")} ${
+        error_fields.length > 1 ? "are" : "is"
+      } required`,
+      BAD_REQUEST
+    );
+
+  if (payload?.new_password !== payload?.confirm_password)
+    return makeRes(
+      res,
+      "New password not matched with confirm password",
+      BAD_REQUEST
+    );
+
+  try {
+    let rep = await Reps.findOne({ email: req.rep?.email, admin_id: null });
+    if (rep && rep?.password === payload?.old_password) {
+      rep.password = payload?.new_password;
+      await rep.save();
+      return makeRes(res, "Password changed successfully", OK);
+    }
+    return makeRes(res, "Old password is incorrect", BAD_REQUEST);
+  } catch (e) {
+    return makeRes(res, e.message, SERVER_ERROR);
+  }
+};
+
 export const listWithApplications = async (req, res) => {
   try {
-    let reps = [];
-    reps = await Reps.find({ email: req?.rep?.email, admin_id: null })
+    let rep = await Reps.findOne({ email: req?.rep?.email, admin_id: null })
       .populate("applications")
       .lean();
-    reps = reps.map((rep) => ({
+    rep = {
       ...rep,
       link: `${process.env.CLIENT_BASE_URL}/apply/${rep._id}`,
-    }));
-    return makeRes(res, "", OK, { reps });
+    };
+    return makeRes(res, "", OK, { rep });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
   }

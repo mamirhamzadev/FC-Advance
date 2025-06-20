@@ -98,73 +98,78 @@ export const create = async (req, res) => {
     await sendMail(
       sendToEmails,
       rep
-        ? `Form Submitted for Rep - (${rep?.name})`
-        : "Form submitted without Rep",
+        ? `Form Submitted through Rep - (${rep?.name})`
+        : "Form submitted from website",
       "form-submission.html",
       {
         "{{rep_name_line}}": rep
-          ? `Form Submitted for Rep - (${rep?.name})`
-          : "Form submitted without Rep",
-        "{{submitted_by_email}}": company?.submitted_by.email,
-        "{{submitted_by_full_name}}": company?.submitted_by.full_name,
-        "{{business_name}}": company?.business.name,
-        "{{business_type}}": company?.business.type,
-        "{{business_website}}": company?.business.website,
-        "{{business_tax_id}}": company?.business.tax_id,
+          ? `Form Submitted through Rep - (${rep?.name || "N/A"})`
+          : "Form submitted from website",
+        "{{submitted_by_email}}": company?.submitted_by.email || "N/A",
+        "{{submitted_by_full_name}}": company?.submitted_by.full_name || "N/A",
+        "{{business_name}}": company?.business.name || "N/A",
+        "{{business_type}}": company?.business.type || "N/A",
+        "{{business_website}}": company?.business.website || "N/A",
+        "{{business_tax_id}}": company?.business.tax_id || "N/A",
         "{{business_start_date}}": new Date(company?.business.start_date)
           ?.toISOString()
           ?.split("T")?.[0],
         "{{business_state_of_incorporation}}":
-          company?.business.state_of_incorporation,
-        "{{business_industry}}": company?.business.industry,
-        "{{business_phone}}": company?.business.phone,
-        "{{business_address}}": company?.business.address,
-        "{{business_city}}": company?.business.city,
-        "{{business_state}}": company?.business.state,
-        "{{business_zip}}": company?.business.zip,
+          company?.business.state_of_incorporation || "N/A",
+        "{{business_industry}}": company?.business.industry || "N/A",
+        "{{business_phone}}": company?.business.phone || "N/A",
+        "{{business_address}}": company?.business.address || "N/A",
+        "{{business_city}}": company?.business.city || "N/A",
+        "{{business_state}}": company?.business.state || "N/A",
+        "{{business_zip}}": company?.business.zip || "N/A",
 
-        "{{owner_full_name}}": company?.owner.full_name,
-        "{{owner_ownership_percent}}": company?.owner.ownership_percent,
-        "{{owner_email}}": company?.owner.email,
-        "{{owner_ssn}}": company?.owner.ssn,
-        "{{owner_phone}}": company?.owner.phone,
-        "{{owner_fico_score}}": company?.owner.fico_score,
-        "{{owner_address_line_1}}": company?.owner.address.line1,
-        "{{owner_address_line_2}}": company?.owner.address.line2,
-        "{{owner_city}}": company?.owner.city,
-        "{{owner_state}}": company?.owner.state,
-        "{{owner_zip}}": company?.owner.zip,
+        "{{owner_full_name}}": company?.owner.full_name || "N/A",
+        "{{owner_ownership_percent}}":
+          company?.owner.ownership_percent || "N/A",
+        "{{owner_email}}": company?.owner.email || "N/A",
+        "{{owner_ssn}}": company?.owner.ssn || "N/A",
+        "{{owner_phone}}": company?.owner.phone || "N/A",
+        "{{owner_fico_score}}": company?.owner.fico_score || "N/A",
+        "{{owner_address_line_1}}": company?.owner.address.line1 || "N/A",
+        "{{owner_address_line_2}}": company?.owner.address.line2 || "N/A",
+        "{{owner_city}}": company?.owner.city || "N/A",
+        "{{owner_state}}": company?.owner.state || "N/A",
+        "{{owner_zip}}": company?.owner.zip || "N/A",
         "{{owner_dob}}": new Date(company?.owner.dob)
           ?.toISOString()
           ?.split("T")?.[0],
 
-        "{{partner_full_name}}": company?.partner?.full_name,
-        "{{partner_ownership_percent}}": company?.partner?.ownership_percent,
-        "{{partner_email}}": company?.partner?.email,
-        "{{partner_ssn}}": company?.partner?.ssn,
-        "{{partner_phone}}": company?.partner?.phone,
-        "{{partner_fico_score}}": company?.partner?.fico_score,
-        "{{partner_address_line_1}}": company?.partner?.address.line1,
-        "{{partner_address_line_2}}": company?.partner?.address.line2,
-        "{{partner_city}}": company?.partner?.city,
-        "{{partner_state}}": company?.partner?.state,
-        "{{partner_zip}}": company?.partner?.zip,
-        "{{partner_dob}}": new Date(company?.partner?.dob)
-          ?.toISOString()
-          ?.split("T")?.[0],
+        "{{partner_full_name}}": company?.partner?.full_name || "N/A",
+        "{{partner_ownership_percent}}":
+          company?.partner?.ownership_percent || "N/A",
+        "{{partner_email}}": company?.partner?.email || "N/A",
+        "{{partner_ssn}}": company?.partner?.ssn || "N/A",
+        "{{partner_phone}}": company?.partner?.phone || "N/A",
+        "{{partner_fico_score}}": company?.partner?.fico_score || "N/A",
+        "{{partner_address_line_1}}": company?.partner?.address.line1 || "N/A",
+        "{{partner_address_line_2}}": company?.partner?.address.line2 || "N/A",
+        "{{partner_city}}": company?.partner?.city || "N/A",
+        "{{partner_state}}": company?.partner?.state || "N/A",
+        "{{partner_zip}}": company?.partner?.zip || "N/A",
+        "{{partner_dob}}": company?.partner?.dob
+          ? new Date(company?.partner?.dob)?.toISOString()?.split("T")?.[0]
+          : "N/A",
         "{{media}}": company.media
           .filter((file) => !!file)
           .map((file) => file.split("\\").pop())
-          .map(
-            (file) =>
-              `<a 
+          .map((file) => {
+            let nameToShow = file.split("-");
+            nameToShow[0] = "";
+            nameToShow = nameToShow.filter((patch) => !!patch).join("-");
+            return `<a 
                 href="${process.env.SERVER_BASE_URL}/uploads/${file}" 
                 target="_blank" 
-                title="${file}"
-                download>
-                Download<br/>Media
-              </a>`
-          )
+                title="${nameToShow}"
+                style="display: block !important; margin-bottom: 5px !important;"
+                download="${nameToShow}">
+                ${nameToShow}
+              </a>`;
+          })
           .join(""),
       }
     );

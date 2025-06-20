@@ -5,125 +5,347 @@
     <title>Form Submitted</title>
     <style>
       body {
-        font-family: Arial, sans-serif;
-        color: #333;
-        background-color: #f6f6f6;
-        padding: 20px;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
-      p {
-        font-size: 14px;
+      p,
+      h3,
+      h4 {
+        margin: 0 !important;
+        padding: 0 !important;
       }
-      .container {
-        max-width: 600px;
-        margin: auto;
-        background: #ffffff;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-      }
+      h3,
+      h4,
       h2 {
-        color: #2c3e50;
+        font-weight: bold !important;
       }
-      .info {
-        margin: 20px 0;
+      .heading {
+        padding: 0px 10px !important;
+        margin: 1rem 0px !important;
       }
-      .info p {
-        margin: 5px 0;
+      .table-parent {
+        width: 100% !important;
+        padding: 0px 10px !important;
+        margin-bottom: 2rem !important;
+        overflow: auto !important;
       }
-      .button {
-        display: inline-block;
-        margin-top: 20px;
-        padding: 12px 20px;
-        background-color: #007bff;
-        color: #ffffff !important;
-        text-decoration: none;
-        border-radius: 5px;
+      table {
+        width: 100% !important;
       }
-      .footer {
-        margin-top: 30px;
-        font-size: 12px;
-        color: #888;
+      table,
+      tr,
+      th,
+      td {
+        border: 1px solid lightgray !important;
+        border-collapse: collapse !important;
       }
-      .media {
-        display: flex;
+      th {
+        font-size: 20px !important;
+        font-weight: bold !important;
       }
-      .media > a {
-        padding: 10px 15px;
-        background-color: #b6ffb6;
-        color: black !important;
-        text-align: center;
-        text-decoration: none;
-        border-radius: 10px;
-        font-size: 14px;
-        margin-right: 10px;
+      th,
+      td {
+        padding: 10px !important;
+      }
+      th div,
+      td div {
+        display: block !important;
+        font-size: 16px !important;
+      }
+      th div h4,
+      td div h4 {
+        font-weight: bold !important;
+        margin-bottom: 2px !important;
+      }
+      th div p,
+      td div p {
+        font-size: 14px !important;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h2>{{rep_name_line}}</h2>
+    <h2 class="heading">{{rep_name_line}}</h2>
 
-      <div class="info">
-        <p><strong>Your Email:</strong> {{submitted_by_email}}</p>
-        <p><strong>Your Full Name:</strong> {{submitted_by_full_name}}</p>
-
-        <h3 style="margin-top: 50px">BUSINESS INFORMATION</h3>
-        <p><strong>Name:</strong> {{business_name}}</p>
-        <p><strong>Type:</strong> {{business_type}}</p>
-        <p>
-          <strong>Website:</strong>
-          <a href="{{business_webite}}">{{business_webite}}</a>
-        </p>
-        <p><strong>Tax ID:</strong> {{business_tax_id}}</p>
-        <p><strong>Start Date:</strong> {{business_start_date}}</p>
-        <p>
-          <strong>State of Incorporation:</strong>
-          {{business_state_of_incorporation}}
-        </p>
-        <p><strong>Industry:</strong> {{business_industry}}</p>
-        <p><strong>Phone:</strong> {{business_phone}}</p>
-        <p><strong>Address:</strong> {{business_address}}</p>
-        <p><strong>City:</strong> {{business_city}}</p>
-        <p><strong>State:</strong> {{business_state}}</p>
-        <p><strong>Zip Code:</strong> {{business_zip}}</p>
-
-        <h3 style="margin-top: 50px">OWNER INFORMATION</h3>
-        <p><strong>Full Name:</strong> {{owner_full_name}}</p>
-        <p><strong>Ownership %:</strong> {{owner_ownership_percent}}</p>
-        <p><strong>Email:</strong> {{owner_email}}</p>
-        <p><strong>SSN:</strong> {{owner_ssn}}</p>
-        <p><strong>Phone:</strong> {{owner_phone}}</p>
-        <p><strong>FICO Score:</strong> {{owner_fico_score}}</p>
-        <p><strong>Address Line 1:</strong> {{owner_address_line_1}}</p>
-        <p><strong>Address Line 2:</strong> {{owner_address_line_2}}</p>
-        <p><strong>City:</strong> {{owner_city}}</p>
-        <p><strong>State:</strong> {{owner_state}}</p>
-        <p><strong>Zip Code:</strong> {{owner_zip}}</p>
-        <p><strong>Date of Birth:</strong> {{owner_dob}}</p>
-
-        <h3 style="margin-top: 50px">PARTNER INFORMATION</h3>
-        <p><strong>Full Name:</strong> {{partner_full_name}}</p>
-        <p><strong>Ownership %:</strong> {{partner_ownership_percent}}</p>
-        <p><strong>Email:</strong> {{partner_email}}</p>
-        <p><strong>SSN:</strong> {{partner_ssn}}</p>
-        <p><strong>Phone:</strong> {{partner_phone}}</p>
-        <p><strong>FICO Score:</strong> {{partner_fico_score}}</p>
-        <p><strong>Address Line 1:</strong> {{partner_address_line_1}}</p>
-        <p><strong>Address Line 2:</strong> {{partner_address_line_2}}</p>
-        <p><strong>City:</strong> {{partner_city}}</p>
-        <p><strong>State:</strong> {{partner_state}}</p>
-        <p><strong>Zip Code:</strong> {{partner_zip}}</p>
-        <p><strong>Date of Birth:</strong> {{partner_dob}}</p>
-        <div style="display: flex; gap: 5px; margin-top: 10px">
-          <strong>Media:</strong>
-          <div
-            style="flex-wrap: wrap !important; align-items: center !important"
-            class="media"
-          >
-            {{media}}
-          </div>
-        </div>
-      </div>
+    <div class="table-parent">
+      <table>
+        <tr>
+          <td colspan="3">
+            <div>
+              <h4>Submitted By (Email)</h4>
+              <p>{{submitted_by_email}}</p>
+            </div>
+          </td>
+          <td colspan="3">
+            <div>
+              <h4>Submitted By (Full Name)</h4>
+              <p>{{submitted_by_full_name}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th colspan="2">BUSINESS INFORMATION</th>
+          <th colspan="2">OWNER INFORMATION</th>
+          <th colspan="2">PARTNER INFORMATION</th>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>Name</h4>
+              <p>{{business_name}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Full Name</h4>
+              <p>{{owner_full_name}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Full Name</h4>
+              <p>{{partner_full_name}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>Type</h4>
+              <p>{{business_type}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Ownership %</h4>
+              <p>{{owner_ownership_percent}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Ownership %</h4>
+              <p>{{partner_ownership_percent}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>Website</h4>
+              <a href="{{business_website}}" target="_blank">View Business</a>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Email</h4>
+              <p>{{owner_email}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Email</h4>
+              <p>{{partner_email}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>Tax ID</h4>
+              <p>{{business_tax_id}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>SSN</h4>
+              <p>{{owner_ssn}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>SSN</h4>
+              <p>{{partner_ssn}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>Start Date</h4>
+              <p>{{business_start_date}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Phone</h4>
+              <p>{{owner_phone}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Phone</h4>
+              <p>{{partner_phone}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>State of Incorporation</h4>
+              <p>{{business_state_of_incorporation}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>FICO Score</h4>
+              <p>{{owner_fico_score}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>FICO Score</h4>
+              <p>{{partner_fico_score}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>Industry</h4>
+              <p>{{business_industry}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Address Line 1</h4>
+              <p>{{owner_address_line_1}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Address Line 1</h4>
+              <p>{{partner_address_line_1}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>Phone</h4>
+              <p>{{business_phone}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Address Line 2</h4>
+              <p>{{owner_address_line_2}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Address Line 2</h4>
+              <p>{{partner_address_line_2}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>Address</h4>
+              <p>{{business_address}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>City</h4>
+              <p>{{owner_city}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>City</h4>
+              <p>{{partner_city}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>City</h4>
+              <p>{{business_city}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>State</h4>
+              <p>{{owner_state}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>State</h4>
+              <p>{{partner_state}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>State</h4>
+              <p>{{business_state}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Zip Code</h4>
+              <p>{{owner_zip}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Zip Code</h4>
+              <p>{{partner_zip}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div>
+              <h4>Zip Code</h4>
+              <p>{{business_zip}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Date of Birth</h4>
+              <p>{{owner_dob}}</p>
+            </div>
+          </td>
+          <td colspan="2">
+            <div>
+              <h4>Date of Birth</h4>
+              <p>{{partner_dob}}</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="6">
+            <h4
+              style="
+                line-height: 1.2 !important;
+                float: left !important;
+                margin-right: 10px !important;
+              "
+            >
+              Media:
+            </h4>
+            <div style="float: left !important; line-height: 1.2 !important">
+              {{media}}
+            </div>
+          </td>
+        </tr>
+      </table>
     </div>
   </body>
 </html>

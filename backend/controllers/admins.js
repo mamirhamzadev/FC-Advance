@@ -235,12 +235,7 @@ export const changePassword = async (req, res) => {
     }
     return makeRes(res, "Old Password is incorrect", BAD_REQUEST);
   } catch (e) {
-    console.log(e);
-    return makeRes(
-      res,
-      "Something went wrong. Please refresh and try again",
-      SERVER_ERROR
-    );
+    return makeRes(res, e.message, SERVER_ERROR);
   }
 };
 

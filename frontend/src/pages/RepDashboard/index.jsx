@@ -19,8 +19,12 @@ import {
   faFileVideo,
   faFileWord,
   faFileZipper,
+  faGear,
+  faSearch,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 
 const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "tiff", "bmp", "webp", "svg"];
 const VIDEO_EXTS = [
@@ -64,16 +68,19 @@ function RepDashboard() {
   const isAuthorized = useSelector(
     (state) => state?.repDashboard?.isAuthorized
   );
-  const [reps, setReps] = useState([]);
+  const [rep, setRep] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedRep, setSelectedRep] = useState(null);
+  const [globalFilterValue, setGlobalFilterValue] = useState("");
+  const [filteredApplications, setFilteredApplications] = useState([]);
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const [viewSettingModal, setViewSettingModal] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   useEffect(() => {
     axios
-      .get("/api/reps/list-with-applications")
+      .get("/api/reps/get")
       .then((res) => {
-        setReps(res?.data?.data?.reps);
+        setRep(res?.data?.data?.rep);
         dispatch(setRepAuthorized());
       })
       .catch((err) => {
@@ -137,7 +144,7 @@ function RepDashboard() {
       .post("/api/reps/dashboard/login", Object.fromEntries(payload))
       .then((res) => {
         localStorage.setItem("rep-token", res?.data?.data?.rep_token);
-        setReps(res?.data?.data?.reps);
+        setRep(res?.data?.data?.rep);
         dispatch(setRepAuthorized());
       })
       .catch((err) => {
@@ -147,164 +154,227 @@ function RepDashboard() {
       .finally(() => setIsLoading(false));
   };
 
+  useEffect(() => {
+    setFilteredApplications(
+      (rep?.applications || []).filter(
+        (application) =>
+          (application?.submitted_by?.email || "").includes(
+            globalFilterValue
+          ) ||
+          (application?.business?.name || "").includes(globalFilterValue) ||
+          (application?.business?.website || "").includes(globalFilterValue) ||
+          (application?.owner?.email || "").includes(globalFilterValue) ||
+          (application?.partner?.email || "").includes(globalFilterValue)
+      )
+    );
+  }, [globalFilterValue, rep]);
+
+  const passwordChangeHandler = (e) => {
+    e.preventDefault();
+    setIsChangingPassword(true);
+    const payload = new FormData(e.target);
+
+    axios
+      .post("/api/reps/change-password", Object.fromEntries(payload))
+      .then((res) => {
+        toast(res?.data?.msg);
+        e.target?.reset();
+        setViewSettingModal(false);
+      })
+      .catch((err) => {
+        toast(err?.response?.data?.msg);
+      })
+      .finally(() => {
+        setIsChangingPassword(false);
+      });
+  };
+
   return (
     <>
       {isAuthorized ? (
         <section className="wrapper my-[50px]">
-          <h2 className="text-center text-[26px] font-bold mb-[20px] capitalize">
-            Rep Dashboard
+          <h2 className="font-bold text-[26px] capitalize text-center mb-[15px] sm:mb-[25px]">
+            Welcome, {rep?.name}
           </h2>
-          <div className="border border-gray-300 rounded-2xl relative flex h-max">
-            <div className="w-full lg:w-[300px] lg:border-e lg:border-e-gray-300 flex flex-col items-stretch overflow-y-auto">
-              {reps.map((rep, index) => (
-                <button
-                  onClick={() => setSelectedRep(rep)}
-                  key={index}
-                  className={`flex items-center gap-[5px] border-b-gray-300 border-b p-[15px] ${
-                    selectedRep?.name === rep?.name
-                      ? "text-red-600 font-bold"
-                      : ""
-                  } ${
-                    index + 1 === reps.length ? "lg:border-b border-b-0" : ""
-                  }`}
-                >
-                  <span>{rep?.name}</span>
-                  <span className="text-[14px] text-gray-400">
-                    ({(rep.applications || []).length})
-                  </span>
-                </button>
-              ))}
+          <div className="flex gap-[10px] items-center flex-wrap md:flex-row flex-col">
+            <p className="flex-1">
+              <span className="font-semibold">Email: </span>
+              <span>{rep?.email}</span>
+            </p>
+
+            <div className="flex gap-[10px] items-center justify-end">
+              <Button
+                onClick={(e) =>
+                  navigator.clipboard.writeText(rep?.link).then(() => {
+                    e.target.innerHTML = "Copied";
+                    setTimeout(() => {
+                      e.target.innerHTML = "Copy Link for Client";
+                    }, 1000);
+                  })
+                }
+                className="!py-[10px] sm:!py-[12px] !px-[20px] sm:!px-[40px]"
+              >
+                Copy Link for Client
+              </Button>
+              <Button
+                onClick={() => setViewSettingModal(true)}
+                className="!py-[10px] sm:!py-[12px] !px-[15px] sm:!px-[20px] !text-[16px]"
+              >
+                <FontAwesomeIcon icon={faGear} />
+              </Button>
             </div>
-            <div className="lg:flex hidden flex-1 min-h-[60vh] p-[20px] flex-col overflow-auto">
-              {selectedRep ? (
-                <>
-                  <h3 className="mb-[10px] font-bold text-[20px] flex gap-[5px] flex-wrap">
-                    Rep - {selectedRep?.name}
-                    <button
-                      onClick={(e) =>
-                        navigator.clipboard
-                          .writeText(selectedRep.link)
-                          .then(() => {
-                            e.target.innerHTML = "Copied";
-                            setTimeout(() => {
-                              e.target.innerHTML = "Copy Link for Client";
-                            }, 1000);
-                          })
-                      }
-                      className="bg-red-600 text-white text-[14px] py-[5px] px-[10px] rounded-[10px]"
-                    >
-                      Copy Link for Client
-                    </button>
-                  </h3>
-                  <p className="mb-[30px] text-[14px]">
-                    <span className="font-semibold">Email: </span>
-                    <span>{selectedRep.email}</span>
-                  </p>
-                  <p className="mb-[20px] text-[18px] font-semibold">
-                    <span>Applications: </span>
-                    <span className="bg-red-600 text-[14px] p-[5px] rounded-[5px] text-white inline-flex items-center justify-center w-fit max-h-[25px] min-w-[25px]">
-                      {(selectedRep.applications || []).length}
-                    </span>
-                  </p>
-                  <div className="overflow-auto w-full">
-                    <table className="w-full border-collapse text-[14px]">
-                      <thead>
-                        <tr>
-                          <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                            #
-                          </th>
-                          <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                            Submitted By
-                            <br />
-                            (Email)
-                          </th>
-                          <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                            Business
-                            <br />
-                            Name & website
-                          </th>
-                          <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                            Owner
-                            <br />
-                            Email
-                          </th>
-                          <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                            Partner
-                            <br />
-                            Email
-                          </th>
-                          <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                            Actions
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {(selectedRep?.applications || []).length ? (
-                          <>
-                            {(selectedRep?.applications || []).map(
-                              (application, index) => (
-                                <tr key={index}>
-                                  <td className="border border-gray-300 py-[5px] px-[10px]">
-                                    {index + 1}
-                                  </td>
-                                  <td className="border border-gray-300 py-[5px] px-[10px]">
-                                    {application?.submitted_by?.email}
-                                  </td>
-                                  <td className="border border-gray-300 py-[5px] px-[10px]">
-                                    <div className="flex items-center gap-[5px] flex-wrap">
-                                      <p className="m-0">
-                                        {application?.business?.name}
-                                      </p>
-                                      <Link
-                                        className="text-red-600 underline"
-                                        target="_blank"
-                                        to={application?.business?.website}
-                                      >
-                                        View Business
-                                      </Link>
-                                    </div>
-                                  </td>
-                                  <td className="border border-gray-300 py-[5px] px-[10px]">
-                                    {application?.owner?.email}
-                                  </td>
-                                  <td className="border border-gray-300 py-[5px] px-[10px]">
-                                    {application?.partner?.email || "-"}
-                                  </td>
-                                  <td className="border border-gray-300 py-[5px] px-[10px]">
-                                    <button
-                                      onClick={() =>
-                                        setSelectedApplication(application)
-                                      }
-                                      className="flex items-center justify-center"
-                                    >
-                                      <FontAwesomeIcon icon={faEye} />
-                                    </button>
-                                  </td>
-                                </tr>
-                              )
-                            )}
-                          </>
-                        ) : (
-                          <tr>
-                            <td
-                              className="p-[10px] text-center font-bold border border-gray-300"
-                              colSpan={6}
-                            >
-                              No Records Found
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+          </div>
+          <div className="flex mt-[25px] flex-col">
+            <p className="mb-[25px] text-[18px] font-semibold">
+              <span>Applications: </span>
+              <span className="bg-gray-700 text-[14px] ms-[10px] p-[5px] rounded-[5px] text-white inline-flex items-center justify-center w-fit max-h-[25px] min-w-[25px]">
+                {(rep?.applications || []).length}
+              </span>
+            </p>
+            <div className="hidden md:block overflow-auto w-full">
+              <DataTable
+                value={rep?.applications || []}
+                paginator
+                removableSort
+                showGridlines
+                rows={10}
+                loading={isLoading}
+                dataKey="_id"
+                scrollable
+                scrollHeight="flex"
+                globalFilter={globalFilterValue}
+                frozenWidth="50px"
+                header={
+                  <div className="w-[300px] bg-white border border-gray-200 flex items-center justify-center rounded-[0.475rem] shadow-[inset_0_1px_2px_rgba(0,0,0,0.075)] ps-[1rem] text-gray-600 gap-[10px] text-[14px]">
+                    <FontAwesomeIcon icon={faSearch} />
+                    <input
+                      className="w-full py-[0.6rem] outline-0"
+                      value={globalFilterValue}
+                      onChange={(e) => setGlobalFilterValue(e.target.value)}
+                      placeholder="Keyword Search"
+                    />
                   </div>
-                </>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-gray-300 text-[14px] font-semibold">
-                    Select Rep to display here
+                }
+                emptyMessage="No record found."
+              >
+                <Column
+                  header={"#"}
+                  field={"#"}
+                  headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  body={(options) => (
+                    <div className="min-w-[30px] text-[14px]">
+                      {(options?.rowIndex || 0) + 1}
+                    </div>
+                  )}
+                  sortable
+                />
+                <Column
+                  header={"Submitted By (Email)"}
+                  field={"submitted_by.email"}
+                  headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  body={(rowData) => (
+                    <div className="min-w-[30px] text-[14px]">
+                      {rowData?.submitted_by?.email || "N/A"}
+                    </div>
+                  )}
+                  sortable
+                />
+                <Column
+                  header={"Business Name & website"}
+                  field={"business.name"}
+                  headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  body={(rowData) => (
+                    <div className="min-w-[30px] text-[14px] flex gap-[10px] items-center whitespace-nowrap">
+                      {rowData?.business?.name || "N/A"}
+                      {rowData?.business?.website && (
+                        <Link
+                          to={rowData?.business?.website}
+                          target="_blank"
+                          className="text-red-600 underline"
+                        >
+                          View Business
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                  sortable
+                />
+                <Column
+                  header={"Owner Email"}
+                  field={"owner.email"}
+                  headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  body={(rowData) => rowData?.owner?.email || "N/A"}
+                  sortable
+                />
+                <Column
+                  header={"Partner Email"}
+                  field={"partner.email"}
+                  headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  body={(rowData) => (
+                    <div className="whitespace-nowrap min-w-[30px] !text-[14px]">
+                      {rowData?.partner?.email || "N/A"}
+                    </div>
+                  )}
+                  sortable
+                />
+                <Column
+                  header={"Actions"}
+                  headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  body={(rowData) => (
+                    <button
+                      onClick={() => setSelectedApplication(rowData)}
+                      className="w-full flex items-center justify-center"
+                    >
+                      <FontAwesomeIcon icon={faEye} />
+                    </button>
+                  )}
+                  sortable
+                />
+              </DataTable>
+            </div>
+
+            <div className="text-[14px] overflow-auto w-full md:hidden grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-[10px]">
+              <div className="col-span-full bg-white border border-gray-200 flex items-center justify-center rounded-[0.475rem] shadow-[inset_0_1px_2px_rgba(0,0,0,0.075)] ps-[1rem] text-gray-600 gap-[10px] text-[14px]">
+                <FontAwesomeIcon icon={faSearch} />
+                <input
+                  className="w-full py-[0.6rem] outline-0"
+                  value={globalFilterValue}
+                  onChange={(e) => setGlobalFilterValue(e.target.value)}
+                  placeholder="Keyword Search"
+                />
+              </div>
+              {filteredApplications.map((application, index) => (
+                <div
+                  onClick={() => setSelectedApplication(application)}
+                  key={index}
+                  className="flex flex-col gap-[10px] bg-gray-100 overflow-hidden rounded-[0.5rem] p-[15px] cursor-pointer relative group"
+                >
+                  <span className="absolute bottom-0 left-0 w-full bg-black/50 z-1 flex items-center justify-center text-white text-[16px] transform-[translateY(100%)] transition-[transform] duration-300 group-[:hover]:transform-[translateY(0)]">
+                    Click to View
+                  </span>
+                  <p>
+                    <strong>Submitted By: </strong>
+                    {application?.submitted_by?.email}
+                  </p>
+                  <p>
+                    <strong>Business Name: </strong>
+                    <Link
+                      to={application?.business?.website}
+                      className="text-red-600 underline"
+                    >
+                      {application?.business?.name}
+                    </Link>
+                  </p>
+                  <p>
+                    <strong>Owner Email: </strong>
+                    {application?.owner?.email}
+                  </p>
+                  <p>
+                    <strong>Partner Email: </strong>
+                    {application?.partner?.email}
                   </p>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         </section>
@@ -344,177 +414,6 @@ function RepDashboard() {
           </form>
         </section>
       )}
-
-      {/* reps modal for lower than lg screen */}
-      {selectedRep ? (
-        <div className="fixed top-0 left-0 size-full bg-black/50 z-100 lg:hidden flex pt-[50px] justify-center px-[10px] overflow-auto">
-          <div className="flex flex-col text-[14px] bg-white rounded-[1rem] min-w-[280px] max-w-[60%] w-full h-fit overflow-hidden">
-            <div className="flex items-center justify-between gap-[10px] p-[15px] md:p-[20px] border-b border-b-gray-300">
-              <h3 className="font-bold text-[18px]">
-                Rep - {selectedRep?.name}
-              </h3>
-              <button
-                className="flex items-center justify-center size-[25px] text-[20px]"
-                onClick={() => setSelectedRep(null)}
-              >
-                <FontAwesomeIcon icon={faXmark} />
-              </button>
-            </div>
-
-            <div className="flex flex-1 min-h-[60vh] p-[15px] md:p-[20px] flex-col overflow-auto">
-              <h3 className="mb-[10px] font-bold text-[20px] flex gap-[5px] flex-wrap">
-                Rep - {selectedRep?.name}
-                <button
-                  onClick={(e) =>
-                    navigator.clipboard.writeText(selectedRep.link).then(() => {
-                      e.target.innerHTML = "Copied";
-                      setTimeout(() => {
-                        e.target.innerHTML = "Copy Link for Client";
-                      }, 1000);
-                    })
-                  }
-                  className="bg-red-600 text-white text-[14px] py-[5px] px-[10px] rounded-[10px]"
-                >
-                  Copy Link for Client
-                </button>
-              </h3>
-              <p className="mb-[30px] text-[14px]">
-                <span className="font-semibold">Email: </span>
-                <span>{selectedRep.email}</span>
-              </p>
-              <p className="mb-[20px] text-[18px] font-semibold">
-                <span>Applications: </span>
-                <span className="bg-red-600 text-[14px] p-[5px] rounded-[5px] text-white inline-flex items-center justify-center w-fit max-h-[25px] min-w-[25px]">
-                  {(selectedRep.applications || []).length}
-                </span>
-              </p>
-              <div className="overflow-auto w-full grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-[10px]">
-                {(selectedRep.applications || []).map((application, index) => (
-                  <div
-                    onClick={() => setSelectedApplication(application)}
-                    key={index}
-                    className="flex flex-col gap-[5px] border border-gray-300 overflow-hidden rounded-[0.5rem] p-[15px] cursor-pointer relative group"
-                  >
-                    <span className="absolute bottom-0 left-0 w-full bg-black/50 z-1 flex items-center justify-center text-white text-[16px] transform-[translateY(100%)] transition-[transform] duration-300 group-[:hover]:transform-[translateY(0)]">
-                      Click to View
-                    </span>
-                    <p>
-                      <strong>Submitted By: </strong>
-                      {application?.submitted_by?.email}
-                    </p>
-                    <p>
-                      <strong>Business Name: </strong>
-                      <Link
-                        to={application?.business?.website}
-                        className="text-red-600 underline"
-                      >
-                        {application?.business?.name}
-                      </Link>
-                    </p>
-                    <p>
-                      <strong>Owner Email: </strong>
-                      {application?.owner?.email}
-                    </p>
-                    <p>
-                      <strong>Partner Email: </strong>
-                      {application?.partner?.email}
-                    </p>
-                  </div>
-                ))}
-                {/* <table className="w-full border-collapse text-[14px]">
-                  <thead>
-                    <tr>
-                      <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                        #
-                      </th>
-                      <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                        Submitted By
-                        <br />
-                        (Email)
-                      </th>
-                      <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                        Business
-                        <br />
-                        Name & website
-                      </th>
-                      <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                        Owner
-                        <br />
-                        Email
-                      </th>
-                      <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                        Partner
-                        <br />
-                        Email
-                      </th>
-                      <th className="p-[15px] whitespace-nowrap border border-gray-300">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(selectedRep?.applications || []).length ? (
-                      <>
-                        {(selectedRep?.applications || []).map(
-                          (application, index) => (
-                            <tr key={index}>
-                              <td className="border border-gray-300 py-[5px] px-[10px]">
-                                {index + 1}
-                              </td>
-                              <td className="border border-gray-300 py-[5px] px-[10px]">
-                                {application?.submitted_by?.email}
-                              </td>
-                              <td className="border border-gray-300 py-[5px] px-[10px]">
-                                <div className="flex items-center gap-[5px] flex-wrap">
-                                  <p className="m-0">
-                                    {application?.business?.name}
-                                  </p>
-                                  <Link
-                                    className="text-red-600 underline"
-                                    target="_blank"
-                                    to={application?.business?.website}
-                                  >
-                                    View Business
-                                  </Link>
-                                </div>
-                              </td>
-                              <td className="border border-gray-300 py-[5px] px-[10px]">
-                                {application?.owner?.email}
-                              </td>
-                              <td className="border border-gray-300 py-[5px] px-[10px]">
-                                {application?.partner?.email || "-"}
-                              </td>
-                              <td className="border border-gray-300 py-[5px] px-[10px]">
-                                <button
-                                  onClick={() =>
-                                    setSelectedApplication(application)
-                                  }
-                                  className="flex items-center justify-center"
-                                >
-                                  <FontAwesomeIcon icon={faEye} />
-                                </button>
-                              </td>
-                            </tr>
-                          )
-                        )}
-                      </>
-                    ) : (
-                      <tr>
-                        <td
-                          className="p-[10px] text-center font-bold border border-gray-300"
-                          colSpan={6}
-                        >
-                          No Records Found
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table> */}
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       {/* appllications modal */}
       {selectedApplication ? (
@@ -651,6 +550,56 @@ function RepDashboard() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      ) : null}
+
+      {/* settings modal */}
+      {viewSettingModal ? (
+        <div className="fixed top-0 left-0 size-full bg-black/50 z-100 flex pt-[50px] justify-center px-[10px]">
+          <div className="flex flex-col text-[14px] bg-white rounded-[1rem] min-w-[300px] max-w-[60%] w-full max-h-[calc(100vh-100px)] h-fit pb-[20px] overflow-hidden">
+            <div className="flex items-center justify-between gap-[10px] p-[20px] border-b border-b-gray-300">
+              <h3 className="font-bold text-[18px]">Settings</h3>
+              <button
+                className="flex items-center justify-center size-[25px] text-[20px]"
+                onClick={() => setViewSettingModal(false)}
+              >
+                <FontAwesomeIcon icon={faXmark} />
+              </button>
+            </div>
+
+            <form
+              onSubmit={passwordChangeHandler}
+              className="overflow-auto p-[20px] flex items-center flex-col gap-[2rem]"
+            >
+              <h3 className="text-[20px] font-bold">Change Password</h3>
+              <FloatingInput
+                name="old_password"
+                placeholder="Current Password"
+                type="password"
+                required
+              />
+              <FloatingInput
+                name="new_password"
+                placeholder="New Password"
+                type="password"
+                required
+              />
+              <FloatingInput
+                name="confirm_password"
+                placeholder="Confirm Password"
+                type="password"
+                required
+              />
+              <Button
+                disabled={isChangingPassword}
+                type="submit"
+                className="self-end mt-[10px] flex items-center gap-[10px]"
+              >
+                <span>Change Password</span>
+                <span className="in-disabled:flex hidden size-[20px] rounded-full border-[3px] border-e-transparent border-white animate-spin"></span>
+              </Button>
+            </form>
           </div>
         </div>
       ) : null}

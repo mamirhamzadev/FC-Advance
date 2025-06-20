@@ -3,6 +3,7 @@ import LOADER from "../assets/loader.gif";
 
 // Breadcrumb section image
 import BREADCRUMB_IMAGE from "../assets/breadcrum-img.jpeg";
+import UPLOADING_ANIMATION from "../assets/uploading-anim.gif";
 
 // Home page images...
 import CROUSAL_IMG_1 from "../assets/home-page/crousal-img-1.jpeg";
@@ -62,4 +63,5 @@ export {
   FUNDING_SOLUTIONS_DECLINED_SECTION,
   MERCHANT_CASH_ADVANCE_IMG,
   BUSINESS_TERM_LOANS_IMG,
+  UPLOADING_ANIMATION,
 };

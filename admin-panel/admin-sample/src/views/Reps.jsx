@@ -203,7 +203,7 @@ const Reps = () => {
                 <div className="row">
                   <div className="col-12 me-5 d-flex justify-content-end">
                     <ul className="nav nav-pills">
-                      <li className="me-3">
+                      <li className="me-3 mb-3">
                         <button
                           onClick={() => handleAddUpdateButton()}
                           className="btn btn-icon bg-primary text-white plan-action-btn w-100 py-2 px-5"
@@ -212,22 +212,31 @@ const Reps = () => {
                           Add Rep
                         </button>
                       </li>
-                      <li className="d-flex align-items-center justify-content-center">
+                      <li className="me-3 mb-3">
                         <button
                           title="Copy Rep link"
                           onClick={(e) =>
-                            navigator.clipboard.writeText(adminRep.link)
+                            navigator.clipboard
+                              .writeText(adminRep.link)
+                              .then(() => {
+                                e.target.innerHTML = "Copied";
+                                setTimeout(() => {
+                                  e.target.innerHTML = "Copy Personal Rep Link";
+                                }, 2000);
+                              })
                           }
-                          className="border-0 bg-transparent d-flex align-items-center justify-content-center h-100"
+                          className="btn btn-icon bg-primary text-white plan-action-btn w-100 py-2 px-5"
                         >
-                          <i className="fa fa-copy text-primary fs-2"></i>
+                          <span>Copy Personal Rep Link</span>
                         </button>
+                      </li>
+                      <li className="me-3 mb-3">
                         <button
                           title="View Rep stats"
                           onClick={() => handleViewRepsButton(adminRep)}
-                          className="border-0 bg-transparent d-flex align-items-center justify-content-center h-100"
+                          className="btn btn-icon bg-primary text-white plan-action-btn w-100 py-2 px-5"
                         >
-                          <i className="fa fa-eye text-primary fs-2"></i>
+                          View Personal Rep Stats
                         </button>
                       </li>
                     </ul>
