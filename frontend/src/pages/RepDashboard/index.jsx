@@ -189,6 +189,13 @@ function RepDashboard() {
       });
   };
 
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center py-[100px]">
+        <span className="animate-spin flex size-[30px] rounded-full border-[3px] border-black border-b-transparent"></span>
+      </div>
+    );
+
   return (
     <>
       {isAuthorized ? (

@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 dotenv.config();
+import assetsRouter from "./routes/assets.js";
 import adminRouter from "./routes/admins.js";
 import ApplicationRouter from "./routes/applications.js";
 import RepsRouter from "./routes/reps.js";
@@ -19,8 +20,8 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: "*" }));
-app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
+app.use("/uploads", assetsRouter);
 app.use("/api/admins", adminRouter);
 app.use("/api/applications", ApplicationRouter);
 app.use("/api/reps", RepsRouter);
