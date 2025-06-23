@@ -8,6 +8,7 @@ import { ToastContainer } from "react-toastify";
 import NotFound from "./pages/NotFound";
 
 axios.defaults.baseURL = "https://fc-advance-api.single-solution.dev/";
+// axios.defaults.baseURL = "http://localhost:3000";
 axios.interceptors.request.use((config) => {
   config.headers.Authorization = `Bearer ${
     localStorage.getItem("rep-token") || ""

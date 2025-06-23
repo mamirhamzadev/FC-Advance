@@ -3,7 +3,6 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { InputSwitch } from "primereact/inputswitch";
 import { convertToDate } from "../../utils/helpers";
-import { Link } from "react-router-dom";
 
 const capitalizeFirstLetter = (text) => {
   if (typeof text !== "string" || !text.length) return text; // Check if text is a string and not empty
@@ -98,13 +97,13 @@ const PlainDataTable = React.memo((props) => {
           >
             Copy Link
           </button>
-          <Link
-            to={value}
+          <a
+            href={value}
             target="_blank"
             className="text-start d-flex align-items-center text-primary"
           >
             Visit Instead
-          </Link>
+          </a>
         </div>
       );
     } else if (columnField === "isFollowUpRequired") {
@@ -137,10 +136,7 @@ const PlainDataTable = React.memo((props) => {
     } else if (columnField === "description") {
       return value && value.length > 50 ? `${value.slice(0, 50)}...` : value;
     }
-
-    return value !== undefined || value !== null || value !== NaN
-      ? value
-      : "N/A";
+    return value.toString() ? value : "N/A";
   };
 
   const renderColumns = () => {

@@ -54,26 +54,25 @@ export const update = async (req, res) => {
 
     if (
       user.profileImage !== payload?.profileImage ||
-      req?.file?.path !== user.profileImage
+      !user.profileImage.includes(req?.file?.filename)
     ) {
       try {
         fs.unlinkSync(path.join(process.cwd(), user.profileImage));
       } catch (e) {}
     }
+
     user.name = payload?.name;
     user.username = payload?.username;
     user.email = payload?.email;
-    user.profileImage = req?.file?.path || payload?.profileImage;
+    user.profileImage = req?.file?.filename
+      ? `uploads?file=${req?.file?.filename}`
+      : payload?.profileImage;
     await user.save();
     return makeRes(res, "Admin updated successfully", OK, {
       profile: req.user,
     });
   } catch (e) {
-    return makeRes(
-      res,
-      "Something went wrong, please refresh and try again",
-      SERVER_ERROR
-    );
+    return makeRes(res, e.message, SERVER_ERROR);
   }
 };
 

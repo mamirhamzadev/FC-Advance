@@ -171,11 +171,14 @@ const Reps = () => {
       }
 
       const blob = await response.blob();
+      let fileName = media.split("=");
+      fileName[0] = "";
+      fileName = fileName.filter((part) => !!part).join("=");
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
 
       link.href = url;
-      link.setAttribute("download", media.split("\\")[1]);
+      link.setAttribute("download", fileName);
       document.body.appendChild(link);
       link.click();
       link.remove();

@@ -7,7 +7,6 @@ import assetsRouter from "./routes/assets.js";
 import adminRouter from "./routes/admins.js";
 import ApplicationRouter from "./routes/applications.js";
 import RepsRouter from "./routes/reps.js";
-import path from "path";
 
 mongoose
   .connect(process.env.MONGO_URI)

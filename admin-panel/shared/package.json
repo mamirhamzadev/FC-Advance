@@ -7,7 +7,10 @@
 		"lottie-web": "^5.12.2",
 		"primereact": "^10.9.5",
 		"react": "^19.1.0",
+		"react-bootstrap": "^2.10.10",
 		"react-lazy-load-image-component": "^1.6.3",
+		"react-router-dom": "^7.6.2",
+		"react-toastify": "^11.0.5",
 		"yup": "^1.6.1"
 	}
 }

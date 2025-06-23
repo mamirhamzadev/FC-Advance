@@ -5,6 +5,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import useToast from "../../../shared/store/hooks/useToast";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const { notify } = useToast();
@@ -55,27 +56,30 @@ const Dashboard = () => {
                 <div className="card-body mt-n10">
                   <div className="mt-n20 position-relative">
                     <div className="row g-3 g-lg-6 justify-content-center">
-                      <DashboardInfoCard
-                        title="Reps"
-                        icon="fa-headset"
-                        count={data?.reps || 0}
-                        page="reps"
-                        isFetching={loading}
-                      />
-                      <DashboardInfoCard
-                        title="Applications"
-                        icon="fa-clipboard-list"
-                        count={data?.applications || 0}
-                        page="applications"
-                        isFetching={loading}
-                      />
-                      <DashboardInfoCard
-                        title="Users"
-                        icon="fa-user"
-                        count={0}
-                        page="users"
-                        isFetching={loading}
-                      />
+                      <Link to={"/reps"} className="col-md-3">
+                        <DashboardInfoCard
+                          title="Reps"
+                          icon="fa-headset"
+                          count={data?.reps || 0}
+                          isFetching={loading}
+                        />
+                      </Link>
+                      <Link to={"/applications"} className="col-md-3">
+                        <DashboardInfoCard
+                          title="Applications"
+                          icon="fa-clipboard-list"
+                          count={data?.applications || 0}
+                          isFetching={loading}
+                        />
+                      </Link>
+                      <Link to={"/users"} className="col-md-3">
+                        <DashboardInfoCard
+                          title="Users"
+                          icon="fa-user"
+                          count={0}
+                          isFetching={loading}
+                        />
+                      </Link>
                     </div>
                   </div>
                 </div>

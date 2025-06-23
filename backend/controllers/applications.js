@@ -76,7 +76,7 @@ export const create = async (req, res) => {
       const file = files.find((file) => file.fieldname === name);
       let url = "";
       if (!file && payload?.[name]) url = payload[name];
-      else if (file) url = file.path;
+      else if (file) url = `uploads?file=${file.filename}`;
       return url;
     });
     payload = { ...payload, media, is_applied: true };

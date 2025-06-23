@@ -106,7 +106,7 @@ export const sendMail = async (to, subject, template_name, jsonData) => {
 };
 
 const storage = multer.diskStorage({
-  destination: "./uploads/",
+  destination: "./assets/uploads/",
   filename: function (req, file, cb) {
     cb(null, Date.now() + "-" + file.originalname.split(" ").join("-"));
   },
