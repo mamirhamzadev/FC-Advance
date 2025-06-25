@@ -4,11 +4,10 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import useToast from "../../../shared/store/hooks/useToast";
+import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
-  const { notify } = useToast();
   const profile = useSelector((state) => state?.profile?.profile);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
@@ -17,7 +16,7 @@ const Dashboard = () => {
     axios
       .get("/api/admins/dashboard")
       .then((res) => setData({ ...res?.data }))
-      .catch((err) => notify("error", err?.msg))
+      .catch((err) => toast.error(err?.msg))
       .finally(() => setLoading(false));
   }, []);
 
@@ -40,8 +39,7 @@ const Dashboard = () => {
             <div className="col-xl-12 mb-5 mb-xl-10">
               <div className="card card-flush h-xl-100">
                 <div
-                  className="card-header justify-content-center rounded bgi-no-repeat bgi-size-cover bgi-position-y-bottom bgi-position-x-center align-items-start h-250px"
-                  style={{ background: "#d21825" }}
+                  className="card-header justify-content-center bg-primary rounded bgi-no-repeat bgi-size-cover bgi-position-y-bottom bgi-position-x-center align-items-start h-250px"
                 >
                   <h3 className="card-title align-items-start flex-column text-white pt-15 mb-10 text-center ">
                     <span className="d-block fs-2x fw-bolder mb-3 w-100">

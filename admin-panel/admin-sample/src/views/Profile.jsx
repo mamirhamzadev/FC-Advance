@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { updateProfileValidationSchema } from "../../../shared/utils/validations/yupValidations";
 import ImageLoader from "../../../shared/styles/loaders/ImageLoader";
-import useToast from "../../../shared/store/hooks/useToast";
+import { toast } from "react-toastify";
 import { useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
@@ -12,7 +12,6 @@ import { setProfile } from "../redux/actions/profile";
 
 const Profile = () => {
   const dispatch = useDispatch();
-  const { notify } = useToast();
   const hiddenImageFileInput = useRef();
 
   const {
@@ -36,7 +35,7 @@ const Profile = () => {
 
   useEffect(() => {
     axios
-    .get("/api/admins/profile")
+      .get("/api/admins/profile")
       .then((res) => {
         const profile = res?.data?.profile;
         setUserProfileFormData(profile);
@@ -49,7 +48,7 @@ const Profile = () => {
         setLoading(false);
       })
       .catch((err) => {
-        notify("error", err?.msg);
+        toast.error(err?.msg);
         setValue("_id", "");
         setValue("name", "");
         setValue("email", "");
@@ -70,12 +69,12 @@ const Profile = () => {
     axios
       .post("/api/admins/update", formDataToSend)
       .then((res) => {
-        notify("success", res?.msg);
+        toast.success(res?.msg);
         setIsUpdatingUser(false);
         setLoading(true);
       })
       .catch((err) => {
-        notify("error", err?.msg);
+        toast.error(err?.msg);
         setIsUpdatingUser(false);
         setIsEmailAlreadyExists(!!err?.data?.email);
         setIsUsernameAlreadyExists(!!err?.data?.username);
@@ -104,7 +103,7 @@ const Profile = () => {
                 <ul className="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder">
                   <li className="nav-item mt-2">
                     <a
-                      className="nav-link text-active-primary ms-0 me-10 py-5 active"
+                      className="nav-link text-active-primary border-primary ms-0 me-10 py-5 active"
                       href="#"
                     >
                       Personal Information
@@ -282,7 +281,7 @@ const Profile = () => {
 
                 <div className="card-footer d-flex justify-content-end py-6 px-9">
                   <button
-                    className="btn fw-bolder change-btn btn-lg btn-dark w-100 mb-5"
+                    className="btn btn-primary fw-bolder btn-lg w-100 mb-5"
                     name="edit_password"
                     onClick={handleSubmit(handleUpdateUser)}
                     disabled={isUpdatingUser}

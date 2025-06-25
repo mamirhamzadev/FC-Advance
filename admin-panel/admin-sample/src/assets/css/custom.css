@@ -722,6 +722,23 @@ table td {
   padding: 0;
 }
 
+.swal2-cancel.swal2-styled {
+  transition: 0.3s ease;
+  background: #dde2e6 !important;
+  color: #000 !important;
+}
+.swal2-cancel.swal2-styled:hover {
+  background: #747474 !important;
+  color: #fff !important;
+}
+.swal2-confirm.swal2-styled {
+  transition: 0.3s ease;
+  background: #747474 !important;
+}
+.swal2-confirm.swal2-styled:hover {
+  background: #000 !important;
+}
+
 .modal-scrollable-body {
   max-height: calc(85vh - 120px);
   overflow-y: auto;

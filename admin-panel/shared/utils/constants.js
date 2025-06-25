@@ -26,7 +26,7 @@ export const SWAL_VARIANT_CONFIGS = {
 			text: "Do you really want to delete this Record permanently?",
 			icon: "warning",
 			showCancelButton: true,
-			confirmButtonColor: "#DD6B55",
+			confirmButtonColor: "#374151",
 			confirmButtonText: "Yes, delete it!",
 			cancelButtonText: "No, cancel!",
 			reverseButtons: true,

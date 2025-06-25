@@ -1,11 +1,9 @@
 import { useState } from "react";
-import useToast from "../../../../../shared/store/hooks/useToast";
+import { toast } from "react-toastify";
 import axios from "axios";
 import ProcessingModal from "../../../../../shared/styles/modals/ProcessingModal";
 
 const ForgotPassword = (props) => {
-  const { notify } = useToast();
-
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
   const [showOtpInput, setShowOtpInput] = useState(false);
 
@@ -20,11 +18,11 @@ const ForgotPassword = (props) => {
       .post(api_route, Object.fromEntries(payload))
       .then((res) => {
         if (showOtpInput) props.setCurrentComponent("login");
-        notify("success", res?.msg);
+        toast.success(res?.msg);
         setShowOtpInput(!showOtpInput);
       })
       .catch((err) => {
-        notify("error", err?.msg);
+        toast.error(err?.msg);
         setShowOtpInput(showOtpInput ? true : false);
       })
       .finally(() => setIsSubmittingRequest(false));

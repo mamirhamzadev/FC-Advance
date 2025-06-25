@@ -4,17 +4,14 @@ import Modal from "react-bootstrap/Modal";
 import Swal from "sweetalert2";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import useToast from "../../../shared/store/hooks/useToast";
+import { toast } from "react-toastify";
 import { createDeveloperValidationSchema } from "../../../shared/utils/validations/yupValidations";
 import { SWAL_VARIANT_CONFIGS } from "../../../shared/utils/constants";
 import PlainDataTable from "../../../shared/styles/dataTables/PlainDataTable";
 import ProcessingModal from "../../../shared/styles/modals/ProcessingModal";
 import axios from "axios";
-import { useDispatch } from "react-redux";
 
 const Users = () => {
-  const { notify } = useToast();
-
   const [showAddUpdateModal, setShowAddUpdateModal] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [isUpdatingRecord, setIsUpdatingRecord] = useState(false);
@@ -61,7 +58,7 @@ const Users = () => {
       })
       .catch((err) => {
         setUsers([]);
-        notify("error", err?.msg);
+        toast.error(err?.msg);
         setIsFetchingUsers(false);
       });
   }, [isFetchingUsers]);
@@ -96,7 +93,7 @@ const Users = () => {
           })
           .catch((err) => {
             Swal.fire(SWAL_VARIANT_CONFIGS?.update?.before);
-            notify("error", err?.msg);
+            toast.error(err?.msg);
           });
       }
     });
@@ -105,7 +102,7 @@ const Users = () => {
   const handleSubmitUserForm = async (data) => {
     setShowProgressModal(true);
     setTimeout(() => {
-      notify("success", isUpdatingRecord ? "User Updated" : "User Added");
+      toast.success(isUpdatingRecord ? "User Updated" : "User Added");
       setShowProgressModal(false);
       setShowAddUpdateModal(false);
       setIsFetchingUsers(true);

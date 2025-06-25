@@ -189,6 +189,19 @@ function RepDashboard() {
       });
   };
 
+  const normalizeKey = (key = "") => {
+    key = key.replace("_", " ").replace("-", " ");
+    return key
+      .split(" ")
+      .map((part) =>
+        part
+          .split("")
+          .map((char, index) => (index === 0 ? char.toUpperCase() : char))
+          .join("")
+      )
+      .join(" ");
+  };
+
   if (isLoading)
     return (
       <div className="flex items-center justify-center py-[100px]">
@@ -456,7 +469,7 @@ function RepDashboard() {
                 {Object.keys(selectedApplication?.business || {}).map(
                   (key, index) => (
                     <div className="flex gap-[10px]" key={index}>
-                      <h3 className="font-bold">{key}:</h3>
+                      <h3 className="font-bold">{normalizeKey(key)}:</h3>
                       <p>
                         {DATE_FIELDS.includes(key)
                           ? new Date(
@@ -473,7 +486,7 @@ function RepDashboard() {
                 {Object.keys(selectedApplication?.owner || {}).map(
                   (key, index) => (
                     <div className="flex gap-[10px]" key={index}>
-                      <h3 className="font-bold">{key}:</h3>
+                      <h3 className="font-bold">{normalizeKey(key)}:</h3>
                       <p>
                         {typeof selectedApplication?.owner?.[key] === "string"
                           ? DATE_FIELDS.includes(key)
@@ -509,7 +522,7 @@ function RepDashboard() {
                           return null;
                         return (
                           <div className="flex gap-[10px]" key={index}>
-                            <h3 className="font-bold">{key}:</h3>
+                            <h3 className="font-bold">{normalizeKey(key)}:</h3>
                             <p>
                               {typeof selectedApplication?.partner?.[key] ===
                               "string"

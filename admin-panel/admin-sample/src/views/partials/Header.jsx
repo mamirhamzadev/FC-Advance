@@ -202,7 +202,7 @@ const Header = () => {
                   </ul>
                   <div className="flex-shrink-0 p-4 p-lg-0  me-lg-2">
                     <button
-                      className="btn btn-sm btn-light-danger fw-bolder w-100 w-lg-auto  btn-hover-scale"
+                      className="btn btn-sm btn-light-success fw-bolder w-100 w-lg-auto  btn-hover-scale"
                       onClick={() => {
                         localStorage.removeItem("token");
                         navigate("/auth");

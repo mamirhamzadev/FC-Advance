@@ -18,7 +18,7 @@ export const create = async (req, res) => {
     if (application)
       return makeRes(
         res,
-        "Your application has already been submitted",
+        "Your application has already been submitted! Please contact us for furthur details.",
         CREATED,
         {
           is_submitted: true,
@@ -173,10 +173,15 @@ export const create = async (req, res) => {
           .join(""),
       }
     );
-    return makeRes(res, "Application submitted successfully", OK, {
-      is_submitted: true,
-      company,
-    });
+    return makeRes(
+      res,
+      "Application submitted successfully!<br/>You have been recieved an email in which you can see your submitted responses. In case of any query, please contact us for assisstance.",
+      OK,
+      {
+        is_submitted: true,
+        company,
+      }
+    );
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
   }
@@ -206,7 +211,7 @@ export const checkApplicationExistance = async (req, res) => {
     if (application)
       return makeRes(
         res,
-        "Your Application has already been submitted",
+        "Your application has already been submitted! Please contact us for furthur details.",
         CREATED,
         {
           is_submitted: true,

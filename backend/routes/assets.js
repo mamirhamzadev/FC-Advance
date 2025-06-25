@@ -10,13 +10,12 @@ router.get("/", async (req, res) => {
   const filename = req.query?.file;
   if (!filename) return makeRes(res, "Missing parameters!", BAD_REQUEST);
   try {
-    const fileFullPath = path.join(
-      process.cwd(),
-      "assets",
-      "uploads",
-      filename
-    );
-    const isFileExists = fs.existsSync(fileFullPath);
+    let fileFullPath = path.join(process.cwd(), "assets", "uploads", filename);
+    let isFileExists = fs.existsSync(fileFullPath);
+    if (!isFileExists) {
+      fileFullPath = path.join(process.cwd(), "assets", filename);
+      isFileExists = fs.existsSync(fileFullPath);
+    }
     if (!isFileExists) return makeRes(res, "Missing media", BAD_REQUEST);
     const sourceFile = fs.readFileSync(fileFullPath);
     res.end(sourceFile);

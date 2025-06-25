@@ -10,6 +10,7 @@ function FloatingInput({
   className,
   onChange,
   value,
+  max,
   inputClassName,
 }) {
   const [_value, setValue] = useState(value || "");
@@ -22,6 +23,7 @@ function FloatingInput({
         type={type || "text"}
         name={name}
         id={name}
+        max={max}
         onChange={(e) => {
           setValue(e.target.value);
           onChange?.(e);

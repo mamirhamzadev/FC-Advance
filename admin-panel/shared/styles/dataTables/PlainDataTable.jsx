@@ -102,7 +102,7 @@ const PlainDataTable = React.memo((props) => {
             target="_blank"
             className="text-start d-flex align-items-center text-primary"
           >
-            Visit Instead
+            <u>Visit Instead</u>
           </a>
         </div>
       );

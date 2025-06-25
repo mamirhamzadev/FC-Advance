@@ -179,12 +179,17 @@ function Apply() {
         <>
           <div className="wrapper flex flex-col justify-self-center !w-[calc(100%-20px)] !mx-[10px] mt-[30px] mb-[30px] md:mb-[80px] shadow-[0_0_10px_#cccccc] py-[30px] md:!px-[50px] !px-[20px]">
             {isSubmitted ? (
-              <div className="flex items-center justify-center flex-col gap-[15px] py-[50px] font-bold">
+              <div className="flex items-center justify-center flex-col gap-[30px] font-bold">
                 <span className="rounded-full size-[70px] border flex items-center justify-center text-[30px]">
                   <FontAwesomeIcon icon={faInfo} />
                 </span>
-                <p className="text-[16px]">{message}!</p>
+                <p className="text-[16px] text-center">
+                  {message.split("<br/>").map((part, index) => (
+                    <p key={index} className="text-center">{part}</p>
+                  ))}
+                </p>
                 <Button
+                  className="!mt-[10px]"
                   text={
                     message === "Application submitted successfully"
                       ? "Back to Home"
@@ -248,6 +253,7 @@ function Apply() {
                               name={field.name}
                               placeholder={field.placeholder}
                               type={field.type}
+                              max={field?.max || ""}
                               onChange={field.onChange}
                               required={field.required}
                             />
@@ -262,6 +268,7 @@ function Apply() {
                               name={field.name}
                               onChange={field.onChange}
                               placeholder={field.placeholder}
+                              max={field?.max || ""}
                               type={field.type}
                               required={field.required}
                             />
@@ -278,6 +285,7 @@ function Apply() {
                               name={field.name}
                               onChange={field.onChange}
                               placeholder={field.placeholder}
+                              max={field?.max || ""}
                               type={field.type}
                               required={field.required}
                             />
@@ -289,36 +297,127 @@ function Apply() {
                           Terms of USe
                         </h3>
                         <p className="text-[12px]">
-                          Lorem ipsum dolor sit amet consectetur adipisicing
-                          elit. Aliquam eveniet sed nulla ipsa alias tenetur
-                          dolor. Dolorum adipisci ab doloribus rem, dolores
-                          nobis praesentium autem facilis ipsum quibusdam
-                          doloremque fuga, vitae nisi, laborum laudantium.
-                          Nostrum magnam quam, perspiciatis a possimus cum eius
-                          id pariatur sapiente porro at ad corporis repudiandae
-                          provident laboriosam perferendis consequuntur fugiat?
-                          Quisquam assumenda tempora nemo alias odio quo, nam
-                          esse veniam sint iure recusandae repudiandae, dolor
-                          numquam aliquam. Ratione nemo nam repudiandae
-                          necessitatibus consequatur eius corporis sit quo,
-                          laboriosam architecto dolor veniam voluptas, placeat
-                          possimus expedita quia maxime perspiciatis similique
-                          distinctio iusto minima. Aliquid, debitis voluptate
-                          eius iusto dolore dolorum nulla repellat alias totam
-                          rem sed mollitia quaerat blanditiis natus inventore
-                          autem ex laudantium distinctio molestias ratione
-                          reprehenderit deleniti. Quia, est? Itaque vero odit
-                          nam tempore consequuntur temporibus repellat ratione
-                          veritatis quia esse architecto, impedit corrupti
-                          sapiente expedita amet culpa totam ullam incidunt
-                          commodi saepe dolore! Temporibus beatae aliquid labore
-                          itaque soluta, adipisci nihil praesentium, doloremque
-                          voluptatum culpa aperiam distinctio dolorum. Corporis,
-                          quod facere. Ut incidunt reprehenderit, recusandae in
-                          rem sapiente cum assumenda quo nihil beatae ab nisi
-                          ducimus eveniet ipsum quaerat deleniti aspernatur
-                          neque veniam corrupti nemo aperiam quae quod eligendi
-                          totam! Repellat, quasi recusandae!
+                          <p className="font-bold">1. Introduction</p>
+                          <p>
+                            Welcome to Business fcadvance.com. These Terms and
+                            Conditions govern your use of our website and
+                            services. By accessing and using our website, you
+                            agree to be bound by these Terms and Conditions. If
+                            you do not agree with any part of these terms, you
+                            must not use our website.
+                          </p>
+                          <p className="font-bold">2. Use of Our Website</p>
+                          <p>
+                            (a) You must be at least 18 years old to use our
+                            website and services. By using our website, you
+                            confirm that you are at least 18 years old.
+                          </p>
+                          <p>
+                            (b) You may not use our website for any illegal or
+                            unauthorized purposes. You agree to comply with all
+                            applicable laws and regulations.
+                          </p>
+                          <p>
+                            (c) We reserve the right to modify, suspend, or
+                            discontinue any part of our website, services, or
+                            content without prior n
+                          </p>
+                          <p>
+                            (d) Your use of any information or materials on this
+                            website is entirely at your own risk, for which we
+                            shall not be liable.
+                          </p>
+                          <p className="font-bold">
+                            3. Intellectual Property Rights
+                          </p>
+                          <p>
+                            (a) All content on this website, including but not
+                            limited to text, graphics, logos, images, videos,
+                            and software, is the property of Business (Your
+                            Company Name) and is protected by copyright and
+                            other intellectual property laws.
+                          </p>
+                          <p>
+                            (b) You may not reproduce, distribute, modify,
+                            transmit, or use any part of our website's content
+                            without our prior written consent.
+                          </p>
+                          <p className="font-bold">4. Privacy Policy</p>
+                          <p>
+                            (a) Our Privacy Policy outlines how we collect, use,
+                            and protect your personal information. By using our
+                            website, you consent to our Privacy Policy.
+                          </p>
+                          <p>
+                            (b) We do not share or sell your personal
+                            information to third parties.
+                          </p>
+                          <p className="font-bold">5. Disclaimer</p>
+                          <p>
+                            (a) The information provided on our website is for
+                            general informational purposes only. We make no
+                            warranties or representations about the accuracy,
+                            completeness, or reliability of the content.
+                          </p>
+                          <p>
+                            (b) We are not responsible for any damages or losses
+                            resulting from the use of our website or any
+                            information provided therein.
+                          </p>
+                          <p className="font-bold">
+                            6. Links to Third-Party Websites
+                          </p>
+                          <p>
+                            Our website may contain links to third-party
+                            websites. We do not endorse or have any control over
+                            the content or practices of these websites. Your use
+                            of third-party websites is at your own risk.
+                          </p>
+                          <p className="font-bold">
+                            7. Limitation of Liability
+                          </p>
+                          <p>
+                            To the extent permitted by law, Business (Your
+                            Company Name) shall not be liable for any direct,
+                            indirect, incidental, consequential, or special
+                            damages arising from or in any way related to your
+                            use of our website or services.
+                          </p>
+                          <p className="font-bold">8. Indemnification</p>
+                          <p>
+                            You agree to indemnify and hold harmless Business
+                            (Your Company Name), its officers, directors,
+                            employees, and affiliates, from any claims, losses,
+                            damages, liabilities, costs, or expenses (including
+                            legal fees) arising out of your use of our website
+                            or violation of these Terms and Conditions.
+                          </p>
+                          <p className="font-bold">
+                            9. Governing Law and Jurisdiction
+                          </p>
+                          <p>
+                            These Terms and Conditions shall be governed by and
+                            construed in accordance with the laws of [Your
+                            Jurisdiction]. Any disputes arising from or related
+                            to these terms shall be subject to the exclusive
+                            jurisdiction of the courts.
+                          </p>
+                          <p className="font-bold">
+                            10. Changes to Terms and Conditions
+                          </p>
+                          <p>
+                            We reserve the right to update or modify these Terms
+                            and Conditions at any time without prior notice.
+                            Your continued use of our website following the
+                            posting of any changes constitutes your acceptance
+                            of such changes.
+                          </p>
+                          <p className="font-bold">11. Contact Us</p>
+                          <p>
+                            If you have any questions or concerns about these
+                            Terms and Conditions, please contact us at
+                            info@fcadvance.com.
+                          </p>
                         </p>
                       </div>
                       <div className="flex gap-[20px] items-center justify-center">
@@ -483,6 +582,7 @@ function Apply() {
                     className="relative z-1 size-[150px] rounded-full"
                   />
                 </div>
+                <p className="text-gray-700 text-[14px] ">Uploading Data...</p>
               </div>
             </div>
           ) : null}

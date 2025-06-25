@@ -311,7 +311,7 @@ export const checkRepExistance = async (req, res) => {
     );
   try {
     const rep = await Reps.findOne({ _id: id });
-    console.log(rep)
+    console.log(rep);
     if (rep) return makeRes(res, "", OK, { envelopeId: rep._id });
     return makeRes(
       res,

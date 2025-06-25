@@ -21,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: "*" }));
 
 app.use("/uploads", assetsRouter);
+app.use("/assets", assetsRouter);
 app.use("/api/admins", adminRouter);
 app.use("/api/applications", ApplicationRouter);
 app.use("/api/reps", RepsRouter);

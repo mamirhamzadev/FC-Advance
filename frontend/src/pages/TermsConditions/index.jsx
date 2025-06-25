@@ -21,7 +21,7 @@ function TermsConditions() {
 
       <section className="wrapper pb-[50px] pt-[80px] md:pb-[80px] text-[14px] text-[#333] leading-[26px]">
         <h2 className="text-[26px] md:text-[40px] text-[#232323] mb-[30px] font-bold">
-          Privacy Policy
+          Terms & Conditions
         </h2>
 
         <p>Terms and Conditions - Business fcadvance.com</p>

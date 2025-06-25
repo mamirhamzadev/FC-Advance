@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import BreadCrumb from "./partials/BreadCrumb";
 import Modal from "react-bootstrap/Modal";
 import Swal from "sweetalert2";
-import useToast from "../../../shared/store/hooks/useToast";
+import { toast } from "react-toastify";
 import PlainDataTable from "../../../shared/styles/dataTables/PlainDataTable";
 import { handleFormDataInput } from "../../../shared/utils/helpers";
 import ProcessingModal from "../../../shared/styles/modals/ProcessingModal";
@@ -48,8 +48,6 @@ const FILE_NAMES = {
 const DATE_FIELDS = ["dob", "start_date"];
 
 const Application = () => {
-  const { notify } = useToast();
-
   const [formData, setFormData] = useState();
   const [applications, setApplications] = useState([]);
   const [isFetchingApplications, setIsFetchingApplications] = useState(true);
@@ -61,7 +59,7 @@ const Application = () => {
     axios
       .get("/api/applications/list?without_rep=1")
       .then((res) => setApplications(res?.data?.applications))
-      .catch((err) => notify(err?.msg))
+      .catch((err) => toast.error(err?.msg))
       .finally(() => setIsFetchingApplications(false));
   }, [isFetchingApplications]);
 
@@ -114,6 +112,19 @@ const Application = () => {
     } catch (error) {
       console.error("Download failed:", error);
     }
+  };
+
+  const normalizeKey = (key = "") => {
+    key = key.replace("_", " ").replace("-", " ");
+    return key
+      .split(" ")
+      .map((part) =>
+        part
+          .split("")
+          .map((char, index) => (index === 0 ? char.toUpperCase() : char))
+          .join("")
+      )
+      .join(" ");
   };
 
   return (
@@ -202,7 +213,9 @@ const Application = () => {
             <h2 className="my-5 pt-5">Business Information</h2>
             {Object.keys(formData?.business || {}).map((key, index) => (
               <div className="d-flex mb-4 gap-2" key={index}>
-                <h3 className="card-title fw-bold fs-5 m-0">{key}:</h3>
+                <h3 className="card-title fw-bold fs-5 m-0">
+                  {normalizeKey(key)}:
+                </h3>
                 <p className="mb-0">
                   {DATE_FIELDS.includes(key)
                     ? new Date(formData?.business?.[key]).toDateString()
@@ -213,7 +226,9 @@ const Application = () => {
             <h2 className="my-5 pt-5">Owner Information</h2>
             {Object.keys(formData?.owner || {}).map((key, index) => (
               <div className="d-flex mb-4 gap-2" key={index}>
-                <h3 className="card-title fw-bold fs-5 m-0">{key}:</h3>
+                <h3 className="card-title fw-bold fs-5 m-0">
+                  {normalizeKey(key)}:
+                </h3>
                 <p className="mb-0">
                   {typeof formData?.owner?.[key] === "string"
                     ? DATE_FIELDS.includes(key)
@@ -238,7 +253,9 @@ const Application = () => {
                     return null;
                   return (
                     <div className="d-flex mb-4 gap-2" key={index}>
-                      <h3 className="card-title fw-bold fs-5 m-0">{key}:</h3>
+                      <h3 className="card-title fw-bold fs-5 m-0">
+                        {normalizeKey(key)}:
+                      </h3>
                       <p className="mb-0">
                         {typeof formData?.partner?.[key] === "string"
                           ? DATE_FIELDS.includes(key)

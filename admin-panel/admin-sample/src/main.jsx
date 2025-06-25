@@ -1,6 +1,6 @@
 import { BrowserRouter } from "react-router-dom";
 import { createRoot } from "react-dom/client";
-import { ToastContainer } from "react-toastify";
+import { Slide, ToastContainer } from "react-toastify";
 import { PrimeReactProvider } from "primereact/api";
 import { QueryClient, QueryClientProvider } from "react-query";
 import App from "./App.jsx";
@@ -55,7 +55,18 @@ root.render(
     <Provider store={store}>
       <PrimeReactProvider>
         <BrowserRouter>
-          <ToastContainer />
+          <ToastContainer
+            autoClose={3000}
+            transition={Slide}
+            position="top-right"
+            hideProgressBar
+            closeOnClick
+            newestOnTop
+            rtl={false}
+            draggable
+            pauseOnHover
+            style={{ color: "#000000", fontWeight: "bold" }}
+          />
           <App />
         </BrowserRouter>
       </PrimeReactProvider>

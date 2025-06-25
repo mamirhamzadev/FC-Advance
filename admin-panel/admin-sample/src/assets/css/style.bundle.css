@@ -8019,7 +8019,7 @@ fieldset:disabled .btn {
 }
 
 .border-primary {
-	border-color: #d21825 !important;
+	border-color: #747474 !important;
 }
 
 .border-secondary {
@@ -31729,7 +31729,7 @@ fieldset:disabled .btn {
 }
 
 .bg-primary {
-	background-color: #d21825 !important;
+	background-color: #747474 !important;
 }
 
 .bg-primary.hoverable:hover {
@@ -33013,7 +33013,7 @@ fieldset:disabled .btn {
 }
 
 .text-primary {
-	color: #d21825 !important;
+	color: #747474 !important;
 }
 
 .text-inverse-primary {
@@ -33034,12 +33034,12 @@ fieldset:disabled .btn {
 
 .text-hover-primary:hover {
 	transition: color 0.2s ease, background-color 0.2s ease;
-	color: #d21825 !important;
+	color: #747474 !important;
 }
 
 .text-hover-primary:hover i {
 	transition: color 0.2s ease, background-color 0.2s ease;
-	color: #d21825 !important;
+	color: #747474 !important;
 }
 
 .text-hover-primary:hover .svg-icon svg [fill]:not(.permanent):not(g) {
@@ -33088,12 +33088,12 @@ fieldset:disabled .btn {
 
 .text-active-primary.active {
 	transition: color 0.2s ease, background-color 0.2s ease;
-	color: #d21825 !important;
+	color: #747474 !important;
 }
 
 .text-active-primary.active i {
 	transition: color 0.2s ease, background-color 0.2s ease;
-	color: #d21825 !important;
+	color: #747474 !important;
 }
 
 .text-active-primary.active .svg-icon svg [fill]:not(.permanent):not(g) {
@@ -40204,7 +40204,7 @@ a:hover {
 .btn.btn-primary {
 	color: #fff;
 	/* border-color: #1D165C; */
-	background-color: #C10105;
+	background-color: #747474;
 }
 
 .btn.btn-primary i {
@@ -40233,8 +40233,7 @@ a:hover {
 .btn.btn-primary:hover:not(.btn-active),
 .show>.btn.btn-primary {
 	color: #fff;
-	border-color: #C10105;
-	/* background-color: #1D165C !important; */
+	background-color: #000;
 }
 
 .btn-check:active+.btn.btn-primary i,
@@ -40635,7 +40634,7 @@ a:hover {
 .btn.btn-success {
 	color: #fff;
 	border-color: #3e4953;
-	background-color: #C10105;
+	background-color: #747474;
 }
 
 .btn.btn-success i {
@@ -40746,7 +40745,7 @@ a:hover {
 .show>.btn.btn-light-success {
 	color: #fff;
 	border-color: #3e4953;
-	background-color: #d21825 !important;
+	background-color: #747474 !important;
 }
 
 .btn-check:active+.btn.btn-light-success i,
@@ -41783,7 +41782,7 @@ a:hover {
 .btn.btn-dark {
 	color: #fff;
 	border-color: #d21825;
-	background-color: #C10105;
+	background-color: #747474;
 }
 
 .btn.btn-dark i {
@@ -54416,7 +54415,7 @@ code:not([class*="language-"]) {
 
 .badge-success {
 	color: #fff;
-	background-color: #d21825;
+	background-color: #747474;
 }
 
 .badge-light-success {

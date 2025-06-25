@@ -6,7 +6,6 @@ const DashboardInfoCard = (props) => {
           <span className="symbol-label" style={{ background: "none" }}>
             <span
               className={`fs-2qx fa ${props?.icon}`}
-              style={{ color: "#d21825" }}
             ></span>
           </span>
         </div>
@@ -15,7 +14,6 @@ const DashboardInfoCard = (props) => {
           <div className="symbol me-5 mb-8">
             <span
               className="fw-boldest d-block fs-2qx lh-1 mb-1"
-              style={{ color: "#d21825" }}
             >
               {(props?.count || 0).toLocaleString("en-US", {
                 minimumFractionDigits: 0,
@@ -29,7 +27,7 @@ const DashboardInfoCard = (props) => {
       </div>
 
       <div className="mt-10">
-        <h6 className="fw-bold fs-4" style={{ color: "#d21825" }}>
+        <h6 className="fw-bold fs-4">
           {props?.title}
         </h6>
       </div>

@@ -2,14 +2,12 @@ import BreadCrumb from "./partials/BreadCrumb";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import useToast from "../../../shared/store/hooks/useToast";
+import { toast } from "react-toastify";
 import { changePasswordValidationSchema } from "../../../shared/utils/validations/yupValidations";
 import { useEffect } from "react";
 import axios from "axios";
 
 const ChangePassword = () => {
-  const { notify } = useToast();
-
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -55,12 +53,12 @@ const ChangePassword = () => {
     axios
       .post("/api/admins/change-password", data)
       .then((res) => {
-        notify("success", res?.msg);
+        toast.success(res?.msg);
         setIsSubmittingRequest(false);
         reset({ oldPassword: "", newPassword: "", confirmPassword: "" });
       })
       .catch((err) => {
-        notify("error", err?.msg);
+        toast.error(err?.msg);
         setIsSubmittingRequest(false);
       });
   };
@@ -90,7 +88,7 @@ const ChangePassword = () => {
                 <ul className="nav nav-stretch nav-line-tabs nav-line-tabs-2x border-transparent fs-5 fw-bolder">
                   <li className="nav-item mt-2">
                     <a
-                      className="nav-link text-active-primary ms-0 me-10 py-5 active"
+                      className="nav-link text-active-primary ms-0 me-10 py-5 active border-primary"
                       href="#"
                     >
                       Change Password
@@ -260,7 +258,7 @@ const ChangePassword = () => {
                 </div>
                 <div className="card-footer d-flex justify-content-end py-6 px-9">
                   <button
-                    className="btn fw-bolder change-btn btn-lg btn-dark w-100 mb-5"
+                    className="btn btn-primary fw-bolder btn-lg w-100 mb-5"
                     name="edit_password"
                     onClick={handleSubmit(handleUpdatePassword)}
                     disabled={isSubmittingRequest}

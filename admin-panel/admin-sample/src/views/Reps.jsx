@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import BreadCrumb from "./partials/BreadCrumb";
 import Modal from "react-bootstrap/Modal";
 import Swal from "sweetalert2";
-import useToast from "../../../shared/store/hooks/useToast";
+import { toast } from "react-toastify";
 import PlainDataTable from "../../../shared/styles/dataTables/PlainDataTable";
 import { handleFormDataInput } from "../../../shared/utils/helpers";
 import ProcessingModal from "../../../shared/styles/modals/ProcessingModal";
@@ -48,8 +48,6 @@ const FILE_NAMES = {
 const DATE_FIELDS = ["dob", "start_date"];
 
 const Reps = () => {
-  const { notify } = useToast();
-
   const [formData, setFormData] = useState();
   const [showAddUpdateModal, setShowAddUpdateModal] = useState(false);
   const [showProgressModal, setShowProgressModal] = useState(false);
@@ -71,7 +69,7 @@ const Reps = () => {
         setReps(res?.data?.reps);
         setAdminRep(res?.data?.admin_rep);
       })
-      .catch((err) => notify(err?.msg))
+      .catch((err) => toast.error(err?.msg))
       .finally(() => setIsFetchingReps(false));
   }, [isFetchingReps]);
 
@@ -87,7 +85,7 @@ const Reps = () => {
     axios
       .get("/api/reps/get/" + item?._id)
       .then((res) => setFormData(res?.data?.rep))
-      .catch((err) => notify("error", err.msg))
+      .catch((err) => toast.error(err.msg))
       .finally(() => setIsFetchingRep(false));
   };
 
@@ -102,12 +100,12 @@ const Reps = () => {
         axios
           .delete("/api/reps/remove/" + data._id)
           .then((res) => {
-            notify("success", res?.msg);
+            toast.success(res?.msg);
             Swal.fire(SWAL_VARIANT_CONFIGS?.delete?.after);
             setIsFetchingReps(true);
           })
           .catch((err) => {
-            notify("error", err?.msg);
+            toast.error(err?.msg);
             Swal.fire(SWAL_VARIANT_CONFIGS?.delete?.before);
           });
       }
@@ -126,13 +124,11 @@ const Reps = () => {
       .post(api_url, Object.fromEntries(dataToSend))
       .then((res) => {
         setShowAddUpdateModal(false);
-        notify("success", res?.msg);
+        toast.success(res?.msg);
         setIsFetchingReps(true);
         setIsUpdatingRecord(false);
       })
-      .catch((err) => {
-        notify("error", err?.msg);
-      })
+      .catch((err) => toast.error(err?.msg))
       .finally(() => {
         setIsProcessingAddUpdate(false);
         setShowProgressModal(false);
@@ -188,6 +184,19 @@ const Reps = () => {
     }
   };
 
+  const normalizeKey = (key = "") => {
+    key = key.replace("_", " ").replace("-", " ");
+    return key
+      .split(" ")
+      .map((part) =>
+        part
+          .split("")
+          .map((char, index) => (index === 0 ? char.toUpperCase() : char))
+          .join("")
+      )
+      .join(" ");
+  };
+
   return (
     <>
       <div className="fade-in">
@@ -209,7 +218,7 @@ const Reps = () => {
                       <li className="me-3 mb-3">
                         <button
                           onClick={() => handleAddUpdateButton()}
-                          className="btn btn-icon bg-primary text-white plan-action-btn w-100 py-2 px-5"
+                          className="btn btn-primary btn-icon text-white plan-action-btn w-100 py-2 px-5"
                         >
                           <i className="las la-plus fs-2 me-1 text-white" />
                           Add Rep
@@ -228,7 +237,7 @@ const Reps = () => {
                                 }, 2000);
                               })
                           }
-                          className="btn btn-icon bg-primary text-white plan-action-btn w-100 py-2 px-5"
+                          className="btn btn-icon btn-primary text-white plan-action-btn w-100 py-2 px-5"
                         >
                           <span>Copy Personal Rep Link</span>
                         </button>
@@ -237,7 +246,7 @@ const Reps = () => {
                         <button
                           title="View Rep stats"
                           onClick={() => handleViewRepsButton(adminRep)}
-                          className="btn btn-icon bg-primary text-white plan-action-btn w-100 py-2 px-5"
+                          className="btn btn-icon btn-primary text-white plan-action-btn w-100 py-2 px-5"
                         >
                           View Personal Rep Stats
                         </button>
@@ -320,7 +329,11 @@ const Reps = () => {
                   onChange={(e) => handleFormDataInput(e, setFormData)}
                   required
                 />
-                <p className="mt-1" style={{ color: "gray" }}>
+                <p
+                  className="mt-1 d-flex gap-1 align-items-center"
+                  style={{ color: "gray" }}
+                >
+                  <i className="fa fa-circle-info fs-3 text-primary"></i>
                   Email is used to access rep dashboard & password wil be sent
                   via email.
                 </p>
@@ -331,7 +344,7 @@ const Reps = () => {
             <div className="w-100 d-flex justify-content-between flex-wrap flex-row-reverse">
               <button
                 type="submit"
-                className="btn btn-success py-2 fw-bolder px-4"
+                className="btn btn-primary py-2 fw-bolder px-4"
                 disabled={!formData?.name || !formData?.email}
               >
                 {isProcessingAddUpdate ? (
@@ -557,7 +570,9 @@ const Reps = () => {
             <h2 className="my-5 pt-5">Business Information</h2>
             {Object.keys(application?.business || {}).map((key, index) => (
               <div className="d-flex mb-4 gap-2" key={index}>
-                <h3 className="card-title fw-bold fs-5 m-0">{key}:</h3>
+                <h3 className="card-title fw-bold fs-5 m-0">
+                  {normalizeKey(key)}:
+                </h3>
                 <p className="mb-0">
                   {DATE_FIELDS.includes(key)
                     ? new Date(application?.business?.[key]).toDateString()
@@ -568,7 +583,9 @@ const Reps = () => {
             <h2 className="my-5 pt-5">Owner Information</h2>
             {Object.keys(application?.owner || {}).map((key, index) => (
               <div className="d-flex mb-4 gap-2" key={index}>
-                <h3 className="card-title fw-bold fs-5 m-0">{key}:</h3>
+                <h3 className="card-title fw-bold fs-5 m-0">
+                  {normalizeKey(key)}:
+                </h3>
                 <p className="mb-0">
                   {typeof application?.owner?.[key] === "string"
                     ? DATE_FIELDS.includes(key)
@@ -593,7 +610,9 @@ const Reps = () => {
                     return null;
                   return (
                     <div className="d-flex mb-4 gap-2" key={index}>
-                      <h3 className="card-title fw-bold fs-5 m-0">{key}:</h3>
+                      <h3 className="card-title fw-bold fs-5 m-0">
+                        {normalizeKey(key)}:
+                      </h3>
                       <p className="mb-0">
                         {typeof application?.partner?.[key] === "string"
                           ? DATE_FIELDS.includes(key)

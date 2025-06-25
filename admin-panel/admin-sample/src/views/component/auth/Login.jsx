@@ -1,11 +1,10 @@
 import { useState } from "react";
-import useToast from "../../../../../shared/store/hooks/useToast";
+import { toast } from "react-toastify";
 import { handleFormDataInput } from "../../../../../shared/utils/helpers";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = (props) => {
-  const { notify } = useToast();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({});
@@ -18,13 +17,13 @@ const Login = (props) => {
     axios
       .post("/api/admins/login", formData)
       .then((res) => {
-        notify("success", res.msg);
+        toast.success(res.msg);
         localStorage.setItem("token", res?.data?.token || "");
         navigate("/");
         setIsSubmittingRequest(false);
       })
       .catch((err) => {
-        notify("error", err.msg);
+        toast.error(err.msg);
         setIsSubmittingRequest(false);
       });
   };
