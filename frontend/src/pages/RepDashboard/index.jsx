@@ -502,7 +502,7 @@ function RepDashboard() {
                         )}
                       </>
                     ) : (
-                      <p>No media availble</p>
+                      <p>No files attached</p>
                     )}
                   </div>
                 </div>

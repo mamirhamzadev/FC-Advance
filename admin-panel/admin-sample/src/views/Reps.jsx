@@ -572,24 +572,28 @@ const Reps = () => {
                 Media (click to download):
               </h3>
               <div className="mb-0 d-flex gap-2 flex-wrap">
-                {(application?.media || [])
-                  .filter((media) => !!media)
-                  .map((media) => (
-                    <a
-                      target="_blank"
-                      href={axios.defaults.baseURL + media}
-                      style={{
-                        width: "100px",
-                        aspectRatio: "1/1",
-                        cursor: "pointer",
-                        fontSize: "70px",
-                      }}
-                      title={media.split("=")[1]}
-                      className="border p-2 rounded-1 d-flex align-items-center justify-content-center"
-                    >
-                      <i className="fa fa-file-pdf"></i>
-                    </a>
-                  ))}
+                {(application?.media || []).length ? (
+                  <>
+                    {(application?.media || []).map((media) => (
+                      <a
+                        target="_blank"
+                        href={axios.defaults.baseURL + media}
+                        style={{
+                          width: "100px",
+                          aspectRatio: "1/1",
+                          cursor: "pointer",
+                          fontSize: "70px",
+                        }}
+                        title={media.split("=")[1]}
+                        className="border p-2 rounded-1 d-flex align-items-center justify-content-center"
+                      >
+                        <i className="fa fa-file-pdf"></i>
+                      </a>
+                    ))}
+                  </>
+                ) : (
+                  <p>No files attached</p>
+                )}
               </div>
             </div>
           </div>
