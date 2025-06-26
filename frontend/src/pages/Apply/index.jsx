@@ -181,7 +181,7 @@ function Apply() {
           <span className="flex size-[30px] rounded-full border-[3px] border-b-transparent animate-spin"></span>
         </div>
       ) : (
-        <>
+        <div className="w-full flex items-center justify-center">
           <div className="wrapper flex flex-col justify-self-center !w-[calc(100%-20px)] !mx-[10px] mt-[30px] mb-[30px] md:mb-[80px] shadow-[0_0_10px_#cccccc] py-[30px] md:!px-[50px] !px-[20px]">
             {isSubmitted ? (
               <div className="flex items-center justify-center flex-col gap-[30px] font-bold">
@@ -264,7 +264,7 @@ function Apply() {
                               max={field?.max || ""}
                               onChange={field.onChange}
                               required={field.required}
-                              value={field.value}
+                              // value={field.value}
                             />
                           ))}
                         </div>
@@ -281,7 +281,7 @@ function Apply() {
                               max={field?.max || ""}
                               type={field.type}
                               required={field.required}
-                              value={field.value}
+                              // value={field.value}
                             />
                           ))}
                         </div>
@@ -300,7 +300,7 @@ function Apply() {
                               max={field?.max || ""}
                               type={field.type}
                               required={field.required}
-                              value={field.value}
+                              // value={field.value}
                             />
                           ))}
                         </div>
@@ -433,27 +433,7 @@ function Apply() {
                           </p>
                         </div>
                       </div>
-                      <div className="mb-[20px] w-full">
-                        <div className="flex items-end justify-between gap-[10px]">
-                          <p className="font-bold text-[14px] flex-1">
-                            Signatures*:
-                          </p>
-                          <button
-                            type="button"
-                            className="p-[5px]"
-                            onClick={() => sigCanvas.current?.clear()}
-                          >
-                            <FontAwesomeIcon icon={faRotateRight} />
-                          </button>
-                        </div>
-                        <div className="border rounded-md">
-                          <SignatureCanvas
-                            ref={sigCanvas}
-                            canvasProps={{ className: "w-full" }}
-                          />
-                        </div>
-                      </div>
-                      <div className="relative flex flex-col gap-[5px] items-center justify-center border p-[15px] w-fit self-center rounded-md">
+                      <div className="relative flex flex-col gap-[5px] items-center justify-center border p-[15px] mb-[30px] w-fit self-center rounded-md">
                         <p className="font-bold text-[14px] bg-white absolute top-0 transform-[translateY(-50%)] px-[10px]">
                           Upload PDF files
                         </p>
@@ -495,14 +475,40 @@ function Apply() {
                       </div>
                     </>
                   ) : null}
-                  <Button
-                    disabled={isLoading}
-                    type="submit"
-                    className={`mt-[20px] text-white w-fit px-[20px] py-[10px] leading-[1.5] text-[14px] self-center md:self-end min-w-[150px] flex gap-[10px] items-center justify-center`}
-                  >
-                    {applicationData ? "Apply" : "Next"}
-                    <span className="in-disabled:flex hidden animate-spin size-[20px] rounded-full border-[3px] border-white border-b-transparent"></span>
-                  </Button>
+                  <div className="flex md:items-end items-center justify-between w-full md:flex-row flex-col">
+                    <div className="flex-1">
+                      {applicationData ? (
+                        <div className="max-w-[350px] w-full">
+                          <div className="flex items-end justify-between gap-[10px]">
+                            <p className="font-bold text-[14px] flex-1">
+                              Signatures*:
+                            </p>
+                            <button
+                              type="button"
+                              className="p-[2px]"
+                              onClick={() => sigCanvas.current?.clear()}
+                            >
+                              <FontAwesomeIcon icon={faRotateRight} />
+                            </button>
+                          </div>
+                          <div className="border rounded-md">
+                            <SignatureCanvas
+                              ref={sigCanvas}
+                              canvasProps={{ className: "w-full !h-auto" }}
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+                    </div>
+                    <Button
+                      disabled={isLoading}
+                      type="submit"
+                      className={`mt-[20px] text-white w-fit px-[20px] py-[10px] leading-[1.5] text-[14px] self-center md:self-end min-w-[150px] flex gap-[10px] items-center justify-center justify-self-end`}
+                    >
+                      {applicationData ? "Apply" : "Next"}
+                      <span className="in-disabled:flex hidden animate-spin size-[20px] rounded-full border-[3px] border-white border-b-transparent"></span>
+                    </Button>
+                  </div>
                 </form>
               </>
             )}
@@ -525,7 +531,7 @@ function Apply() {
               </div>
             </div>
           ) : null}
-        </>
+        </div>
       )}
     </>
   );

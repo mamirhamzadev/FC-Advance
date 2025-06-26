@@ -195,6 +195,17 @@ const Application = () => {
             )}
 
             <div className="d-flex mb-4 gap-2">
+              <h3 className="card-title fw-bold fs-5 m-0">Signatures:</h3>
+              <div className="border p-2 rounded-1 d-flex align-items-center justify-content-center">
+                <img
+                  src={axios.defaults.baseURL + formData?.signatures}
+                  alt="signatures"
+                  width="150px"
+                />
+              </div>
+            </div>
+
+            <div className="d-flex mb-4 gap-2">
               <h3 className="card-title fw-bold fs-5 m-0">
                 Media (click to download):
               </h3>
