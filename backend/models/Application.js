@@ -20,7 +20,7 @@ const businessSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     type: { type: String, required: true },
-    website: { type: String, required: true },
+    website: { type: String, default: "" },
     tax_id: { type: String, required: true },
     start_date: { type: Date, required: true },
     state_of_incorporation: { type: String, required: true },
@@ -76,7 +76,7 @@ const schema = new mongoose.Schema(
     owner: { type: ownerSchema, default: null },
     partner: { type: partnerSchema, default: null },
     media: [{ type: String }],
-    is_applied: { type: Boolean, default: false },
+    signatures: { type: String, required: true },
   },
   { timestamps: true }
 );

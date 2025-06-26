@@ -27,12 +27,14 @@ export const Fields = {
       name: "business[name]",
       placeholder: "Legal Company Name",
       type: "text",
+      value: "Business",
       onChange: alphabetValidator,
       required: true,
     },
     {
       name: "business[type]",
       placeholder: "Doing Business As",
+      value: "IT",
       type: "text",
       onChange: null,
       required: true,
@@ -40,13 +42,15 @@ export const Fields = {
     {
       name: "business[website]",
       placeholder: "Company Website",
+      value: "https://youtube.com/",
       type: "url",
       onChange: null,
-      required: true,
+      required: false,
     },
     {
       name: "business[tax_id]",
       placeholder: "Tax ID/EIN",
+      value: "1223",
       type: "text",
       onChange: null,
       required: true,
@@ -55,6 +59,7 @@ export const Fields = {
       name: "business[start_date]",
       placeholder: "Business Start Date",
       type: "date",
+      value: new Date().toISOString().split("T")[0],
       max: new Date().toISOString().split("T")[0],
       onChange: null,
       required: true,
@@ -62,6 +67,7 @@ export const Fields = {
     {
       name: "business[state_of_incorporation]",
       placeholder: "State of Incorporation",
+      value: "Punjab",
       type: "text",
       onChange: alphabetValidator,
       required: true,
@@ -69,6 +75,7 @@ export const Fields = {
     {
       name: "business[industry]",
       placeholder: "Industry",
+      value: "IT",
       type: "text",
       onChange: null,
       required: true,
@@ -76,6 +83,7 @@ export const Fields = {
     {
       name: "business[phone]",
       placeholder: "Phone",
+      value: "9999999999",
       type: "tel",
       onChange: numberValidator,
       required: true,
@@ -83,6 +91,7 @@ export const Fields = {
     {
       name: "business[address]",
       placeholder: "Address",
+      value: "Lahore",
       type: "text",
       onChange: null,
       required: true,
@@ -90,6 +99,7 @@ export const Fields = {
     {
       name: "business[city]",
       placeholder: "City",
+      value: "Lahore",
       type: "text",
       onChange: alphabetValidator,
       required: true,
@@ -97,6 +107,7 @@ export const Fields = {
     {
       name: "business[state]",
       placeholder: "State",
+      value: "Punjab",
       type: "text",
       onChange: alphabetValidator,
       required: true,
@@ -104,6 +115,7 @@ export const Fields = {
     {
       name: "business[zip]",
       placeholder: "Zip",
+      value: "123",
       type: "text",
       onChange: numberValidator,
       required: true,
@@ -113,6 +125,7 @@ export const Fields = {
     {
       name: "owner[full_name]",
       placeholder: "Full Name",
+      value: "Hamza",
       type: "text",
       onChange: alphabetValidator,
       required: true,
@@ -120,6 +133,7 @@ export const Fields = {
     {
       name: "owner[ownership_percent]",
       placeholder: "Ownership %",
+      value: "90",
       type: "text",
       onChange: numberValidator,
       required: true,
@@ -127,6 +141,7 @@ export const Fields = {
     {
       name: "owner[email]",
       placeholder: "Business Email",
+      value: "ah5958076@gmail.com",
       type: "email",
       onChange: null,
       required: true,
@@ -134,6 +149,7 @@ export const Fields = {
     {
       name: "owner[ssn]",
       placeholder: "Social Security Number",
+      value: "123",
       type: "text",
       onChange: null,
       required: true,
@@ -141,6 +157,7 @@ export const Fields = {
     {
       name: "owner[phone]",
       placeholder: "Mobile Phone",
+      value: "999999999999",
       type: "tel",
       onChange: numberValidator,
       required: true,
@@ -148,6 +165,7 @@ export const Fields = {
     {
       name: "owner[fico_score]",
       placeholder: "FICO Score",
+      value: "123",
       type: "text",
       onChange: null,
       required: true,
@@ -155,6 +173,7 @@ export const Fields = {
     {
       name: "owner[address][line1]",
       placeholder: "Address Line 1",
+      value: "Lahore",
       type: "text",
       onChange: null,
       required: true,
@@ -169,6 +188,7 @@ export const Fields = {
     {
       name: "owner[city]",
       placeholder: "City",
+      value: "Lahore",
       type: "text",
       onChange: alphabetValidator,
       required: true,
@@ -177,6 +197,7 @@ export const Fields = {
       name: "owner[state]",
       placeholder: "State",
       type: "text",
+      value: "Punjab",
       onChange: alphabetValidator,
       required: true,
     },
@@ -184,6 +205,7 @@ export const Fields = {
       name: "owner[zip]",
       placeholder: "Zip",
       type: "text",
+      value: "133",
       onChange: numberValidator,
       required: true,
     },
@@ -191,6 +213,7 @@ export const Fields = {
       name: "owner[dob]",
       placeholder: "Date of Birth",
       type: "date",
+      value: new Date().toISOString().split("T")[0],
       max: new Date().toISOString().split("T")[0],
       onChange: null,
       required: true,

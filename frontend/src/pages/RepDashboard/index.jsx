@@ -9,57 +9,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { setRepAuthorized } from "../../redux/actions/rep-dashboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faDownload,
   faEye,
-  faFile,
-  faFileCsv,
-  faFileExcel,
-  faFileLines,
   faFilePdf,
-  faFilePowerpoint,
-  faFileVideo,
-  faFileWord,
-  faFileZipper,
   faGear,
   faSearch,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-
-const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "tiff", "bmp", "webp", "svg"];
-const VIDEO_EXTS = [
-  ".mp4",
-  ".mkv",
-  ".avi",
-  ".mov",
-  ".wmv",
-  ".flv",
-  ".webm",
-  ".3gp",
-  ".m4v",
-  ".ts",
-  ".vob",
-  ".m2ts",
-  ".ogv",
-  ".f4v",
-  ".rm",
-];
-const FILE_NAMES = {
-  any: faFile,
-  xls: faFileExcel,
-  xlsx: faFileExcel,
-  doc: faFileWord,
-  docx: faFileWord,
-  pdf: faFilePdf,
-  zip: faFileZipper,
-  tar: faFileZipper,
-  rar: faFileZipper,
-  ppt: faFilePowerpoint,
-  pptx: faFilePowerpoint,
-  txt: faFileLines,
-  csv: faFileCsv,
-  video: faFileVideo,
-};
 
 const DATE_FIELDS = ["dob", "start_date"];
 
@@ -89,52 +47,6 @@ function RepDashboard() {
       })
       .finally(() => setIsLoading(false));
   }, []);
-
-  const constructPreview = (media) => {
-    if (!media) return;
-    let preview = {};
-    const ext = (media.split(".").pop() || "").toLowerCase();
-    if (IMAGE_EXTS.includes(ext))
-      preview = { url: axios.defaults.baseURL + media };
-    else if (VIDEO_EXTS.includes(ext)) preview = { icon: FILE_NAMES.video };
-    else if (Object.keys(FILE_NAMES).includes(ext))
-      preview = { icon: FILE_NAMES[ext] };
-    else preview = { icon: FILE_NAMES.any };
-
-    if (preview?.url)
-      return (
-        <img
-          src={preview.url}
-          alt="..."
-          className="h-full w-full object-cover"
-        />
-      );
-    else if (preview?.icon) return <FontAwesomeIcon icon={preview.icon} />;
-    return null;
-  };
-
-  const downloadFile = async (media) => {
-    try {
-      const response = await fetch(`${axios.defaults.baseURL}${media}`);
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-
-      link.href = url;
-      link.setAttribute("download", media.split("\\")[1]);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
-  };
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -281,6 +193,7 @@ function RepDashboard() {
                   header={"#"}
                   field={"#"}
                   headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  bodyClassName="!text-[14px]"
                   body={(options) => (
                     <div className="min-w-[30px] text-[14px]">
                       {(options?.rowIndex || 0) + 1}
@@ -292,6 +205,7 @@ function RepDashboard() {
                   header={"Submitted By (Email)"}
                   field={"submitted_by.email"}
                   headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  bodyClassName="!text-[14px]"
                   body={(rowData) => (
                     <div className="min-w-[30px] text-[14px]">
                       {rowData?.submitted_by?.email || "N/A"}
@@ -303,6 +217,7 @@ function RepDashboard() {
                   header={"Business Name & website"}
                   field={"business.name"}
                   headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  bodyClassName="!text-[14px]"
                   body={(rowData) => (
                     <div className="min-w-[30px] text-[14px] flex gap-[10px] items-center whitespace-nowrap">
                       {rowData?.business?.name || "N/A"}
@@ -310,7 +225,7 @@ function RepDashboard() {
                         <Link
                           to={rowData?.business?.website}
                           target="_blank"
-                          className="text-red-600 underline"
+                          className="text-gray-700 underline"
                         >
                           View Business
                         </Link>
@@ -323,6 +238,7 @@ function RepDashboard() {
                   header={"Owner Email"}
                   field={"owner.email"}
                   headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  bodyClassName="!text-[14px]"
                   body={(rowData) => rowData?.owner?.email || "N/A"}
                   sortable
                 />
@@ -330,6 +246,7 @@ function RepDashboard() {
                   header={"Partner Email"}
                   field={"partner.email"}
                   headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  bodyClassName="!text-[14px]"
                   body={(rowData) => (
                     <div className="whitespace-nowrap min-w-[30px] !text-[14px]">
                       {rowData?.partner?.email || "N/A"}
@@ -340,13 +257,23 @@ function RepDashboard() {
                 <Column
                   header={"Actions"}
                   headerClassName="whitespace-nowrap min-w-[30px] !text-[14px]"
+                  bodyClassName="!text-[14px]"
                   body={(rowData) => (
-                    <button
-                      onClick={() => setSelectedApplication(rowData)}
-                      className="w-full flex items-center justify-center"
-                    >
-                      <FontAwesomeIcon icon={faEye} />
-                    </button>
+                    <div className="flex items-center justify-center gap-[10px] text-gray-700">
+                      <button
+                        onClick={() => setSelectedApplication(rowData)}
+                        className="flex items-center justify-center"
+                      >
+                        <FontAwesomeIcon icon={faEye} />
+                      </button>
+                      <a
+                        href={`${axios.defaults.baseURL}api/applications/pdf/${rowData._id}`}
+                        target="_blank"
+                        className="flex items-center justify-center"
+                      >
+                        <FontAwesomeIcon icon={faDownload} />
+                      </a>
+                    </div>
                   )}
                   sortable
                 />
@@ -547,21 +474,21 @@ function RepDashboard() {
                 <div className="flex gap-[10px] mt-[10px] mb-[50px]">
                   <h3 className="font-bold">Media (click to download):</h3>
                   <div className="flex gap-[10px] flex-wrap">
-                    {(selectedApplication?.media || []).filter(
-                      (media) => !!media
-                    ).length ? (
+                    {(selectedApplication?.media || []).length ? (
                       <>
-                        {(selectedApplication?.media || [])
-                          .filter((media) => !!media)
-                          .map((media, index) => (
-                            <div
+                        {(selectedApplication?.media || []).map(
+                          (media, index) => (
+                            <a
                               key={index}
-                              onClick={() => downloadFile(media)}
-                              className="w-[100px] aspect-square cursor-pointer text-[70px] border border-gray-200 p-[5px] rounded-[5px] flex items-center justify-center"
+                              href={axios.defaults.baseURL + media}
+                              target="_blank"
+                              title={media.split("=")[1]}
+                              className="w-[100px] aspect-square cursor-pointer text-[70px] border border-gray-200 p-[5px] rounded-[5px] flex items-center justify-center text-gray-700"
                             >
-                              {constructPreview(media)}
-                            </div>
-                          ))}
+                              <FontAwesomeIcon icon={faFilePdf} />
+                            </a>
+                          )
+                        )}
                       </>
                     ) : (
                       <p>No media availble</p>

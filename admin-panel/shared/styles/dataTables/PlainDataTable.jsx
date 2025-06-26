@@ -169,7 +169,11 @@ const PlainDataTable = React.memo((props) => {
           body={(rowData) => (
             <div
               className="d-flex"
-              style={{ justifyContent: "center", gap: "0.8rem" }}
+              style={{
+                justifyContent: "center",
+                gap: "0.8rem",
+                alignItems: "center",
+              }}
             >
               {props?.view &&
                 (props?.showFullSizeButton ? (
@@ -232,6 +236,15 @@ const PlainDataTable = React.memo((props) => {
                   title="Subscription"
                   style={{ fontSize: "1rem" }}
                 />
+              )}
+              {props?.downloadPDF && (
+                <a href={rowData.downloadLink} target="_blank">
+                  <i
+                    className="fas fa-download svg-icon svg-icon-5 svg-icon-gray-500 cursor-pointer"
+                    title="Download File"
+                    style={{ fontSize: "1rem" }}
+                  />
+                </a>
               )}
             </div>
           )}

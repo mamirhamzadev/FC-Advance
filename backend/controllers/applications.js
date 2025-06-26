@@ -4,6 +4,9 @@ import { makeRes, sendMail } from "../helpers/utils.js";
 import Admin from "../models/Admin.js";
 import Application from "../models/Application.js";
 import Reps from "../models/Reps.js";
+import puppeteer from "puppeteer";
+import { readFileSync } from "fs";
+import path from "path";
 
 export const create = async (req, res) => {
   let payload = req.body;
@@ -28,7 +31,6 @@ export const create = async (req, res) => {
 
   if (!payload?.business?.name) empty_fields.push("Legal Company Name");
   if (!payload?.business?.type) empty_fields.push("Doing Business As");
-  if (!payload?.business?.website) empty_fields.push("Company Website");
   if (!payload?.business?.tax_id) empty_fields.push("Tax ID/EIN");
   if (!payload?.business?.start_date) empty_fields.push("Business Start Date");
   if (!payload?.business?.state_of_incorporation)
@@ -65,121 +67,55 @@ export const create = async (req, res) => {
   }
 
   try {
-    const EXPECTED_MEDIAS = [
-      "attachment1",
-      "attachment2",
-      "attachment3",
-      "attachment4",
-    ];
     const files = req?.files || [];
-    const media = EXPECTED_MEDIAS.map((name) => {
-      const file = files.find((file) => file.fieldname === name);
-      let url = "";
-      if (!file && payload?.[name]) url = payload[name];
-      else if (file) url = `uploads?file=${file.filename}`;
-      return url;
+    let signatures = files.find((file) => file.fieldname === "signature");
+    if (!signatures)
+      return makeRes(res, "Signatures are required", BAD_REQUEST);
+    signatures = `uploads?file=${signatures.filename}`;
+    let media = files.filter((file) => file.fieldname === "attachment");
+    media = media.map((file) => `uploads?file=${file.filename}`);
+
+    const application = await Application.create({
+      ...payload,
+      media,
+      signatures,
     });
-    payload = { ...payload, media, is_applied: true };
-    const rep =
-      payload?.envelope_id && isObjectIdOrHexString(payload?.envelope_id)
-        ? await Reps.findOne({ _id: payload?.envelope_id })
-        : null;
-    const company = await Application.create(payload);
+
+    let rep = null;
+    if (payload?.envelope_id && isObjectIdOrHexString(payload?.envelope_id))
+      rep = await Reps.findOne({ _id: payload?.envelope_id });
+
     if (rep) {
-      rep.applications.push(company._id);
+      rep.applications.push(application._id);
       await rep.save();
     }
     const admin = await Admin.find({}, { _id: 0, email: 1 });
-    const sendToEmails = [
-      company.submitted_by.email,
-      ...admin.map((adm) => adm.email),
-    ];
+    const sendToEmails = [application.submitted_by.email];
     if (rep) sendToEmails.push(rep.email);
+    const mailTo = sendToEmails;
+    const mailSubject = rep
+      ? `Form Submitted through Rep - (${rep?.name})`
+      : "Form submitted from website";
+    const mailTemplate = "form-submission.html";
     await sendMail(
-      sendToEmails,
-      rep
-        ? `Form Submitted through Rep - (${rep?.name})`
-        : "Form submitted from website",
-      "form-submission.html",
-      {
-        "{{rep_name_line}}": rep
-          ? `Form Submitted through Rep - (${rep?.name || "N/A"})`
-          : "Form submitted from website",
-        "{{submitted_by_email}}": company?.submitted_by.email || "N/A",
-        "{{submitted_by_full_name}}": company?.submitted_by.full_name || "N/A",
-        "{{business_name}}": company?.business.name || "N/A",
-        "{{business_type}}": company?.business.type || "N/A",
-        "{{business_website}}": company?.business.website || "N/A",
-        "{{business_tax_id}}": company?.business.tax_id || "N/A",
-        "{{business_start_date}}": new Date(company?.business.start_date)
-          ?.toISOString()
-          ?.split("T")?.[0],
-        "{{business_state_of_incorporation}}":
-          company?.business.state_of_incorporation || "N/A",
-        "{{business_industry}}": company?.business.industry || "N/A",
-        "{{business_phone}}": company?.business.phone || "N/A",
-        "{{business_address}}": company?.business.address || "N/A",
-        "{{business_city}}": company?.business.city || "N/A",
-        "{{business_state}}": company?.business.state || "N/A",
-        "{{business_zip}}": company?.business.zip || "N/A",
-
-        "{{owner_full_name}}": company?.owner.full_name || "N/A",
-        "{{owner_ownership_percent}}":
-          company?.owner.ownership_percent || "N/A",
-        "{{owner_email}}": company?.owner.email || "N/A",
-        "{{owner_ssn}}": company?.owner.ssn || "N/A",
-        "{{owner_phone}}": company?.owner.phone || "N/A",
-        "{{owner_fico_score}}": company?.owner.fico_score || "N/A",
-        "{{owner_address_line_1}}": company?.owner.address.line1 || "N/A",
-        "{{owner_address_line_2}}": company?.owner.address.line2 || "N/A",
-        "{{owner_city}}": company?.owner.city || "N/A",
-        "{{owner_state}}": company?.owner.state || "N/A",
-        "{{owner_zip}}": company?.owner.zip || "N/A",
-        "{{owner_dob}}": new Date(company?.owner.dob)
-          ?.toISOString()
-          ?.split("T")?.[0],
-
-        "{{partner_full_name}}": company?.partner?.full_name || "N/A",
-        "{{partner_ownership_percent}}":
-          company?.partner?.ownership_percent || "N/A",
-        "{{partner_email}}": company?.partner?.email || "N/A",
-        "{{partner_ssn}}": company?.partner?.ssn || "N/A",
-        "{{partner_phone}}": company?.partner?.phone || "N/A",
-        "{{partner_fico_score}}": company?.partner?.fico_score || "N/A",
-        "{{partner_address_line_1}}": company?.partner?.address.line1 || "N/A",
-        "{{partner_address_line_2}}": company?.partner?.address.line2 || "N/A",
-        "{{partner_city}}": company?.partner?.city || "N/A",
-        "{{partner_state}}": company?.partner?.state || "N/A",
-        "{{partner_zip}}": company?.partner?.zip || "N/A",
-        "{{partner_dob}}": company?.partner?.dob
-          ? new Date(company?.partner?.dob)?.toISOString()?.split("T")?.[0]
-          : "N/A",
-        "{{media}}": company.media
-          .filter((file) => !!file)
-          .map((file) => file.split("\\").pop())
-          .map((file) => {
-            let nameToShow = file.split("-");
-            nameToShow[0] = "";
-            nameToShow = nameToShow.filter((patch) => !!patch).join("-");
-            return `<a 
-                href="${process.env.SERVER_BASE_URL}/uploads/${file}" 
-                target="_blank" 
-                title="${nameToShow}"
-                style="display: block !important; margin-bottom: 5px !important;"
-                download="${nameToShow}">
-                ${nameToShow}
-              </a>`;
-          })
-          .join(""),
-      }
+      mailTo,
+      mailSubject,
+      mailTemplate,
+      prepareMailData(application, rep, true)
+    );
+    await sendMail(
+      admin.map((adm) => adm.email),
+      mailSubject,
+      mailTemplate,
+      prepareMailData(application, rep, true, true)
     );
     return makeRes(
       res,
-      "Application submitted successfully!<br/>You have been recieved an email in which you can see your submitted responses. In case of any query, please contact us for assisstance.",
+      "Application submitted successfully!<br/>You have been received an email in which you can see your submitted responses. In case of any query, please contact us for assisstance.",
       OK,
       {
         is_submitted: true,
-        company,
+        application,
       }
     );
   } catch (e) {
@@ -213,9 +149,7 @@ export const checkApplicationExistance = async (req, res) => {
         res,
         "Your application has already been submitted! Please contact us for furthur details.",
         CREATED,
-        {
-          is_submitted: true,
-        }
+        { is_submitted: true }
       );
     return makeRes(res, "", OK, { application: payload });
   } catch (e) {
@@ -226,11 +160,150 @@ export const checkApplicationExistance = async (req, res) => {
 export const list = async (req, res) => {
   const without_rep = req.query?.without_rep === "1";
   try {
-    const applications = without_rep
-      ? await Application.find({ is_applied: true, envelope_id: "" })
-      : await Application.find({ is_applied: true });
+    const query = without_rep ? { envelope_id: "" } : {};
+    const applications = await Application.find(query);
     return makeRes(res, "", OK, { applications, profile: req.user });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
   }
+};
+
+export const renderPdf = async (req, res) => {
+  const appId = req.params?.id;
+  if (!appId || !isObjectIdOrHexString(appId))
+    res.send("<h1>Application not found. Please try again</h1>");
+
+  try {
+    const application = await Application.findOne({ _id: appId });
+    if (!application)
+      return res.send("<h1>Application not found. Please try again</h1>");
+    let rep = null;
+    if (application.envelope_id)
+      rep = await Reps.findOne({ _id: application.envelope_id });
+
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+
+    let html = readFileSync(
+      path.join(process.cwd(), "templates", "form-submission.html"),
+      "utf-8"
+    );
+
+    const dataToReplace = prepareMailData(application, rep);
+    Object.keys(dataToReplace).forEach(
+      (key) => (html = html.replaceAll(key, dataToReplace[key]))
+    );
+    await page.setContent(html, { waitUntil: "networkidle0" });
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      margin: { top: 10, bottom: 10, left: 20, right: 20 },
+    });
+    await browser.close();
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `inline; filename="application-${application.submitted_by.full_name}.pdf"`,
+      "Content-Length": pdfBuffer.length,
+    });
+
+    res.send(pdfBuffer);
+  } catch (e) {
+    res.send(e.message);
+  }
+};
+
+const prepareMailData = (
+  application,
+  rep,
+  addDownloadPdfLink = false,
+  forAdmin = false
+) => {
+  if (!application) return {};
+  return {
+    "{{rep_name_line}}": rep
+      ? `Form Submitted through Rep (${rep?.name})` +
+        (forAdmin ? `<br/>Rep Email: ${rep?.email}` : "")
+      : "Form submitted from website",
+    "{{download_pdf}}": addDownloadPdfLink
+      ? `<a 
+          href="${process.env.SERVER_BASE_URL}/api/applications/pdf/${application._id}" 
+          target="_blank" 
+          class="heading" 
+          style="display: block !important;
+                  width: fit-content !important;
+                  text-decoration: none !important;
+                  color: white !important;
+                  background-color: #747474 !important;
+                  border-radius: 10px !important;
+                  padding: 10px 15px !important;
+                  font-size: 14px !important;
+                  margin: 0 0 10px 10px !important;
+                  font-weight: 500 !important;">
+            Download PDF
+          </a>`
+      : "",
+    "{{submitted_by_email}}": application?.submitted_by.email || "N/A",
+    "{{submitted_by_full_name}}": application?.submitted_by.full_name || "N/A",
+    "{{business_name}}": application?.business.name || "N/A",
+    "{{business_type}}": application?.business.type || "N/A",
+    "{{business_website}}": application?.business.website || "N/A",
+    "{{business_tax_id}}": application?.business.tax_id || "N/A",
+    "{{business_start_date}}": new Date(application?.business.start_date)
+      ?.toISOString()
+      ?.split("T")?.[0],
+    "{{business_state_of_incorporation}}":
+      application?.business.state_of_incorporation || "N/A",
+    "{{business_industry}}": application?.business.industry || "N/A",
+    "{{business_phone}}": application?.business.phone || "N/A",
+    "{{business_address}}": application?.business.address || "N/A",
+    "{{business_city}}": application?.business.city || "N/A",
+    "{{business_state}}": application?.business.state || "N/A",
+    "{{business_zip}}": application?.business.zip || "N/A",
+
+    "{{owner_full_name}}": application?.owner.full_name || "N/A",
+    "{{owner_ownership_percent}}":
+      application?.owner.ownership_percent || "N/A",
+    "{{owner_email}}": application?.owner.email || "N/A",
+    "{{owner_ssn}}": application?.owner.ssn || "N/A",
+    "{{owner_phone}}": application?.owner.phone || "N/A",
+    "{{owner_fico_score}}": application?.owner.fico_score || "N/A",
+    "{{owner_address_line_1}}": application?.owner.address.line1 || "N/A",
+    "{{owner_address_line_2}}": application?.owner.address.line2 || "N/A",
+    "{{owner_city}}": application?.owner.city || "N/A",
+    "{{owner_state}}": application?.owner.state || "N/A",
+    "{{owner_zip}}": application?.owner.zip || "N/A",
+    "{{owner_dob}}": new Date(application?.owner.dob)
+      ?.toISOString()
+      ?.split("T")?.[0],
+
+    "{{partner_full_name}}": application?.partner?.full_name || "N/A",
+    "{{partner_ownership_percent}}":
+      application?.partner?.ownership_percent || "N/A",
+    "{{partner_email}}": application?.partner?.email || "N/A",
+    "{{partner_ssn}}": application?.partner?.ssn || "N/A",
+    "{{partner_phone}}": application?.partner?.phone || "N/A",
+    "{{partner_fico_score}}": application?.partner?.fico_score || "N/A",
+    "{{partner_address_line_1}}": application?.partner?.address.line1 || "N/A",
+    "{{partner_address_line_2}}": application?.partner?.address.line2 || "N/A",
+    "{{partner_city}}": application?.partner?.city || "N/A",
+    "{{partner_state}}": application?.partner?.state || "N/A",
+    "{{partner_zip}}": application?.partner?.zip || "N/A",
+    "{{partner_dob}}": application?.partner?.dob
+      ? new Date(application?.partner?.dob)?.toISOString()?.split("T")?.[0]
+      : "N/A",
+    "{{signatures}}": `${process.env.SERVER_BASE_URL}/${application.signatures}`,
+    "{{media}}": application.media
+      .filter((file) => !!file)
+      .map((file) => file.split("\\").pop())
+      .map(
+        (file) => `<a 
+                href="${process.env.SERVER_BASE_URL}/${file}" 
+                target="_blank" 
+                title="${file.split("=")[1]}"
+                style="display: block !important; margin-bottom: 10px !important;"
+                download="${file.split("=")[1]}">
+                ${file.split("=")[1]}
+              </a>`
+      )
+      .join(""),
+  };
 };

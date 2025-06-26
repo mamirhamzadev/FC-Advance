@@ -1,49 +1,9 @@
 import { useEffect, useState } from "react";
 import BreadCrumb from "./partials/BreadCrumb";
 import Modal from "react-bootstrap/Modal";
-import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import PlainDataTable from "../../../shared/styles/dataTables/PlainDataTable";
-import { handleFormDataInput } from "../../../shared/utils/helpers";
-import ProcessingModal from "../../../shared/styles/modals/ProcessingModal";
-import { SWAL_VARIANT_CONFIGS } from "../../../shared/utils/constants";
 import axios from "axios";
-import { Link } from "react-router-dom";
-
-const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "tiff", "bmp", "webp", "svg"];
-const VIDEO_EXTS = [
-  ".mp4",
-  ".mkv",
-  ".avi",
-  ".mov",
-  ".wmv",
-  ".flv",
-  ".webm",
-  ".3gp",
-  ".m4v",
-  ".ts",
-  ".vob",
-  ".m2ts",
-  ".ogv",
-  ".f4v",
-  ".rm",
-];
-const FILE_NAMES = {
-  any: "fa fa-file",
-  xls: "fa fa-file-excel",
-  xlsx: "fa fa-file-excel",
-  doc: "fa fa-file-word",
-  docx: "fa fa-file-word",
-  pdf: "fa fa-file-pdf",
-  zip: "fa fa-file-zipper",
-  tar: "fa fa-file-zipper",
-  rar: "fa fa-file-zipper",
-  ppt: "fa fa-file-powerpoint",
-  pptx: "fa fa-file-powerpoint",
-  txt: "fa fa-file-lines",
-  csv: "fa fa-file-csv",
-  video: "fa fa-file-video",
-};
 
 const DATE_FIELDS = ["dob", "start_date"];
 
@@ -51,14 +11,20 @@ const Application = () => {
   const [formData, setFormData] = useState();
   const [applications, setApplications] = useState([]);
   const [isFetchingApplications, setIsFetchingApplications] = useState(true);
-  const [application, setApplication] = useState();
   const [viewApplicationModal, setShowViewApplicationModal] = useState(false);
 
   useEffect(() => {
     if (!isFetchingApplications) return;
     axios
       .get("/api/applications/list?without_rep=1")
-      .then((res) => setApplications(res?.data?.applications))
+      .then((res) =>
+        setApplications(
+          (res?.data?.applications || []).map((app) => ({
+            ...app,
+            downloadLink: `${axios.defaults.baseURL}api/applications/pdf/${app._id}`,
+          }))
+        )
+      )
       .catch((err) => toast.error(err?.msg))
       .finally(() => setIsFetchingApplications(false));
   }, [isFetchingApplications]);
@@ -66,52 +32,6 @@ const Application = () => {
   const handleViewApplicationButton = (item) => {
     setShowViewApplicationModal(true);
     setFormData(item);
-  };
-
-  const constructPreview = (media) => {
-    if (!media) return;
-    let preview = {};
-    const ext = (media.split(".").pop() || "").toLowerCase();
-    if (IMAGE_EXTS.includes(ext))
-      preview = { url: axios.defaults.baseURL + media };
-    else if (VIDEO_EXTS.includes(ext)) preview = { icon: FILE_NAMES.video };
-    else if (Object.keys(FILE_NAMES).includes(ext))
-      preview = { icon: FILE_NAMES[ext] };
-    else preview = { icon: FILE_NAMES.any };
-
-    if (preview?.url)
-      return (
-        <img
-          src={preview.url}
-          alt="..."
-          className="h-100 w-100 object-fit-cover"
-        />
-      );
-    else if (preview?.icon) return <i className={preview.icon}></i>;
-    return null;
-  };
-
-  const downloadFile = async (media) => {
-    try {
-      const response = await fetch(`${axios.defaults.baseURL}${media}`);
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-
-      link.href = url;
-      link.setAttribute("download", media.split("\\")[1]);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Download failed:", error);
-    }
   };
 
   const normalizeKey = (key = "") => {
@@ -154,6 +74,7 @@ const Application = () => {
                 <PlainDataTable
                   data={applications || []}
                   view={handleViewApplicationButton}
+                  downloadPDF
                   fieldNamesToShow={[
                     "#",
                     "Submitted By (Email)",
@@ -281,19 +202,21 @@ const Application = () => {
                 {(formData?.media || [])
                   .filter((media) => !!media)
                   .map((media, index) => (
-                    <div
+                    <a
                       key={index}
-                      onClick={() => downloadFile(media)}
+                      target="_blank"
+                      href={axios.defaults.baseURL + media}
                       style={{
                         width: "100px",
                         aspectRatio: "1/1",
                         cursor: "pointer",
                         fontSize: "70px",
                       }}
+                      title={media.split("=")[1]}
                       className="border p-2 rounded-1 d-flex align-items-center justify-content-center"
                     >
-                      {constructPreview(media)}
-                    </div>
+                      <i className="fa fa-file-pdf"></i>
+                    </a>
                   ))}
               </div>
             </div>

@@ -94,7 +94,7 @@ export const sendMail = async (to, subject, template_name, jsonData) => {
       "utf-8"
     );
     Object.keys(jsonData || {}).forEach(
-      (key) => (html = html.replace(key, jsonData[key]))
+      (key) => (html = html.replaceAll(key, jsonData[key]))
     );
 
     const mailOptions = { from: USER, to, subject, html };

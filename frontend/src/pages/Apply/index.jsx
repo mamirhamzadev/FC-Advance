@@ -3,16 +3,9 @@ import FloatingInput from "../../components/Input";
 import Button from "../../components/Button";
 import { CONTACT_US_ROUTE, HOME_ROUTE } from "../../constants/routes";
 import {
-  faFile,
-  faFileCsv,
-  faFileExcel,
-  faFileLines,
   faFilePdf,
-  faFilePowerpoint,
-  faFileVideo,
-  faFileWord,
-  faFileZipper,
   faInfo,
+  faRotateRight,
   faUpload,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
@@ -22,43 +15,11 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Fields, alphabetValidator } from "./helper";
 import { UPLOADING_ANIMATION } from "../../constants/images";
-
-const IMAGE_EXTS = ["png", "jpg", "jpeg", "gif", "tiff", "bmp", "webp", "svg"];
-const VIDEO_EXTS = [
-  ".mp4",
-  ".mkv",
-  ".avi",
-  ".mov",
-  ".wmv",
-  ".flv",
-  ".webm",
-  ".3gp",
-  ".m4v",
-  ".ts",
-  ".vob",
-  ".m2ts",
-  ".ogv",
-  ".f4v",
-  ".rm",
-];
-const FILE_NAMES = {
-  any: faFile,
-  xls: faFileExcel,
-  xlsx: faFileExcel,
-  doc: faFileWord,
-  docx: faFileWord,
-  pdf: faFilePdf,
-  zip: faFileZipper,
-  tar: faFileZipper,
-  rar: faFileZipper,
-  ppt: faFilePowerpoint,
-  pptx: faFilePowerpoint,
-  txt: faFileLines,
-  csv: faFileCsv,
-  video: faFileVideo,
-};
+import { useRef } from "react";
+import SignatureCanvas from "react-signature-canvas";
 
 function Apply() {
+  const sigCanvas = useRef(null);
   const params = useParams();
   const [envelopeId, setEnvelopeId] = useState("");
   const [message, setMessage] = useState("");
@@ -68,7 +29,12 @@ function Apply() {
   const [isFetching, setIsFetching] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [imagePreviews, setImagePreviews] = useState({});
+  const [imagePreviews, setImagePreviews] = useState([
+    false,
+    false,
+    false,
+    false,
+  ]);
 
   useEffect(() => {
     setIsFetching(true);
@@ -84,60 +50,103 @@ function Apply() {
       .finally(() => setIsFetching(false));
   }, [params]);
 
-  useEffect(() => {
-    if (!Object.keys(applicationData || {}).length) return;
-
-    const previewsObj = {};
-    (applicationData?.media || []).forEach((url, index) => {
-      if (!url) return;
-      let preview = {};
-      const ext = (url.split(".").pop() || "").toLowerCase();
-      if (IMAGE_EXTS.includes(ext))
-        preview = { url: axios.defaults.baseURL + url };
-      else if (VIDEO_EXTS.includes(ext)) preview = { icon: FILE_NAMES.video };
-      else if (Object.keys(FILE_NAMES).includes(ext))
-        preview = { icon: FILE_NAMES[ext] };
-      else preview = { icon: FILE_NAMES.any };
-
-      previewsObj[`attachment${index + 1}`] = preview;
-    });
-    setImagePreviews(previewsObj);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [applicationData]);
-
-  const fileChangeHandler = (e) => {
+  const fileChangeHandler = (e, index) => {
     e.preventDefault();
     const file = e.target.files[0];
     if (!file) return;
-    let preview = {};
     const ext = (file.name.split(".").pop() || "").toLowerCase();
-    if (IMAGE_EXTS.includes(ext)) preview = { url: URL.createObjectURL(file) };
-    else if (VIDEO_EXTS.includes(ext)) preview = { icon: FILE_NAMES.video };
-    else if (Object.keys(FILE_NAMES).includes(ext))
-      preview = { icon: FILE_NAMES[ext] };
-    else preview = { icon: FILE_NAMES.any };
-
-    setImagePreviews((prev) => ({
-      ...prev,
-      [e.target?.name]: preview,
-    }));
-  };
-
-  const handleImageRemove = (name) => {
-    const previews = { ...imagePreviews };
-    delete previews?.[name];
+    if (ext !== "pdf") {
+      toast.error("Only pdf files are allowed");
+      return handleImageRemove(index);
+    }
+    const previews = [...imagePreviews];
+    previews[index] = true;
     setImagePreviews(previews);
-    const input = document.querySelector(`input[type='file'][name='${name}']`);
-    if (!input) return;
-    input.value = "";
   };
 
-  const handleFormSubmit = (e) => {
+  const handleImageRemove = (index) => {
+    const previews = [...imagePreviews];
+    previews[index] = false;
+    setImagePreviews(previews);
+    const input = document.querySelector(`input#attachment${index}`);
+    if (input) input.value = "";
+  };
+
+  function trimCanvas(canvas) {
+    const ctx = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    const imageData = ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+
+    let top = null;
+    let left = null;
+    let right = null;
+    let bottom = null;
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const index = (y * width + x) * 4;
+        const alpha = data[index + 3]; // alpha channel
+
+        if (alpha !== 0) {
+          if (top === null) {
+            top = y;
+          }
+          if (left === null || x < left) {
+            left = x;
+          }
+          if (right === null || x > right) {
+            right = x;
+          }
+          if (bottom === null || y > bottom) {
+            bottom = y;
+          }
+        }
+      }
+    }
+
+    if (top === null) {
+      // Entire canvas is empty
+      return null;
+    }
+
+    const trimmedWidth = right - left + 1;
+    const trimmedHeight = bottom - top + 1;
+
+    const trimmedCanvas = document.createElement("canvas");
+    trimmedCanvas.width = trimmedWidth;
+    trimmedCanvas.height = trimmedHeight;
+    const trimmedCtx = trimmedCanvas.getContext("2d");
+
+    trimmedCtx.putImageData(
+      ctx.getImageData(left, top, trimmedWidth, trimmedHeight),
+      0,
+      0
+    );
+
+    return trimmedCanvas;
+  }
+
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
     if (applicationData) setIsUploading(true);
     setIsLoading(true);
     const payload = new FormData(e.target);
     payload.set("envelope_id", envelopeId);
+    if (applicationData) {
+      const canvas = trimCanvas(sigCanvas.current?.getCanvas());
+      if (!canvas) {
+        toast.error("Signatures are required");
+        setIsUploading(false);
+        setIsLoading(false);
+        return;
+      }
+      const blob = await new Promise((resolve) =>
+        canvas.toBlob(resolve, "image/png")
+      );
+      payload.set("signature", blob, "signature.png");
+    }
 
     const axios_promise = applicationData
       ? axios.post("/api/applications/create", payload, {
@@ -155,13 +164,9 @@ function Apply() {
         setApplicationData(res.data?.data?.application);
         setIsSubmitted(_is_submitted);
         setMessage(msg);
-        if (msg && !_is_submitted) toast(msg);
+        if (msg && !_is_submitted) toast.success(msg);
       })
-      .catch((err) => {
-        const msg = err?.repsonse?.data?.msg;
-        setMessage(msg);
-        if (msg) toast.error(msg);
-      })
+      .catch((err) => toast.error(err?.response?.data?.msg))
       .finally(() => {
         setUploadingProgress(0);
         setIsUploading(false);
@@ -185,7 +190,9 @@ function Apply() {
                 </span>
                 <p className="text-[16px] text-center">
                   {message.split("<br/>").map((part, index) => (
-                    <p key={index} className="text-center">{part}</p>
+                    <span key={index} className="block text-center">
+                      {part}
+                    </span>
                   ))}
                 </p>
                 <Button
@@ -248,14 +255,16 @@ function Apply() {
                             Business Information
                           </h3>
 
-                          {Fields.business.map((field) => (
+                          {Fields.business.map((field, index) => (
                             <FloatingInput
+                              key={index}
                               name={field.name}
                               placeholder={field.placeholder}
                               type={field.type}
                               max={field?.max || ""}
                               onChange={field.onChange}
                               required={field.required}
+                              value={field.value}
                             />
                           ))}
                         </div>
@@ -263,14 +272,16 @@ function Apply() {
                           <h3 className="w-fit uppercase mb-[10px] pb-[5px] font-bold relative before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-black">
                             Owner Information
                           </h3>
-                          {Fields.owner.map((field) => (
+                          {Fields.owner.map((field, index) => (
                             <FloatingInput
+                              key={index}
                               name={field.name}
                               onChange={field.onChange}
                               placeholder={field.placeholder}
                               max={field?.max || ""}
                               type={field.type}
                               required={field.required}
+                              value={field.value}
                             />
                           ))}
                         </div>
@@ -280,14 +291,16 @@ function Apply() {
                             Partner Information
                           </h3>
 
-                          {Fields.partner.map((field) => (
+                          {Fields.partner.map((field, index) => (
                             <FloatingInput
+                              key={index}
                               name={field.name}
                               onChange={field.onChange}
                               placeholder={field.placeholder}
                               max={field?.max || ""}
                               type={field.type}
                               required={field.required}
+                              value={field.value}
                             />
                           ))}
                         </div>
@@ -296,7 +309,7 @@ function Apply() {
                         <h3 className="uppercase text-[14px] font-bold mb-[20px]">
                           Terms of USe
                         </h3>
-                        <p className="text-[12px]">
+                        <div className="text-[12px]">
                           <p className="font-bold">1. Introduction</p>
                           <p>
                             Welcome to Business fcadvance.com. These Terms and
@@ -418,140 +431,66 @@ function Apply() {
                             Terms and Conditions, please contact us at
                             info@fcadvance.com.
                           </p>
-                        </p>
+                        </div>
                       </div>
-                      <div className="flex gap-[20px] items-center justify-center">
-                        {(applicationData?.media || []).map((media, index) => (
-                          <input
-                            key={index}
-                            type="hidden"
-                            name={`attachment${index + 1}`}
-                            value={media}
+                      <div className="mb-[20px] w-full">
+                        <div className="flex items-end justify-between gap-[10px]">
+                          <p className="font-bold text-[14px] flex-1">
+                            Signatures*:
+                          </p>
+                          <button
+                            type="button"
+                            className="p-[5px]"
+                            onClick={() => sigCanvas.current?.clear()}
+                          >
+                            <FontAwesomeIcon icon={faRotateRight} />
+                          </button>
+                        </div>
+                        <div className="border rounded-md">
+                          <SignatureCanvas
+                            ref={sigCanvas}
+                            canvasProps={{ className: "w-full" }}
                           />
-                        ))}
-                        <div className="relative bg-gray-200 size-[100px] flex items-center justify-center text-[30px] rounded-[5px]">
-                          {imagePreviews?.attachment1 ? (
-                            <span
-                              onClick={() => handleImageRemove("attachment1")}
-                              className="z-2 size-[25px] bg-red-500 flex items-center justify-center rounded-full absolute top-0 right-0 text-[15px] text-white transform-[translate(25%,-25%)] cursor-pointer"
-                            >
-                              <FontAwesomeIcon icon={faXmark} />
-                            </span>
-                          ) : null}
-                          {imagePreviews?.attachment1?.url ? (
-                            <img
-                              src={imagePreviews?.attachment1?.url}
-                              className="size-[80px] rounded-[5px] object-cover"
-                            />
-                          ) : imagePreviews?.attachment1?.icon ? (
-                            <FontAwesomeIcon
-                              icon={imagePreviews?.attachment1?.icon}
-                              className="text-gray-500 text-[70px]"
-                            />
-                          ) : (
-                            <FontAwesomeIcon icon={faUpload} />
-                          )}
-                          <div className="size-full overflow-hidden absolute z-1">
-                            <input
-                              type="file"
-                              name="attachment1"
-                              className="scale-[10] cursor-pointer opacity-0"
-                              onChange={fileChangeHandler}
-                            />
-                          </div>
                         </div>
-                        <div className="relative bg-gray-200 size-[100px] flex items-center justify-center text-[30px] rounded-[5px]">
-                          {imagePreviews?.attachment2 ? (
-                            <span
-                              onClick={() => handleImageRemove("attachment2")}
-                              className="z-2 size-[25px] bg-red-500 flex items-center justify-center rounded-full absolute top-0 right-0 text-[15px] text-white transform-[translate(25%,-25%)] cursor-pointer"
+                      </div>
+                      <div className="relative flex flex-col gap-[5px] items-center justify-center border p-[15px] w-fit self-center rounded-md">
+                        <p className="font-bold text-[14px] bg-white absolute top-0 transform-[translateY(-50%)] px-[10px]">
+                          Upload PDF files
+                        </p>
+                        <div className="grid grid-cols-2 sm:flex gap-[20px] flex-wrap items-center justify-center">
+                          {imagePreviews.map((preview, index) => (
+                            <div
+                              key={index}
+                              className="relative bg-gray-200 size-[100px] flex items-center justify-center text-[30px] rounded-[5px]"
                             >
-                              <FontAwesomeIcon icon={faXmark} />
-                            </span>
-                          ) : null}
-                          {imagePreviews?.attachment2?.url ? (
-                            <img
-                              src={imagePreviews?.attachment2?.url}
-                              className="size-[80px] rounded-[5px] object-cover"
-                            />
-                          ) : imagePreviews?.attachment2?.icon ? (
-                            <FontAwesomeIcon
-                              icon={imagePreviews?.attachment2?.icon}
-                              className="text-gray-500 text-[70px]"
-                            />
-                          ) : (
-                            <FontAwesomeIcon icon={faUpload} />
-                          )}
-                          <div className="size-full overflow-hidden absolute z-1">
-                            <input
-                              type="file"
-                              name="attachment2"
-                              className="scale-[10] cursor-pointer opacity-0"
-                              onChange={fileChangeHandler}
-                            />
-                          </div>
-                        </div>
-                        <div className="relative bg-gray-200 size-[100px] flex items-center justify-center text-[30px] rounded-[5px]">
-                          {imagePreviews?.attachment3 ? (
-                            <span
-                              onClick={() => handleImageRemove("attachment3")}
-                              className="z-2 size-[25px] bg-red-500 flex items-center justify-center rounded-full absolute top-0 right-0 text-[15px] text-white transform-[translate(25%,-25%)] cursor-pointer"
-                            >
-                              <FontAwesomeIcon icon={faXmark} />
-                            </span>
-                          ) : null}
-                          {imagePreviews?.attachment3?.url ? (
-                            <img
-                              src={imagePreviews?.attachment3?.url}
-                              className="size-[80px] rounded-[5px] object-cover"
-                            />
-                          ) : imagePreviews?.attachment3?.icon ? (
-                            <FontAwesomeIcon
-                              icon={imagePreviews?.attachment3?.icon}
-                              className="text-gray-500 text-[70px]"
-                            />
-                          ) : (
-                            <FontAwesomeIcon icon={faUpload} />
-                          )}
-                          <div className="size-full overflow-hidden absolute z-1">
-                            <input
-                              type="file"
-                              name="attachment3"
-                              className="scale-[10] cursor-pointer opacity-0"
-                              onChange={fileChangeHandler}
-                            />
-                          </div>
-                        </div>
-                        <div className="relative bg-gray-200 size-[100px] flex items-center justify-center text-[30px] rounded-[5px]">
-                          {imagePreviews?.attachment4 ? (
-                            <span
-                              onClick={() => handleImageRemove("attachment4")}
-                              className="z-2 size-[25px] bg-red-500 flex items-center justify-center rounded-full absolute top-0 right-0 text-[15px] text-white transform-[translate(25%,-25%)] cursor-pointer"
-                            >
-                              <FontAwesomeIcon icon={faXmark} />
-                            </span>
-                          ) : null}
-                          {imagePreviews?.attachment4?.url ? (
-                            <img
-                              src={imagePreviews?.attachment4?.url}
-                              className="size-[80px] rounded-[5px] object-cover"
-                            />
-                          ) : imagePreviews?.attachment4?.icon ? (
-                            <FontAwesomeIcon
-                              icon={imagePreviews?.attachment4?.icon}
-                              className="text-gray-500 text-[70px]"
-                            />
-                          ) : (
-                            <FontAwesomeIcon icon={faUpload} />
-                          )}
-                          <div className="size-full overflow-hidden absolute z-1">
-                            <input
-                              type="file"
-                              name="attachment4"
-                              className="scale-[10] cursor-pointer opacity-0"
-                              onChange={fileChangeHandler}
-                            />
-                          </div>
+                              {preview && (
+                                <span
+                                  onClick={() => handleImageRemove(index)}
+                                  className="z-2 size-[25px] bg-red-500 flex items-center justify-center rounded-full absolute top-0 right-0 text-[15px] text-white transform-[translate(25%,-25%)] cursor-pointer"
+                                >
+                                  <FontAwesomeIcon icon={faXmark} />
+                                </span>
+                              )}
+                              {preview ? (
+                                <FontAwesomeIcon
+                                  icon={faFilePdf}
+                                  className="text-gray-500 text-[70px]"
+                                />
+                              ) : (
+                                <FontAwesomeIcon icon={faUpload} />
+                              )}
+                              <div className="size-full overflow-hidden absolute z-1">
+                                <input
+                                  type="file"
+                                  id={`attachment${index}`}
+                                  name="attachment"
+                                  accept="application/pdf"
+                                  className="scale-[10] cursor-pointer opacity-0"
+                                  onChange={(e) => fileChangeHandler(e, index)}
+                                />
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </>
