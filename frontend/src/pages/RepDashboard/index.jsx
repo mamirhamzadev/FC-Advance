@@ -470,7 +470,18 @@ function RepDashboard() {
                 ) : (
                   <p>No partner available</p>
                 )}
-
+                <div className="flex gap-[10px] mt-[10px] mb-[50px]">
+                  <h3 className="font-bold">Signatures:</h3>
+                  <div className="border border-gray-200 p-[5px] rounded-[5px] flex items-center justify-center">
+                    <img
+                      src={
+                        axios.defaults.baseURL + selectedApplication?.signatures
+                      }
+                      alt="signatures"
+                      width="150px"
+                    />
+                  </div>
+                </div>
                 <div className="flex gap-[10px] mt-[10px] mb-[50px]">
                   <h3 className="font-bold">Media (click to download):</h3>
                   <div className="flex gap-[10px] flex-wrap">
