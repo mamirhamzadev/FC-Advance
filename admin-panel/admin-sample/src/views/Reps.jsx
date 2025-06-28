@@ -10,8 +10,6 @@ import { SWAL_VARIANT_CONFIGS } from "../../../shared/utils/constants";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-const DATE_FIELDS = ["dob", "start_date"];
-
 const Reps = () => {
   const [formData, setFormData] = useState();
   const [showAddUpdateModal, setShowAddUpdateModal] = useState(false);
@@ -22,8 +20,6 @@ const Reps = () => {
   const [isFetchingReps, setIsFetchingReps] = useState(true);
   const [isFetchingRep, setIsFetchingRep] = useState(false);
   const [viewRepModal, setShowViewRepModal] = useState(false);
-  const [application, setApplication] = useState();
-  const [viewApplicationModal, setShowViewApplicationModal] = useState(false);
   const [isProcessingAddUpdate, setIsProcessingAddUpdate] = useState(false);
 
   useEffect(() => {
@@ -52,11 +48,6 @@ const Reps = () => {
       .then((res) => setFormData(res?.data?.rep))
       .catch((err) => toast.error(err.msg))
       .finally(() => setIsFetchingRep(false));
-  };
-
-  const handleViewApplicationDialog = (application) => {
-    setApplication(application);
-    setShowViewApplicationModal(true);
   };
 
   const handleDeleteItemButton = (data) => {
@@ -98,19 +89,6 @@ const Reps = () => {
         setIsProcessingAddUpdate(false);
         setShowProgressModal(false);
       });
-  };
-
-  const normalizeKey = (key = "") => {
-    key = key.replace("_", " ").replace("-", " ");
-    return key
-      .split(" ")
-      .map((part) =>
-        part
-          .split("")
-          .map((char, index) => (index === 0 ? char.toUpperCase() : char))
-          .join("")
-      )
-      .join(" ");
   };
 
   return (
@@ -388,13 +366,30 @@ const Reps = () => {
                                           <p className="m-0">
                                             {application?.business?.name}
                                           </p>
-                                          <Link
-                                            className="text-primary"
-                                            target="_blank"
-                                            to={application?.business?.website}
-                                          >
-                                            View Business
-                                          </Link>
+                                          {application?.business?.website ? (
+                                            <Link
+                                              style={{
+                                                color: "blue",
+                                                textDecoration: "underline",
+                                              }}
+                                              target="_blank"
+                                              to={
+                                                application?.business?.website
+                                              }
+                                            >
+                                              View Business
+                                            </Link>
+                                          ) : (
+                                            <span
+                                              style={{
+                                                color: "gray",
+                                                fontStyle: "italic",
+                                                fontSize: "12px",
+                                              }}
+                                            >
+                                              No Website
+                                            </span>
+                                          )}
                                         </div>
                                       </td>
                                       <td className="p-3">
@@ -405,16 +400,12 @@ const Reps = () => {
                                       </td>
                                       <td className="p-3">
                                         <div className="d-flex gap-2">
-                                          <button
-                                            onClick={() =>
-                                              handleViewApplicationDialog(
-                                                application
-                                              )
-                                            }
+                                          <a
+                                            href={`/applications/${application?._id}`}
                                             className="border-0 bg-transparent d-flex lign-items-center justify-content-center"
                                           >
                                             <i className="fa fa-eye"></i>
-                                          </button>
+                                          </a>
                                           <a
                                             href={`${axios.defaults.baseURL}api/applications/pdf/${application?._id}`}
                                             target="_blank"
@@ -454,156 +445,6 @@ const Reps = () => {
               type="button"
               className="btn btn-light"
               onClick={() => setShowViewRepModal(false)}
-            >
-              Close
-            </button>
-          </div>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal
-        show={viewApplicationModal}
-        onHide={() => setShowViewApplicationModal(false)}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title id="contained-modal-title-vcenter">
-            Application Details
-          </Modal.Title>
-        </Modal.Header>
-
-        <Modal.Body className="modal-scrollable-body p-7">
-          <div className="flex-col">
-            <div className="d-flex mb-4 gap-2">
-              <h3 className="card-title fw-bold fs-5 m-0">Envelope ID:</h3>
-              <p className="mb-0">{application?.envelope_id}</p>
-            </div>
-            <div className="d-flex mb-4 gap-2">
-              <h3 className="card-title fw-bold fs-5 m-0">
-                Submitted By (Name):
-              </h3>
-              <p className="mb-0">{application?.submitted_by?.full_name}</p>
-            </div>
-            <div className="d-flex mb-4 gap-2">
-              <h3 className="card-title fw-bold fs-5 m-0">
-                Submitted By (Email):
-              </h3>
-              <p className="mb-0">{application?.submitted_by?.email}</p>
-            </div>
-            <h2 className="my-5 pt-5">Business Information</h2>
-            {Object.keys(application?.business || {}).map((key, index) => (
-              <div className="d-flex mb-4 gap-2" key={index}>
-                <h3 className="card-title fw-bold fs-5 m-0">
-                  {normalizeKey(key)}:
-                </h3>
-                <p className="mb-0">
-                  {DATE_FIELDS.includes(key)
-                    ? new Date(application?.business?.[key]).toDateString()
-                    : application?.business?.[key]}
-                </p>
-              </div>
-            ))}
-            <h2 className="my-5 pt-5">Owner Information</h2>
-            {Object.keys(application?.owner || {}).map((key, index) => (
-              <div className="d-flex mb-4 gap-2" key={index}>
-                <h3 className="card-title fw-bold fs-5 m-0">
-                  {normalizeKey(key)}:
-                </h3>
-                <p className="mb-0">
-                  {typeof application?.owner?.[key] === "string"
-                    ? DATE_FIELDS.includes(key)
-                      ? new Date(application?.owner?.[key]).toDateString()
-                      : application?.owner?.[key]
-                    : Object.values(application?.owner?.[key]).join(", ")}
-                </p>
-              </div>
-            ))}
-            <h2 className="my-5 pt-5">Partner Information</h2>
-            {application?.partner?.full_name && application?.partner?.email ? (
-              <>
-                {Object.keys(application?.partner || {}).map((key, index) => {
-                  if (
-                    (typeof application?.partner?.[key] === "string" &&
-                      !application?.partner?.[key]) ||
-                    (typeof application?.partner?.[key] === "object" &&
-                      !Object.values(application?.partner?.[key] || {}).find(
-                        (val) => !!val
-                      ))
-                  )
-                    return null;
-                  return (
-                    <div className="d-flex mb-4 gap-2" key={index}>
-                      <h3 className="card-title fw-bold fs-5 m-0">
-                        {normalizeKey(key)}:
-                      </h3>
-                      <p className="mb-0">
-                        {typeof application?.partner?.[key] === "string"
-                          ? DATE_FIELDS.includes(key)
-                            ? new Date(
-                                application?.partner?.[key]
-                              ).toDateString()
-                            : application?.partner?.[key]
-                          : Object.values(
-                              application?.partner?.[key] || {}
-                            ).join(", ")}
-                      </p>
-                    </div>
-                  );
-                })}
-              </>
-            ) : (
-              <p>No partner available</p>
-            )}
-
-            <div className="d-flex mb-4 gap-2">
-              <h3 className="card-title fw-bold fs-5 m-0">Signatures:</h3>
-              <div className="border p-2 rounded-1 d-flex align-items-center justify-content-center">
-                <img
-                  src={axios.defaults.baseURL + application?.signatures}
-                  alt="signatures"
-                  width="150px"
-                />
-              </div>
-            </div>
-            <div className="d-flex mb-4 gap-2">
-              <h3 className="card-title fw-bold fs-5 m-0">
-                Media (click to download):
-              </h3>
-              <div className="mb-0 d-flex gap-2 flex-wrap">
-                {(application?.media || []).length ? (
-                  <>
-                    {(application?.media || []).map((media) => (
-                      <a
-                        target="_blank"
-                        href={axios.defaults.baseURL + media}
-                        style={{
-                          width: "100px",
-                          aspectRatio: "1/1",
-                          cursor: "pointer",
-                          fontSize: "70px",
-                        }}
-                        title={media.split("=")[1]}
-                        className="border p-2 rounded-1 d-flex align-items-center justify-content-center"
-                      >
-                        <i className="fa fa-file-pdf"></i>
-                      </a>
-                    ))}
-                  </>
-                ) : (
-                  <p>No files attached</p>
-                )}
-              </div>
-            </div>
-          </div>
-        </Modal.Body>
-        <Modal.Footer className="modal-fixed-footer">
-          <div className="w-100 d-flex justify-content-between flex-wrap flex-row-reverse">
-            <button
-              type="button"
-              className="btn btn-light"
-              onClick={() => setShowViewApplicationModal(false)}
             >
               Close
             </button>

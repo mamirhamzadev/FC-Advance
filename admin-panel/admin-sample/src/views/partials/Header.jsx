@@ -42,7 +42,7 @@ const Header = () => {
         <div className="container-xxl d-flex flex-grow-1 flex-stack">
           <div className="d-flex align-items-center me-5">
             <Link to="/">
-              <img alt="Logo" src="assets/logo.png" className="h-50px" />
+              <img alt="Logo" src="/assets/logo.png" className="h-50px" />
             </Link>
           </div>
 

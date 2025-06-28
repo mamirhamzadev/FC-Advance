@@ -4,14 +4,14 @@ import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
 import PlainDataTable from "../../../shared/styles/dataTables/PlainDataTable";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const DATE_FIELDS = ["dob", "start_date"];
 
 const Application = () => {
-  const [formData, setFormData] = useState();
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [isFetchingApplications, setIsFetchingApplications] = useState(true);
-  const [viewApplicationModal, setShowViewApplicationModal] = useState(false);
 
   useEffect(() => {
     if (!isFetchingApplications) return;
@@ -30,21 +30,7 @@ const Application = () => {
   }, [isFetchingApplications]);
 
   const handleViewApplicationButton = (item) => {
-    setShowViewApplicationModal(true);
-    setFormData(item);
-  };
-
-  const normalizeKey = (key = "") => {
-    key = key.replace("_", " ").replace("-", " ");
-    return key
-      .split(" ")
-      .map((part) =>
-        part
-          .split("")
-          .map((char, index) => (index === 0 ? char.toUpperCase() : char))
-          .join("")
-      )
-      .join(" ");
+    navigate(`/applications/${item?._id}`);
   };
 
   return (
@@ -98,7 +84,7 @@ const Application = () => {
         </div>
       </div>
 
-      <Modal
+      {/* <Modal
         show={viewApplicationModal}
         onHide={() => setShowViewApplicationModal(false)}
         size="lg"
@@ -248,7 +234,7 @@ const Application = () => {
             </button>
           </div>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
     </>
   );
 };

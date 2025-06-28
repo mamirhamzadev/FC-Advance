@@ -12,6 +12,7 @@ import {
   getRepForRepDashboard,
   changePassword,
 } from "../controllers/reps.js";
+import { get as getApplication } from "../controllers/applications.js";
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.get("/get/:id", checkAdminAuth, get);
 router.get("/list", checkAdminAuth, list);
 
 router.post("/dashboard/login", dashboardLogin);
+router.get("/application/:id", checkRepAuth, getApplication);
 router.post("/change-password", checkRepAuth, changePassword);
 router.get("/list-with-applications", checkRepAuth, listWithApplications);
 router.get("/check/:id", checkRepExistance);

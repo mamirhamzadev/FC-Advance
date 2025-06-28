@@ -1,4 +1,5 @@
 import AboutUs from "../pages/AboutUs";
+import ApplicationDetails from "../pages/ApplicationDetails";
 import Apply from "../pages/Apply";
 import BusinessLiensOfCredit from "../pages/BusinessLiensOfCredit";
 import BusinessTermLoans from "../pages/BusinessTermLoans";
@@ -85,6 +86,13 @@ export default [
     name: "Rep Dashboard",
     path: REP_DASHBOARD_ROUTE,
     component: RepDashboard,
+    isHeaderRoute: false,
+    isFooterRoute: false,
+  },
+  {
+    name: "Application Details",
+    path: REP_DASHBOARD_ROUTE + "/application/:id",
+    component: ApplicationDetails,
     isHeaderRoute: false,
     isFooterRoute: false,
   },

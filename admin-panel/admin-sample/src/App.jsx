@@ -10,6 +10,7 @@ const LazyComponents = {
   Profile: lazy(() => import("./views/Profile")),
   Reps: lazy(() => import("./views/Reps")),
   Applications: lazy(() => import("./views/Applications")),
+  ApplicationDetails: lazy(() => import("./views/ApplicationDetails")),
   Users: lazy(() => import("./views/Users")),
 };
 
@@ -52,6 +53,10 @@ function App() {
                 <Route
                   path="applications"
                   element={<LazyComponents.Applications />}
+                />
+                <Route
+                  path="applications/:id"
+                  element={<LazyComponents.ApplicationDetails />}
                 />
                 <Route path="users" element={<LazyComponents.Users />} />
               </Route>

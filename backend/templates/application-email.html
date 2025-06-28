@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Application Submitted</title>
+  </head>
+  <body
+    style="
+      margin: 0 !important;
+      padding: 0 !important;
+      background-color: #ffffff !important;
+      color: #000000 !important;
+      font-family: Arial, sans-serif !important;
+    "
+  >
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      style="background-color: #ffffff; padding: 20px"
+    >
+      <tr>
+        <td align="center">
+          <table
+            width="100%"
+            cellpadding="0"
+            cellspacing="0"
+            style="
+              max-width: 600px !important;
+              border: 1px solid #e0e0e0 !important;
+              border-radius: 8px !important;
+              box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+            "
+          >
+            <tr>
+              <td
+                style="
+                  background-color: #747474 !important;
+                  padding: 20px !important;
+                  text-align: center !important;
+                  color: #ffffff !important;
+                "
+              >
+                <img
+                  src="https://fc-advance-api.single-solution.dev/assets?file=logo.jpg"
+                  alt="logo"
+                  width="200px"
+                  style="margin: 30px 0px !important"
+                />
+                <h1 style="margin: 0 !important; font-size: 24px !important">
+                  Application Submitted
+                </h1>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding: 30px !important;
+                  text-align: left !important;
+                  color: #000000 !important;
+                "
+              >
+                {{rep_details}}
+                <p
+                  style="
+                    font-size: 18px !important;
+                    font-weight: bold !important;
+                  "
+                >
+                  Application has been submitted by:
+                </p>
+                <p style="font-weight: bold !important">
+                  Full Name:
+                  <span style="font-weight: normal !important"
+                    >{{full_name}}</span
+                  >
+                </p>
+                <p style="font-weight: bold !important">
+                  Email:
+                  <span style="font-weight: normal !important">{{email}}</span>
+                </p>
+                <a
+                  href="{{download_url}}"
+                  style="
+                    font-size: 14px !important;
+                    text-decoration: none !important;
+                    color: white !important;
+                    background-color: #747474 !important;
+                    padding: 10px 15px !important;
+                    border-radius: 5px !important;
+                    display: block !important;
+                    width: fit-content !important;
+                    margin: 10px auto !important;
+                    box-shadow: 0px 2px 30px rgba(0, 0, 0, 0.25) !important;
+                  "
+                >
+                  Download Application PDF
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  background-color: #f9f9f9;
+                  padding: 20px;
+                  text-align: center;
+                  font-size: 12px;
+                  color: #777777;
+                "
+              >
+                In case of any query, feel free to contact support.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

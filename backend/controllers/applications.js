@@ -1,5 +1,11 @@
 import { isObjectIdOrHexString } from "mongoose";
-import { BAD_REQUEST, CREATED, OK, SERVER_ERROR } from "../constants/codes.js";
+import {
+  BAD_REQUEST,
+  CREATED,
+  NOT_FOUND,
+  OK,
+  SERVER_ERROR,
+} from "../constants/codes.js";
 import { makeRes, sendMail } from "../helpers/utils.js";
 import Admin from "../models/Admin.js";
 import Application from "../models/Application.js";
@@ -96,18 +102,35 @@ export const create = async (req, res) => {
     const mailSubject = rep
       ? `Form Submitted through Rep - (${rep?.name})`
       : "Form submitted from website";
-    const mailTemplate = "form-submission.html";
-    await sendMail(
-      mailTo,
-      mailSubject,
-      mailTemplate,
-      prepareMailData(application, rep, true)
-    );
+    const mailTemplate = "application-email.html";
+    await sendMail(mailTo, mailSubject, mailTemplate, {
+      "{{rep_details}}": "",
+      "{{full_name}}": application.submitted_by.full_name,
+      "{{email}}": application.submitted_by.email,
+      "{{download_url}}": `${process.env.SERVER_BASE_URL}/api/applications/pdf/${application._id}`,
+    });
     await sendMail(
       admin.map((adm) => adm.email),
       mailSubject,
       mailTemplate,
-      prepareMailData(application, rep, true, true)
+      {
+        "{{rep_details}}": rep
+          ? `<h3>REP Details:</h3>
+                <p style="font-weight: bold !important">
+                  Full Name:
+                  <span style="font-weight: normal !important"
+                    >${rep.name}</span
+                  >
+                </p>
+                <p style="font-weight: bold !important; margin-bottom: 30px !important;">
+                  Email:
+                  <span style="font-weight: normal !important">${rep.email}</span>
+                </p>`
+          : "",
+        "{{full_name}}": application.submitted_by.full_name,
+        "{{email}}": application.submitted_by.email,
+        "{{download_url}}": `${process.env.SERVER_BASE_URL}/api/applications/pdf/${application._id}`,
+      }
     );
     return makeRes(
       res,
@@ -157,6 +180,28 @@ export const checkApplicationExistance = async (req, res) => {
   }
 };
 
+export const get = async (req, res) => {
+  const id = req.params?.id;
+  if (!id || !isObjectIdOrHexString(id))
+    return makeRes(res, "Application not found", NOT_FOUND);
+
+  try {
+    const application = await Application.findOne({ _id: id }).lean();
+
+    const rep = application.envelope_id
+      ? await Reps.findOne(
+          { _id: application.envelope_id },
+          { email: 1, name: 1 }
+        ).lean()
+      : null;
+    if (application)
+      return makeRes(res, "", OK, { application, rep, profile: req.user });
+    return makeRes(res, "Application not found", NOT_FOUND);
+  } catch (e) {
+    return makeRes(res, e.message, SERVER_ERROR);
+  }
+};
+
 export const list = async (req, res) => {
   const without_rep = req.query?.without_rep === "1";
   try {
@@ -181,15 +226,18 @@ export const renderPdf = async (req, res) => {
     if (application.envelope_id)
       rep = await Reps.findOne({ _id: application.envelope_id });
 
-    const browser = await puppeteer.launch();
+    // const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
     const page = await browser.newPage();
 
     let html = readFileSync(
-      path.join(process.cwd(), "templates", "form-submission.html"),
+      path.join(process.cwd(), "templates", "application-pdf.html"),
       "utf-8"
     );
 
-    const dataToReplace = prepareMailData(application, rep);
+    const dataToReplace = prepareTemplateData(application, rep);
     Object.keys(dataToReplace).forEach(
       (key) => (html = html.replaceAll(key, dataToReplace[key]))
     );
@@ -211,41 +259,29 @@ export const renderPdf = async (req, res) => {
   }
 };
 
-const prepareMailData = (
-  application,
-  rep,
-  addDownloadPdfLink = false,
-  forAdmin = false
-) => {
+const prepareTemplateData = (application, rep) => {
   if (!application) return {};
   return {
     "{{rep_name_line}}": rep
-      ? `Form Submitted through Rep (${rep?.name})` +
-        (forAdmin ? `<br/>Rep Email: ${rep?.email}` : "")
-      : "Form submitted from website",
-    "{{download_pdf}}": addDownloadPdfLink
-      ? `<a 
-          href="${process.env.SERVER_BASE_URL}/api/applications/pdf/${application._id}" 
-          target="_blank" 
-          class="heading" 
-          style="display: block !important;
-                  width: fit-content !important;
-                  text-decoration: none !important;
-                  color: white !important;
-                  background-color: #747474 !important;
-                  border-radius: 10px !important;
-                  padding: 10px 15px !important;
-                  font-size: 14px !important;
-                  margin: 0 0 10px 10px !important;
-                  font-weight: 500 !important;">
-            Download PDF
-          </a>`
-      : "",
+      ? `<p>Application Submitted through Rep:</p>
+        <div style="margin-top: 10px; margin-bottom: 10px;">
+          <p style="font-size: 16px;">
+            REP Name: 
+            <span style="font-weight: normal;">${rep.name}</span>
+          </p>
+          <p style="font-size: 16px;">
+            REP Email: 
+            <span style="font-weight: normal;">${rep.email}</span>
+          </p>
+        <div>`
+      : "Application submitted from website",
     "{{submitted_by_email}}": application?.submitted_by.email || "N/A",
     "{{submitted_by_full_name}}": application?.submitted_by.full_name || "N/A",
     "{{business_name}}": application?.business.name || "N/A",
     "{{business_type}}": application?.business.type || "N/A",
-    "{{business_website}}": application?.business.website || "N/A",
+    "{{business_website}}": application?.business.website
+      ? `<a href="${application.business.website}" target="_blank">View Business</a>`
+      : `<p style="font-style: italic; color: gray; font-size: 14px;">No Webiste</p>`,
     "{{business_tax_id}}": application?.business.tax_id || "N/A",
     "{{business_start_date}}": new Date(application?.business.start_date)
       ?.toISOString()
@@ -291,11 +327,10 @@ const prepareMailData = (
       ? new Date(application?.partner?.dob)?.toISOString()?.split("T")?.[0]
       : "N/A",
     "{{signatures}}": `${process.env.SERVER_BASE_URL}/${application.signatures}`,
-    "{{media}}": application.media
-      .filter((file) => !!file)
-      .map((file) => file.split("\\").pop())
-      .map(
-        (file) => `<a 
+    "{{media}}": (application.media || []).length
+      ? application.media
+          .map(
+            (file) => `<a 
                 href="${process.env.SERVER_BASE_URL}/${file}" 
                 target="_blank" 
                 title="${file.split("=")[1]}"
@@ -303,7 +338,8 @@ const prepareMailData = (
                 download="${file.split("=")[1]}">
                 ${file.split("=")[1]}
               </a>`
-      )
-      .join(""),
+          )
+          .join("")
+      : `<p style="color: gray !important; font-size: 14px !important;">No files attached</p>`,
   };
 };

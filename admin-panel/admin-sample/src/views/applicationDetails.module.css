@@ -1,0 +1,31 @@
+.heading {
+  margin-bottom: 10px;
+  font-weight: bold;
+  padding-bottom: 5px;
+  position: relative;
+  width: fit-content;
+}
+
+.heading::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 25%;
+  background-color: black;
+}
+
+@media (max-width: 768px) {
+  .wrap_md {
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+}
+@media (max-width: 520px) {
+  .wrap_sm {
+    width: fit-content !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(100px, 1fr));
+  }
+}

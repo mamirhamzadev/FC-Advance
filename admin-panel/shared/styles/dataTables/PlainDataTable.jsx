@@ -83,27 +83,41 @@ const PlainDataTable = React.memo((props) => {
     ) {
       return (
         <div className="d-flex gap-3 align-items-center">
-          <button
-            onClick={(e) =>
-              navigator.clipboard.writeText(value).then(() => {
-                e.target.innerHTML = "Copied";
-                setTimeout(() => {
-                  e.target.innerHTML = "Copy Link";
-                }, 2000);
-              })
-            }
-            style={{ minWidth: "85px" }}
-            className="btn btn-primary p-2 py-1"
-          >
-            Copy Link
-          </button>
-          <a
-            href={value}
-            target="_blank"
-            className="text-start d-flex align-items-center text-primary"
-          >
-            <u>Visit Instead</u>
-          </a>
+          {value ? (
+            <>
+              <button
+                onClick={(e) =>
+                  navigator.clipboard.writeText(value).then(() => {
+                    e.target.innerHTML = "Copied";
+                    setTimeout(() => {
+                      e.target.innerHTML = "Copy Link";
+                    }, 2000);
+                  })
+                }
+                style={{ minWidth: "85px" }}
+                className="btn btn-primary p-2 py-1"
+              >
+                Copy Link
+              </button>
+              <a
+                href={value}
+                target="_blank"
+                className="text-start d-flex align-items-center text-primary"
+              >
+                <u>Visit Instead</u>
+              </a>
+            </>
+          ) : (
+            <span
+              style={{
+                color: "gray",
+                fontStyle: "italic",
+                fontSize: "12px",
+              }}
+            >
+              No Link Provided
+            </span>
+          )}
         </div>
       );
     } else if (columnField === "isFollowUpRequired") {

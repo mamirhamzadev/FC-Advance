@@ -221,7 +221,7 @@ function RepDashboard() {
                   body={(rowData) => (
                     <div className="min-w-[30px] text-[14px] flex gap-[10px] items-center whitespace-nowrap">
                       {rowData?.business?.name || "N/A"}
-                      {rowData?.business?.website && (
+                      {rowData?.business?.website ? (
                         <Link
                           to={rowData?.business?.website}
                           target="_blank"
@@ -229,6 +229,16 @@ function RepDashboard() {
                         >
                           View Business
                         </Link>
+                      ) : (
+                        <span
+                          style={{
+                            color: "gray",
+                            fontStyle: "italic",
+                            fontSize: "12px",
+                          }}
+                        >
+                          No Website
+                        </span>
                       )}
                     </div>
                   )}
@@ -260,12 +270,12 @@ function RepDashboard() {
                   bodyClassName="!text-[14px]"
                   body={(rowData) => (
                     <div className="flex items-center justify-center gap-[10px] text-gray-700">
-                      <button
-                        onClick={() => setSelectedApplication(rowData)}
+                      <a
+                        href={`/rep/dashboard/application/${rowData?._id}`}
                         className="flex items-center justify-center"
                       >
                         <FontAwesomeIcon icon={faEye} />
-                      </button>
+                      </a>
                       <a
                         href={`${axios.defaults.baseURL}api/applications/pdf/${rowData._id}`}
                         target="_blank"
