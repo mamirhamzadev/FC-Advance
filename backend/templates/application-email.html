@@ -60,24 +60,63 @@
                   color: #000000 !important;
                 "
               >
-                {{rep_details}}
                 <p
+                  style="
+                    font-size: 14px !important;
+                    line-height: 1.5 !important;
+                    letter-spacing: 0.5px !important;
+                  "
+                >
+                  Application has been successfully submitted on {{created_at}}.
+                  Application has been received and it is currently being
+                  reviewed. Thank you for taking the time to complete the
+                  application.
+                </p>
+                <h3
                   style="
                     font-size: 18px !important;
                     font-weight: bold !important;
+                    text-align: center !important;
+                    text-transform: uppercase !important;
                   "
                 >
-                  Application has been submitted by:
-                </p>
-                <p style="font-weight: bold !important">
+                  Submission Details
+                </h3>
+                {{rep_details}}
+                <h3>Application submitted by:</h3>
+                <p
+                  style="
+                    font-weight: bold !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    margin-bottom: 5px !important;
+                    font-size: 14px !important;
+                  "
+                >
                   Full Name:
                   <span style="font-weight: normal !important"
                     >{{full_name}}</span
                   >
                 </p>
-                <p style="font-weight: bold !important">
+                <p
+                  style="
+                    font-weight: bold !important;
+                    font-size: 14px !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                  "
+                >
                   Email:
                   <span style="font-weight: normal !important">{{email}}</span>
+                </p>
+                <p
+                  style="
+                    font-size: 14px !important;
+                    color: gray !important;
+                    margin: 20px 0px !important;
+                  "
+                >
+                  Click on download button to view the application:
                 </p>
                 <a
                   href="{{download_url}}"

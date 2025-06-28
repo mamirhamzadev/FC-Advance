@@ -107,6 +107,7 @@ export const create = async (req, res) => {
       "{{rep_details}}": "",
       "{{full_name}}": application.submitted_by.full_name,
       "{{email}}": application.submitted_by.email,
+      "{{created_at}}": new Date(application.createdAt).toDateString(),
       "{{download_url}}": `${process.env.SERVER_BASE_URL}/api/applications/pdf/${application._id}`,
     });
     await sendMail(
@@ -116,19 +117,38 @@ export const create = async (req, res) => {
       {
         "{{rep_details}}": rep
           ? `<h3>REP Details:</h3>
-                <p style="font-weight: bold !important">
+                <p
+                  style="
+                    font-weight: bold !important;
+                    margin: 0 !important;
+                    font-size: 14px !important;
+                    padding: 0 !important;
+                  "
+                >
                   Full Name:
                   <span style="font-weight: normal !important"
                     >${rep.name}</span
                   >
                 </p>
-                <p style="font-weight: bold !important; margin-bottom: 30px !important;">
+                <p
+                  style="
+                    font-weight: bold !important;
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    font-size: 14px !important;
+                    margin-top: 5px !important;
+                    margin-bottom: 30px !important;
+                  "
+                >
                   Email:
-                  <span style="font-weight: normal !important">${rep.email}</span>
+                  <span style="font-weight: normal !important"
+                    >${rep.email}</span
+                  >
                 </p>`
           : "",
         "{{full_name}}": application.submitted_by.full_name,
         "{{email}}": application.submitted_by.email,
+        "{{created_at}}": new Date(application.createdAt).toDateString(),
         "{{download_url}}": `${process.env.SERVER_BASE_URL}/api/applications/pdf/${application._id}`,
       }
     );

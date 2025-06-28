@@ -202,7 +202,7 @@ function ApplicationDetails() {
             />
 
             <Display
-              title="Media (Click to View):"
+              title="Media (Click to Download):"
               className="mt-[30px]"
               dataClassName="flex flex-wrap gap-[10px]"
               data={

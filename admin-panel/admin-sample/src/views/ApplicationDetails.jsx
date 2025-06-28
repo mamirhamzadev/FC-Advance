@@ -352,7 +352,7 @@ function ApplicationDetails() {
                   transform: "translateY(-50%)",
                 }}
               >
-                Media (Click to View):
+                Media (Click to Download):
               </p>
               {(application.media || []).length ? (
                 <>
