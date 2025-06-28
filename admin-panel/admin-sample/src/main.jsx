@@ -17,8 +17,8 @@ import { setProfile } from "./redux/actions/profile.js";
 
 const root = createRoot(document.getElementById("root"));
 
-// axios.defaults.baseURL = "https://fc-advance-api.single-solution.dev/";
-axios.defaults.baseURL = "http://localhost:3000/";
+axios.defaults.baseURL = "https://fc-advance-api.single-solution.dev/";
+// axios.defaults.baseURL = "http://localhost:3000/";
 const publicRoutes = ["send-otp", "verify-otp", "uploads"];
 axios.interceptors.request.use((config) => {
   if (!publicRoutes.some((route) => config.url?.includes(route)))
