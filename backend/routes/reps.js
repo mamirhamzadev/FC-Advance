@@ -11,6 +11,7 @@ import {
   dashboardLogin,
   getRepForRepDashboard,
   changePassword,
+  restore,
 } from "../controllers/reps.js";
 import { get as getApplication } from "../controllers/applications.js";
 
@@ -19,6 +20,7 @@ const router = Router();
 router.post("/create", checkAdminAuth, create);
 router.post("/update", checkAdminAuth, update);
 router.delete("/remove/:id", checkAdminAuth, remove);
+router.delete("/restore/:id", checkAdminAuth, restore);
 router.get("/get", checkRepAuth, getRepForRepDashboard);
 router.get("/get/:id", checkAdminAuth, get);
 router.get("/list", checkAdminAuth, list);

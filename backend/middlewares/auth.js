@@ -30,7 +30,7 @@ export const checkRepAuth = async (req, res, next) => {
   if (!token) return makeRes(res, "Unauthorized", UNAUTHORIZED);
   try {
     const payload = await getTokenPayload(token);
-    const rep = await Reps.findOne({ email: payload?.email });
+    const rep = await Reps.findOne({ email: payload?.email, deleted_at: null });
     if (!rep) return makeRes(res, "Unauthorized", UNAUTHORIZED);
     req.rep = { email: rep.email };
     next();

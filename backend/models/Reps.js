@@ -13,6 +13,7 @@ const schema = new mongoose.Schema(
       default: null,
     },
     applications: [{ type: mongoose.Schema.Types.ObjectId, ref: Application }],
+    deleted_at: { type: Date, default: null },
   },
   { timestamps: true }
 );

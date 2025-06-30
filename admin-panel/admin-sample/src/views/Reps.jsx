@@ -16,6 +16,7 @@ const Reps = () => {
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [isUpdatingRecord, setIsUpdatingRecord] = useState(false);
   const [reps, setReps] = useState([]);
+  const [deletedReps, setDeletedReps] = useState([]);
   const [adminRep, setAdminRep] = useState(null);
   const [isFetchingReps, setIsFetchingReps] = useState(true);
   const [isFetchingRep, setIsFetchingRep] = useState(false);
@@ -27,7 +28,13 @@ const Reps = () => {
     axios
       .get("/api/reps/list")
       .then((res) => {
-        setReps(res?.data?.reps);
+        const _reps = [],
+          _deletedReps = [];
+        (res?.data?.reps || []).forEach((rep) =>
+          rep.is_deleted ? _deletedReps.push(rep) : _reps.push(rep)
+        );
+        setReps(_reps);
+        setDeletedReps(_deletedReps);
         setAdminRep(res?.data?.admin_rep);
       })
       .catch((err) => toast.error(err?.msg))
@@ -63,6 +70,24 @@ const Reps = () => {
           .catch((err) => {
             toast.error(err?.msg);
             Swal.fire(SWAL_VARIANT_CONFIGS?.delete?.before);
+          });
+      }
+    });
+  };
+
+  const handleRestoreItemButton = (data) => {
+    Swal.fire(SWAL_VARIANT_CONFIGS?.restore?.before).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete("/api/reps/restore/" + data._id)
+          .then((res) => {
+            toast.success(res?.msg);
+            Swal.fire(SWAL_VARIANT_CONFIGS?.restore?.after);
+            setIsFetchingReps(true);
+          })
+          .catch((err) => {
+            toast.error(err?.msg);
+            Swal.fire(SWAL_VARIANT_CONFIGS?.restore?.before);
           });
       }
     });
@@ -166,6 +191,41 @@ const Reps = () => {
                   delete={handleDeleteItemButton}
                   fieldNamesToShow={["#", "Name", "Link", "Total Applications"]}
                   fieldsToShow={["#", "name", "link", "applications.length"]}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="container-xxl">
+          <div className="d-flex flex-wrap flex-stack mt-4">
+            <div className="d-flex flex-wrap flex-stack">
+              <div className="fw-bolder fs-4">Deleted Reps</div>
+              <span className="badge badge-square badge-success ms-2">
+                {isFetchingReps ? "~" : deletedReps?.length}
+              </span>
+            </div>
+          </div>
+
+          <div className="row my-5">
+            {isFetchingReps ? (
+              <button className="btn fw-bolder px-4">
+                <span className="spinner-border spinner-border-lg" />
+              </button>
+            ) : (
+              <div className="col-12 my-5">
+                <PlainDataTable
+                  data={deletedReps || []}
+                  view={handleViewRepsButton}
+                  edit={handleAddUpdateButton}
+                  restore={handleRestoreItemButton}
+                  fieldNamesToShow={[
+                    "#",
+                    "Name",
+                    "Email",
+                    "Total Applications",
+                  ]}
+                  fieldsToShow={["#", "name", "email", "applications.length"]}
                 />
               </div>
             )}

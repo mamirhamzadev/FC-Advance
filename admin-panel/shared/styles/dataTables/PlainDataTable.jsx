@@ -173,7 +173,14 @@ const PlainDataTable = React.memo((props) => {
       );
     });
 
-    if (props?.view || props?.edit || props?.delete || props?.subscription) {
+    if (
+      props?.view ||
+      props?.edit ||
+      props?.delete ||
+      props?.subscription ||
+      props?.downloadPDF ||
+      props?.restore
+    ) {
       columns.push(
         <Column
           key="actions"
@@ -243,6 +250,14 @@ const PlainDataTable = React.memo((props) => {
                     style={{ fontSize: "1rem" }}
                   />
                 ))}
+              {props?.restore ? (
+                <i
+                  className="fa fa-trash-arrow-up svg-icon svg-icon-5 svg-icon-gray-500 cursor-pointer"
+                  onClick={() => props?.restore?.(rowData)}
+                  title="Restore"
+                  style={{ fontSize: "1rem" }}
+                />
+              ) : null}
               {props?.subscription && (
                 <i
                   className="fas fa-credit-card svg-icon svg-icon-5 svg-icon-gray-500 cursor-pointer"

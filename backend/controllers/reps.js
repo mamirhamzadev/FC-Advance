@@ -11,12 +11,9 @@ import {
   makeRes,
   sendMail,
 } from "../helpers/utils.js";
-import Application from "../models/Application.js";
 import Reps from "../models/Reps.js";
 import dotenv from "dotenv";
 import { isObjectIdOrHexString } from "mongoose";
-import { unlinkSync } from "fs";
-import { join } from "path";
 dotenv.config();
 
 export const create = async (req, res) => {
@@ -129,31 +126,33 @@ export const remove = async (req, res) => {
       BAD_REQUEST
     );
   try {
-    const repApplications = (
-      await Reps.findOne({ _id: id }).populate("applications")
-    ).applications;
-    const mediaFiles = repApplications
-      .map((app) => app?.media)
-      .flat()
-      .filter((file) => !!file)
-      .map((file) => file.split("\\").pop());
-    mediaFiles.forEach((file) => {
-      try {
-        unlinkSync(join(process.cwd(), "uploads", file));
-      } catch (e) {}
-    });
+    const response = await Reps.findOneAndUpdate(
+      { _id: id },
+      { deleted_at: Date.now() }
+    );
+    if (response) return makeRes(res, "Rep deleted", OK, { profile: req.user });
+    return makeRes(res, "Rep cannot be deleted", BAD_REQUEST);
+  } catch (e) {
+    return makeRes(res, e.message, SERVER_ERROR);
+  }
+};
 
-    const response = await Reps.deleteOne({ _id: id });
-    const applicationsResponse = await Application.deleteMany({
-      _id: repApplications.map((app) => app._id),
-    });
-    let msg = "Rep and related applications deleted";
-    if (response.deletedCount)
-      msg = !applicationsResponse.deletedCount
-        ? "Rep deleted but applications not deleted"
-        : msg;
-    else msg = "Rep cannot be deleted";
-    return makeRes(res, msg, OK, { profile: req.user });
+export const restore = async (req, res) => {
+  const id = req.params.id;
+  if (!id)
+    return makeRes(
+      res,
+      "Something went wrong. Please refresh and try again",
+      BAD_REQUEST
+    );
+  try {
+    const response = await Reps.findOneAndUpdate(
+      { _id: id },
+      { deleted_at: null }
+    );
+    if (response)
+      return makeRes(res, "Rep restored", OK, { profile: req.user });
+    return makeRes(res, "Rep cannot be restored", BAD_REQUEST);
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
   }
@@ -168,7 +167,7 @@ export const getRepForRepDashboard = async (req, res) => {
       BAD_REQUEST
     );
   try {
-    const rep = await Reps.findOne({ email, admin_id: null })
+    const rep = await Reps.findOne({ email, admin_id: null, deleted_at: null })
       .populate("applications")
       .lean();
     return makeRes(res, "", OK, { rep, profile: req.user });
@@ -186,7 +185,8 @@ export const get = async (req, res) => {
       BAD_REQUEST
     );
   try {
-    const rep = await Reps.findOne({ _id: id }).populate("applications").lean();
+    let rep = await Reps.findOne({ _id: id }).populate("applications").lean();
+    rep = { ...rep, is_deleted: !!rep.deleted_at, deleted_at: null };
     return makeRes(res, "", OK, { rep, profile: req.user });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
@@ -196,16 +196,25 @@ export const get = async (req, res) => {
 export const list = async (req, res) => {
   try {
     let reps = await Reps.find({ admin_id: null }).lean();
-    let admin_rep = await Reps.findOne({ admin_id: req.user?._id }).lean();
+    let admin_rep = await Reps.findOne({
+      admin_id: req.user?._id,
+      deleted_at: null,
+    }).lean();
     reps = reps.map((rep) => ({
       ...rep,
+      deleted_at: null,
+      is_deleted: !!rep.deleted_at,
       link: `${process.env.CLIENT_BASE_URL}/apply/${rep._id}`,
     }));
     admin_rep = {
       ...admin_rep,
       link: `${process.env.CLIENT_BASE_URL}/apply/${admin_rep._id}`,
     };
-    return makeRes(res, "", OK, { admin_rep, reps, profile: req.user });
+    return makeRes(res, "", OK, {
+      admin_rep,
+      reps,
+      profile: req.user,
+    });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
   }
@@ -228,7 +237,11 @@ export const dashboardLogin = async (req, res) => {
     );
 
   try {
-    let rep = await Reps.findOne({ email: payload?.email, admin_id: null })
+    let rep = await Reps.findOne({
+      email: payload?.email,
+      admin_id: null,
+      deleted_at: null,
+    })
       .populate("applications")
       .lean();
     if (rep && rep?.password === payload?.password) {
@@ -310,7 +323,7 @@ export const checkRepExistance = async (req, res) => {
       BAD_REQUEST
     );
   try {
-    const rep = await Reps.findOne({ _id: id });
+    const rep = await Reps.findOne({ _id: id, deleted_at: null });
     if (rep) return makeRes(res, "", OK, { envelopeId: rep._id });
     return makeRes(
       res,
