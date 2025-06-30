@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import classes from "./applicationDetails.module.css";
@@ -7,6 +7,8 @@ import classes from "./applicationDetails.module.css";
 const DATE_FIELDS = ["dob", "start_date"];
 
 function ApplicationDetails() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [application, setApplication] = useState(null);
   const [rep, setRep] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,6 +42,11 @@ function ApplicationDetails() {
       .join(" ");
   };
 
+  const navigateBack = () => {
+    if (location.key === "default") navigate("/reps");
+    else navigate(-1);
+  };
+
   return (
     <div className="container-xxl fade-in">
       <div className="my-5 w-100">
@@ -66,7 +73,19 @@ function ApplicationDetails() {
           <div className="my-5 w-100">
             {rep ? (
               <div className="mb-5">
-                <h3 className={classes.heading}>Rep Details:</h3>
+                <div className="d-flex gap-5">
+                  <button
+                    onClick={navigateBack}
+                    className="btn p-0 btn-transparent border-none outline-none"
+                    style={{ transform: "translateY(-5px)" }}
+                  >
+                    <i
+                      className="fa fa-arrow-left-long fs-2"
+                      style={{ color: "black" }}
+                    ></i>
+                  </button>
+                  <h3 className={classes.heading}>Rep Details:</h3>
+                </div>
                 <div
                   className={`mt-5 d-flex gap-5 align-items-center ${classes.wrap_md}`}
                 >
@@ -101,9 +120,21 @@ function ApplicationDetails() {
                 </div>
               </div>
             ) : null}
-            <h3 style={{ margin: "30px 0px 20px" }} className={classes.heading}>
-              Application Details
-            </h3>
+            <div className="d-flex gap-5 mt-5 mb-3">
+              {rep ? null : (
+                <button
+                  onClick={navigateBack}
+                  className="btn p-0 btn-transparent border-none outline-none"
+                  style={{ transform: "translateY(-5px)" }}
+                >
+                  <i
+                    className="fa fa-arrow-left-long fs-2"
+                    style={{ color: "black" }}
+                  ></i>
+                </button>
+              )}
+              <h3 className={classes.heading}>Application Details</h3>
+            </div>
             <div className={`d-flex gap-5 w-100 ${classes.wrap_md}`}>
               <div className="position-relative d-flex d-flex align-items-center justify-content-center border border-primary rounded w-100 p-3">
                 <p
@@ -381,6 +412,11 @@ function ApplicationDetails() {
             </div>
           </div>
         )}
+      </div>
+      <div className="d-flex aling-items-center justify-content-center">
+        <button className="btn btn-primary" onClick={navigateBack}>
+          Back
+        </button>
       </div>
     </div>
   );

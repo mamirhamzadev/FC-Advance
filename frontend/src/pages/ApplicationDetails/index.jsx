@@ -6,8 +6,9 @@ import { useDispatch } from "react-redux";
 import { setRepAuthorized } from "../../redux/actions/rep-dashboard";
 import { REP_DASHBOARD_ROUTE } from "../../constants/routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeftLong, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import Display from "./Display";
+import Button from "../../components/Button";
 
 const DATE_FIELDS = ["dob", "start_date"];
 
@@ -49,6 +50,11 @@ function ApplicationDetails() {
       .join(" ");
   };
 
+  const navigateBack = () => {
+    if (location.key === "default") navigate("/reps");
+    else navigate(-1);
+  };
+
   return (
     <div className="wrapper">
       <div className="my-5 w-full">
@@ -66,18 +72,30 @@ function ApplicationDetails() {
           <div className="my-[1.5rem] w-full">
             {rep ? (
               <>
-                <h3 className="font-bold pb-[5px] relative w-fit before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-black">
-                  Rep Details:
-                </h3>
+                <div className="flex gap-[20px]">
+                  <button onClick={navigateBack}>
+                    <FontAwesomeIcon icon={faArrowLeftLong} />
+                  </button>
+                  <h3 className="font-bold pb-[5px] relative w-fit before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-black">
+                    Rep Details:
+                  </h3>
+                </div>
                 <div className="mt-[1rem] flex gap-[20px] md:flex-row flex-col items-center">
                   <Display title="Rep Full Name" data={rep?.name} />
                   <Display title="Rep Email" data={rep?.email} />
                 </div>
               </>
             ) : null}
-            <h3 className="mt-[30px] mb-[1rem] font-bold pb-[5px] relative w-fit before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-black">
-              Application Details
-            </h3>
+            <div className="flex gap-[20px] items-center">
+              {rep ? null : (
+                <button onClick={navigateBack} className="translate-y-[5px]">
+                  <FontAwesomeIcon icon={faArrowLeftLong} />
+                </button>
+              )}
+              <h3 className="mt-[30px] mb-[1rem] font-bold pb-[5px] relative w-fit before:absolute before:bottom-0 before:left-0 before:h-[2px] before:w-[25%] before:bg-black">
+                Application Details
+              </h3>
+            </div>
             <div className="flex gap-[20px] w-full md:flex-row flex-col">
               <Display
                 title="Application Submitted By (Full Name)"
@@ -230,6 +248,9 @@ function ApplicationDetails() {
                 )
               }
             />
+            <div className="mt-[20px] flex items-center justify-center">
+              <Button onClick={navigateBack} text="Back" />
+            </div>
           </div>
         )}
       </div>
