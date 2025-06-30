@@ -410,13 +410,13 @@ function ApplicationDetails() {
                 <p className="m-0 p-0">No files attached</p>
               )}
             </div>
+            <div className="mt-4 d-flex aling-items-center justify-content-center">
+              <button className="btn btn-primary" onClick={navigateBack}>
+                Back
+              </button>
+            </div>
           </div>
         )}
-      </div>
-      <div className="d-flex aling-items-center justify-content-center">
-        <button className="btn btn-primary" onClick={navigateBack}>
-          Back
-        </button>
       </div>
     </div>
   );
