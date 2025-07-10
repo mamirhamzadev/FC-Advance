@@ -18,8 +18,8 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: "*" }));
-
+app.use(cors());
+  
 app.use("/uploads", assetsRouter);
 app.use("/assets", assetsRouter);
 app.use("/api/admins", adminRouter);
