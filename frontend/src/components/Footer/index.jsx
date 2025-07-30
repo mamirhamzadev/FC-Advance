@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { LOGO } from "../../constants/images";
 import ROUTES, {
+  APPLY_NOW_ROUTE,
   BUSINESS_LINES_OF_CREDIT_ROUTE,
   BUSINESS_TERM_LOANS_ROUTE,
   HOME_ROUTE,
@@ -8,6 +9,7 @@ import ROUTES, {
 } from "../../constants/routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import Button from "../Button";
 
 function Footer() {
   return (
@@ -37,6 +39,11 @@ function Footer() {
               );
             return null;
           })}
+          <Button
+            className="flex !px-[20px] w-fit hover:bg-white hover:text-black"
+            text={"Apply Now"}
+            href={APPLY_NOW_ROUTE}
+          />
         </div>
         <div className="w-full md:w-[25%] flex flex-col gap-[15px] text-white mt-[50px] md:mt-0">
           <h4 className="whitespace-nowrap text-[18px] mb-[5px] pb-[10px] ps-[12px] leading-[1.2] uppercase font-bold flex items-center relative before:absolute before:w-[5px] before:h-[15px] before:left-0 before:bg-gray-700">

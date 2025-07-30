@@ -93,11 +93,11 @@ function Header() {
               return null;
             })}
           </div>
-          <Button
+          {/* <Button
             className="lg:flex hidden !bg-black !px-[20px]"
             text={"Apply Now"}
             href={APPLY_NOW_ROUTE}
-          />
+          /> */}
         </div>
 
         <Button
@@ -137,20 +137,20 @@ function Header() {
                 <Link
                   key={index}
                   to={route.path}
-                  className="py-[10px] border-b border-b-gray-300 w-full font-bold uppercase text-[13px] tracking-[0.06em] flex items-center justify-center"
+                  className="py-[10px] not-last:border-b border-b-gray-300 w-full font-bold uppercase text-[13px] tracking-[0.06em] flex items-center justify-center"
                 >
                   {route.name}
                 </Link>
               );
             return null;
           })}
-          <div className="flex gap-[10px] mt-[30px]">
+          {/* <div className="flex gap-[10px] mt-[30px]">
             <Button
               text={"Apply Now"}
               className="!bg-black"
               href={APPLY_NOW_ROUTE}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </header>
