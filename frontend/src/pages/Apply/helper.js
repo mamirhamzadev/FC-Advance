@@ -43,7 +43,7 @@ export const Fields = {
       name: "business[website]",
       placeholder: "Company Website",
       value: "https://youtube.com/",
-      type: "url",
+      type: "text",
       onChange: null,
       required: false,
     },
