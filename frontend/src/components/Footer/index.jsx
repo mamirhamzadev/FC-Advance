@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { LOGO } from "../../constants/images";
 import ROUTES, {
   APPLY_NOW_ROUTE,
@@ -6,12 +6,32 @@ import ROUTES, {
   BUSINESS_TERM_LOANS_ROUTE,
   HOME_ROUTE,
   MERCHANT_CASH_ADVANCE_ROUTE,
+  REP_DASHBOARD_ROUTE,
 } from "../../constants/routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button";
+import { useDispatch, useSelector } from "react-redux";
+import { setRepAuthorized } from "../../redux/actions/rep-dashboard";
 
 function Footer() {
+  const location = useLocation();
+  const dispatch = useDispatch()
+  const isAuthorized = useSelector(
+    (state) => state?.repDashboard?.isAuthorized
+  );
+
+  const repDashboardLoginHandler = () => {
+    if (REP_DASHBOARD_ROUTE === location.pathname) {
+      if (isAuthorized) {
+        localStorage.removeItem("rep-token");
+        dispatch(setRepAuthorized(false));
+      }
+    } else return navigate(REP_DASHBOARD_ROUTE);
+    headerRef.current?.classList.remove("active");
+  };
+
+
   return (
     <footer className="pt-[50px] md:pt-[80px] bg-[#00081d]">
       <div className="wrapper flex flex-col md:flex-row items-start gap-[15px]">
@@ -39,11 +59,27 @@ function Footer() {
               );
             return null;
           })}
-          <Button
-            className="flex !px-[20px] w-fit hover:bg-white hover:text-black"
-            text={"Apply Now"}
-            href={APPLY_NOW_ROUTE}
-          />
+          <div className="flex flex-wrap gap-2">
+            <Button
+              className="flex !px-[20px] w-fit hover:bg-white hover:text-black"
+              text={"Apply Now"}
+              href={APPLY_NOW_ROUTE}
+            />
+            <Button
+              onClick={repDashboardLoginHandler}
+              className="lg:!px-[40px] lg:!py-[12px] !px-[20px]"
+            >
+              <span>
+                {REP_DASHBOARD_ROUTE === location.pathname
+                  ? isAuthorized
+                    ? "Logout"
+                    : "Login"
+                  : isAuthorized
+                    ? "Dashboard"
+                    : "Login"}
+              </span>
+            </Button>
+          </div>
         </div>
         <div className="w-full md:w-[25%] flex flex-col gap-[15px] text-white mt-[50px] md:mt-0">
           <h4 className="whitespace-nowrap text-[18px] mb-[5px] pb-[10px] ps-[12px] leading-[1.2] uppercase font-bold flex items-center relative before:absolute before:w-[5px] before:h-[15px] before:left-0 before:bg-gray-700">

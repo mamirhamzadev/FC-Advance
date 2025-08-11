@@ -20,20 +20,20 @@ export const create = async (req, res) => {
   const empty_fields = [];
   if (!payload?.submitted_by?.full_name) empty_fields.push("Your Full Name");
   if (!payload?.submitted_by?.email) empty_fields.push("Your Email");
-  else {
-    const application = await Application.findOne({
-      "submitted_by.email": payload?.submitted_by?.email,
-    }).lean();
-    if (application)
-      return makeRes(
-        res,
-        "Your application has already been submitted! Please contact us for furthur details.",
-        CREATED,
-        {
-          is_submitted: true,
-        }
-      );
-  }
+  // else {
+  //   const application = await Application.findOne({
+  //     "submitted_by.email": payload?.submitted_by?.email,
+  //   }).lean();
+  //   if (application)
+  //     return makeRes(
+  //       res,
+  //       "Your application has already been submitted! Please contact us for furthur details.",
+  //       CREATED,
+  //       {
+  //         is_submitted: true,
+  //       }
+  //     );
+  // }
 
   if (!payload?.business?.name) empty_fields.push("Legal Company Name");
   if (!payload?.business?.type) empty_fields.push("Doing Business As");
@@ -65,8 +65,7 @@ export const create = async (req, res) => {
   if (empty_fields.length) {
     return makeRes(
       res,
-      `${empty_fields.join(", ")} ${
-        empty_fields.length > 1 ? "are" : "is"
+      `${empty_fields.join(", ")} ${empty_fields.length > 1 ? "are" : "is"
       } mandatory field(s)`,
       BAD_REQUEST
     );
@@ -176,24 +175,23 @@ export const checkApplicationExistance = async (req, res) => {
   if (empty_fields.length) {
     return makeRes(
       res,
-      `${empty_fields.join(", ")} ${
-        empty_fields.length > 1 ? "are" : "is"
+      `${empty_fields.join(", ")} ${empty_fields.length > 1 ? "are" : "is"
       } mandatory field(s)`,
       BAD_REQUEST
     );
   }
 
   try {
-    const application = await Application.findOne({
-      "submitted_by.email": payload?.submitted_by?.email,
-    }).lean();
-    if (application)
-      return makeRes(
-        res,
-        "Your application has already been submitted! Please contact us for furthur details.",
-        CREATED,
-        { is_submitted: true }
-      );
+    // const application = await Application.findOne({
+    //   "submitted_by.email": payload?.submitted_by?.email,
+    // }).lean();
+    // if (application)
+    // return makeRes(
+    //   res,
+    //   "Your application has already been submitted! Please contact us for furthur details.",
+    //   CREATED,
+    //   { is_submitted: true }
+    // );
     return makeRes(res, "", OK, { application: payload });
   } catch (e) {
     return makeRes(res, e.message, SERVER_ERROR);
@@ -210,9 +208,9 @@ export const get = async (req, res) => {
 
     const rep = application.envelope_id
       ? await Reps.findOne(
-          { _id: application.envelope_id },
-          { email: 1, name: 1 }
-        ).lean()
+        { _id: application.envelope_id },
+        { email: 1, name: 1 }
+      ).lean()
       : null;
     if (application)
       return makeRes(res, "", OK, { application, rep, profile: req.user });
@@ -261,11 +259,30 @@ export const renderPdf = async (req, res) => {
     Object.keys(dataToReplace).forEach(
       (key) => (html = html.replaceAll(key, dataToReplace[key]))
     );
+
     await page.setContent(html, { waitUntil: "networkidle0" });
-    const pdfBuffer = await page.pdf({
+    const pdfConfig = {
       format: "A4",
-      margin: { top: 10, bottom: 10, left: 20, right: 20 },
-    });
+      margin: { top: 10, bottom: 50, left: 70, right: 70 },
+      displayHeaderFooter: true,
+      footerTemplate: `<div style="transform: translateY(-20px); 
+          font-size: 10px; 
+          color: #a3b3c9; 
+          text-align: right; 
+          display: flex; 
+          align-items: center; 
+          justify-content: flex-end; 
+          width: 100%;
+          margin-right: 50px !important; 
+          font-weight: 600;">
+            FCA | FUNDING APPLICATION
+            <span style="font-size: 25px; color: #d7dce3 !important; margin-inline: 5px !important;">|</span>
+            <p>
+              <span class="pageNumber"></span> OF <span class="totalPages"></span>
+            </p>
+          </div>`,
+    }
+    const pdfBuffer = await page.pdf(pdfConfig);
     await browser.close();
     res.set({
       "Content-Type": "application/pdf",
@@ -282,26 +299,9 @@ export const renderPdf = async (req, res) => {
 const prepareTemplateData = (application, rep) => {
   if (!application) return {};
   return {
-    "{{rep_name_line}}": rep
-      ? `<p>Application Submitted through Rep:</p>
-        <div style="margin-top: 10px; margin-bottom: 10px;">
-          <p style="font-size: 16px;">
-            REP Name: 
-            <span style="font-weight: normal;">${rep.name}</span>
-          </p>
-          <p style="font-size: 16px;">
-            REP Email: 
-            <span style="font-weight: normal;">${rep.email}</span>
-          </p>
-        <div>`
-      : "Application submitted from website",
-    "{{submitted_by_email}}": application?.submitted_by.email || "N/A",
-    "{{submitted_by_full_name}}": application?.submitted_by.full_name || "N/A",
     "{{business_name}}": application?.business.name || "N/A",
     "{{business_type}}": application?.business.type || "N/A",
-    "{{business_website}}": application?.business.website
-      ? `<a href="${application.business.website}" target="_blank">View Business</a>`
-      : `<p style="font-style: italic; color: gray; font-size: 14px;">No Webiste</p>`,
+    "{{business_website}}": application?.business.website || `N/A`,
     "{{business_tax_id}}": application?.business.tax_id || "N/A",
     "{{business_start_date}}": new Date(application?.business.start_date)
       ?.toISOString()
@@ -347,19 +347,7 @@ const prepareTemplateData = (application, rep) => {
       ? new Date(application?.partner?.dob)?.toISOString()?.split("T")?.[0]
       : "N/A",
     "{{signatures}}": `${process.env.SERVER_BASE_URL}/${application.signatures}`,
-    "{{media}}": (application.media || []).length
-      ? application.media
-          .map(
-            (file) => `<a 
-                href="${process.env.SERVER_BASE_URL}/${file}" 
-                target="_blank" 
-                title="${file.split("=")[1]}"
-                style="display: block !important; margin-bottom: 10px !important;"
-                download="${file.split("=")[1]}">
-                ${file.split("=")[1]}
-              </a>`
-          )
-          .join("")
-      : `<p style="color: gray !important; font-size: 14px !important;">No files attached</p>`,
+    // "{{application_id}}": application._id.toString().slice(0, 15) + "...",
+    "{{created_at}}": new Date(application.createdAt).toLocaleDateString(),
   };
 };

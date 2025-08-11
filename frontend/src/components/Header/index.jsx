@@ -100,7 +100,7 @@ function Header() {
           /> */}
         </div>
 
-        <Button
+        {/* <Button
           onClick={repDashboardLoginHandler}
           className="lg:!px-[40px] lg:!py-[12px] !px-[20px]"
         >
@@ -127,7 +127,7 @@ function Header() {
               className=""
             />
           </span>
-        </Button>
+        </Button> */}
       </div>
       <div className="drop-down group-[.active]/header:flex lg:!hidden hidden absolute top-[105px] w-full bg-white transition-all duration-300 overflow-hidden">
         <div className="wrapper flex flex-col items-center w-full pb-[30px]">

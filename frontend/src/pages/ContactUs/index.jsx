@@ -17,6 +17,12 @@ function ContactUs() {
 
   useEffect(() => setLoading(false), []);
 
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    const payload = new FormData(e.target);
+    console.log(Object.fromEntries(payload))
+  }
+
   return (
     <>
       <Loader show={loading} />
@@ -27,6 +33,7 @@ function ContactUs() {
 
       <section className="wrapper py-[120px] flex gap-[80px] md:gap-[45px] md:flex-row flex-col items-start justify-center">
         <form
+          onSubmit={handleFormSubmit}
           action=""
           className="shadow-[0_0_10px_#cccccc] px-[30px] py-[50px] flex-1"
         >
@@ -37,42 +44,46 @@ function ContactUs() {
             type="text"
             name="name"
             placeholder="Name"
-            className="py-[6px] px-[12px] h-[34px] border-b border-b-[#e7e7e7] w-full text-[14px] mb-[15px]"
+            className="border-0 outline-0 py-[6px] px-[12px] h-[34px] border-b border-b-[#e7e7e7] w-full text-[14px] mb-[15px]"
           />
           <input
             type="email"
             name="email"
             placeholder="Email*"
-            className="py-[6px] px-[12px] h-[34px] border-b border-b-[#e7e7e7] w-full text-[14px] mb-[15px]"
+            className="border-0 outline-0 py-[6px] px-[12px] h-[34px] border-b border-b-[#e7e7e7] w-full text-[14px] mb-[15px]"
+            required
+          />
+          <input
+            type="text"
+            name="phone"
+            placeholder="Phone*"
+            className="border-0 outline-0 py-[6px] px-[12px] h-[34px] border-b border-b-[#e7e7e7] w-full text-[14px] mb-[15px]"
+            required
           />
           <input
             type="text"
             name="subject"
             placeholder="Subject"
-            className="py-[6px] px-[12px] h-[34px] border-b border-b-[#e7e7e7] w-full text-[14px] mb-[15px]"
+            className="border-0 outline-0 py-[6px] px-[12px] h-[34px] border-b border-b-[#e7e7e7] w-full text-[14px] mb-[15px]"
           />
           <textarea
             name="message"
             placeholder="Write Your Message"
-            className="resize-y min-h-[180px] py-[6px] px-[12px] h-[34px] border-b border-b-[#e7e7e7] w-full text-[14px] mb-[15px]"
+            className="border-0 outline-0 resize-y min-h-[180px] py-[6px] px-[12px] h-[34px] border-b border-b-[#e7e7e7] w-full text-[14px] mb-[15px]"
           ></textarea>
           <div className="flex gap-[20px] mb-[15px]">
-            <input type="checkbox" name="notifications" id="notifications" />
+            <input type="checkbox" name="notifications" id="notifications" required />
             <label htmlFor="notifications" className="text-[14px] text-[#333]">
-              By providing your phone number, you agree to receive text messages
-              from <strong>Fc Advance</strong> subject to our{" "}
+              By checking this box, you agree to the Terms of Use and Privacy Policy of FC Advance. You agree to receive text messages (message and data rates may apply; message frequency may vary. You may opt out at any time by replying <strong>"STOP"</strong> to text messages.) and emails to the contact information provided. Your information will be handled in accordance with our&nbsp;
+              <Link to={TERMS_CONDITIONS_ROUTE} className="underline">
+                Terms of Use
+              </Link>&nbsp;and&nbsp;
               <Link to={PRIVACY_POLICY_ROUTE} className="underline">
                 privacy policy
-              </Link>{" "}
-              and{" "}
-              <Link to={TERMS_CONDITIONS_ROUTE} className="underline">
-                terms & conditions
               </Link>
-              . Message & data rates may apply. Message frequency varies. Reply
-              Stop to opt out.
             </label>
           </div>
-          <Button className="mt-[25px] flex gap-[5px] items-center">
+          <Button type="submit" className="mt-[25px] flex gap-[5px] items-center">
             <p>Send Message</p>
             <FontAwesomeIcon icon={faPaperPlane} className="text-[12px]" />
           </Button>

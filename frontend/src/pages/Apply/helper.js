@@ -28,7 +28,7 @@ export const Fields = {
       placeholder: "Legal Company Name",
       type: "text",
       value: "Business",
-      onChange: alphabetValidator,
+      onChange: null,
       required: true,
     },
     {

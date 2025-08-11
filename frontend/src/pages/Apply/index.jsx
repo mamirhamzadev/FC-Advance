@@ -150,12 +150,12 @@ function Apply() {
 
     const axios_promise = applicationData
       ? axios.post("/api/applications/create", payload, {
-          onUploadProgress: (event) =>
-            setUploadingProgress(Math.round(event.progress * 100)),
-        })
+        onUploadProgress: (event) =>
+          setUploadingProgress(Math.round(event.progress * 100)),
+      })
       : axios.post("/api/applications/check", payload, {
-          headers: { "Content-Type": "application/json" },
-        });
+        headers: { "Content-Type": "application/json" },
+      });
 
     axios_promise
       .then((res) => {
@@ -264,7 +264,7 @@ function Apply() {
                               max={field?.max || ""}
                               onChange={field.onChange}
                               required={field.required}
-                              // value={field.value}
+                            // value={field.value}
                             />
                           ))}
                         </div>
@@ -281,7 +281,7 @@ function Apply() {
                               max={field?.max || ""}
                               type={field.type}
                               required={field.required}
-                              // value={field.value}
+                            // value={field.value}
                             />
                           ))}
                         </div>
@@ -300,7 +300,7 @@ function Apply() {
                               max={field?.max || ""}
                               type={field.type}
                               required={field.required}
-                              // value={field.value}
+                            // value={field.value}
                             />
                           ))}
                         </div>
