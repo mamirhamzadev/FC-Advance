@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LOGO } from "../../constants/images";
 import ROUTES, {
   APPLY_NOW_ROUTE,
@@ -16,7 +16,8 @@ import { setRepAuthorized } from "../../redux/actions/rep-dashboard";
 
 function Footer() {
   const location = useLocation();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const isAuthorized = useSelector(
     (state) => state?.repDashboard?.isAuthorized
   );
