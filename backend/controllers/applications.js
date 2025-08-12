@@ -102,18 +102,41 @@ export const create = async (req, res) => {
       ? `Form Submitted through Rep - (${rep?.name})`
       : "Form submitted from website";
     const mailTemplate = "application-email.html";
-    await sendMail(mailTo, mailSubject, mailTemplate, {
+
+    const mailReplacements = {
       "{{rep_details}}": "",
       "{{full_name}}": application.submitted_by.full_name,
       "{{email}}": application.submitted_by.email,
+      "{{attachments}}": media?.length ?
+        media.map((media) => (
+          `<a href="${process.env.SERVER_BASE_URL}/${media}" style="
+            font-weight: bold !important;
+            font-size: 14px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          ">${media.split("=")?.[1]}</a>`
+        )) :
+        `<p class="
+          font-weight: normal !important;
+          font-style: italic !important;
+          color: gray !important;
+          font-size: 14px !important;
+          margin: 0 !important;
+          padding: 0 !important;"
+        >
+          No attachments to show
+        </p>`,
       "{{created_at}}": new Date(application.createdAt).toDateString(),
       "{{download_url}}": `${process.env.SERVER_BASE_URL}/api/applications/pdf/${application._id}`,
-    });
+    }
+
+    await sendMail(mailTo, mailSubject, mailTemplate, mailReplacements);
     await sendMail(
       admin.map((adm) => adm.email),
       mailSubject,
       mailTemplate,
       {
+        ...mailReplacements,
         "{{rep_details}}": rep
           ? `<h3>REP Details:</h3>
                 <p
@@ -145,10 +168,6 @@ export const create = async (req, res) => {
                   >
                 </p>`
           : "",
-        "{{full_name}}": application.submitted_by.full_name,
-        "{{email}}": application.submitted_by.email,
-        "{{created_at}}": new Date(application.createdAt).toDateString(),
-        "{{download_url}}": `${process.env.SERVER_BASE_URL}/api/applications/pdf/${application._id}`,
       }
     );
     return makeRes(
