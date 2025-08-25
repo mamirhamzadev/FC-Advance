@@ -1,16 +1,16 @@
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
-import Loader from "../../components/Loader";
+import { Link } from "react-router-dom";
 import BreadCrumb from "../../components/BreadCrumb";
+import Button from "../../components/Button";
+import Loader from "../../components/Loader";
 import {
   HOME_ROUTE,
   PRIVACY_POLICY_ROUTE,
   TERMS_CONDITIONS_ROUTE,
 } from "../../constants/routes";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-import Button from "../../components/Button";
 import { getContactInfoData } from "./data";
-import { Link } from "react-router-dom";
 
 function ContactUs() {
   const [loading, setLoading] = useState(true);
@@ -74,10 +74,11 @@ function ContactUs() {
           <div className="flex gap-[20px] mb-[15px]">
             <input type="checkbox" name="notifications" id="notifications" required />
             <label htmlFor="notifications" className="text-[14px] text-[#333]">
-              By checking this box, you agree to the Terms of Use and Privacy Policy of FC Advance. You agree to receive text messages (message and data rates may apply; message frequency may vary. You may opt out at any time by replying <strong>"STOP"</strong> to text messages.) and emails to the contact information provided. Your information will be handled in accordance with our&nbsp;
+              By checking this box, you agree to the Terms of Use and Privacy Policy of FC Advance. You agree to receive text messages (message and data rates may apply; message frequency may vary. By opting in, you will receive important updates, promotional offers, and account-related FC Advance Messages directly to your phone. For assistance, call us at <a href="tel:+1 (646) 707 5610">+1 (646) 707 5610</a>. You may opt out at any time by replying <strong>"STOP"</strong> to text messages.) and emails to the contact information provided. Your information will be handled in accordance with our&nbsp;
               <Link to={TERMS_CONDITIONS_ROUTE} className="underline">
                 Terms of Use
-              </Link>&nbsp;and&nbsp;
+              </Link>
+              &nbsp;and&nbsp;
               <Link to={PRIVACY_POLICY_ROUTE} className="underline">
                 privacy policy
               </Link>
@@ -102,7 +103,7 @@ function ContactUs() {
             </div>
           ))}
         </div>
-      </section>
+      </section >
     </>
   );
 }

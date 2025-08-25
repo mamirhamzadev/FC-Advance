@@ -114,8 +114,9 @@ export const create = async (req, res) => {
             font-size: 14px !important;
             margin: 0 !important;
             padding: 0 !important;
-          ">${media.split("=")?.[1]}</a>`
-        )) :
+            display: block !important;
+            ">${media.split("=")?.[1]}</a>`
+        )).join("") :
         `<p class="
           font-weight: normal !important;
           font-style: italic !important;
